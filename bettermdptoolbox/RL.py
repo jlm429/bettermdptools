@@ -9,6 +9,7 @@ https://github.com/mimoralea/gdrl/blob/master/LICENSE
 
 import numpy as np
 from tqdm import tqdm
+import gym
 
 class RL():
     def __init__(self):
@@ -35,8 +36,16 @@ class QLearner(RL):
                    init_epsilon=1.0,
                    min_epsilon=0.1,
                    epsilon_decay_ratio=0.9,
-                   n_episodes=30000):
-        nS, nA = env.observation_space.n, env.action_space.n
+                   n_episodes=100000):
+        #nS, nA = env.observation_space.n, env.action_space.n
+        nA = env.action_space.n
+        if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
+            nS = ""
+            for i in env.observation_space:
+                nS = nS + str(i.n)
+            nS = int(nS)
+        else:
+            nS = env.observation_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
@@ -53,11 +62,17 @@ class QLearner(RL):
                                   n_episodes)
         for e in tqdm(range(n_episodes), leave=False):
             state, done = env.reset(), False
+            #check if state is tuple and convert
+            if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
+                state=int(f"{state[0]}{state[1]}{int(state[2])}")
             if e % 2000 == 0:
                 render=True
             while not done:
                 action = select_action(state, Q, epsilons[e])
                 next_state, reward, done, _ = env.step(action)
+                # check if state is tuple and convert
+                if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
+                    next_state=int(f"{next_state[0]}{next_state[1]}{int(next_state[2])}")
                 td_target = reward + gamma * Q[next_state].max() * (not done)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
