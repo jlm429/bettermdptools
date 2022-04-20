@@ -1,0 +1,4 @@
+gym==0.23.1
+pygame
+numpy
+tqdm

@@ -36,7 +36,7 @@ class QLearner(RL):
                    min_epsilon=0.1,
                    epsilon_decay_ratio=0.9,
                    n_episodes=30000):
-        nS, nA = env.observation_space.n, env.action_space.n
+        nS, nA = 1000, env.action_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
