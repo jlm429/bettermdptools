@@ -36,7 +36,7 @@ class QLearner(RL):
                    init_epsilon=1.0,
                    min_epsilon=0.1,
                    epsilon_decay_ratio=0.9,
-                   n_episodes=100000):
+                   n_episodes=10000):
         #nS, nA = env.observation_space.n, env.action_space.n
         nA = env.action_space.n
         if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
@@ -65,9 +65,11 @@ class QLearner(RL):
             #check if state is tuple and convert
             if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
                 state=int(f"{state[0]}{state[1]}{int(state[2])}")
-            if e % 2000 == 0:
+            if e % 5000 == 0:
                 render=True
             while not done:
+                if render==True:
+                    env.render()
                 action = select_action(state, Q, epsilons[e])
                 next_state, reward, done, _ = env.step(action)
                 # check if state is tuple and convert
@@ -77,8 +79,6 @@ class QLearner(RL):
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state = next_state
-                if render==True:
-                    env.render()
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             render=False
