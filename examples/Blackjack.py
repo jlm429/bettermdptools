@@ -41,5 +41,5 @@ class Blackjack():
 if __name__=="__main__":
     #env = gym.make('Blackjack-v1')
     blackjack = Blackjack()
-    Q, V, pi, Q_track, pi_track = QL().q_learning(blackjack.env, n_episodes=50000, gamma=.8)
+    Q, V, pi, Q_track, pi_track = QL().q_learning(blackjack.env)
     blackjack.test_blackjack()
