@@ -8,6 +8,7 @@ import pygame
 from bettermdptoolbox.RL import QLearner as QL
 import numpy as np
 from bettermdptoolbox.Planning import Value_Iteration as VI
+import pickle
 
 class Blackjack():
     def __init__(self):
@@ -15,7 +16,9 @@ class Blackjack():
         pass
 
     def create_transition_matrix(self):
-        P = 0
+        #Transition probability matrix: https://github.com/rhalbersma/gym-blackjack-v1
+        P = pickle.load( open( "blackjack-envP", "rb" ) )
+        print(type(P))
         return P
 
     def test_blackjack(self):
@@ -41,5 +44,7 @@ class Blackjack():
 if __name__=="__main__":
     #env = gym.make('Blackjack-v1')
     blackjack = Blackjack()
-    Q, V, pi, Q_track, pi_track = QL().q_learning(blackjack.env)
-    blackjack.test_blackjack()
+    P=blackjack.create_transition_matrix()
+
+    #Q, V, pi, Q_track, pi_track = QL().q_learning(blackjack.env)
+    #blackjack.test_blackjack()
