@@ -86,3 +86,64 @@ class QLearner(RL):
         V = np.max(Q, axis=1)
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return Q, V, pi, Q_track, pi_track
+
+    def sarsa(self, env,
+              gamma=.99,
+              init_alpha=0.5,
+              min_alpha=0.01,
+              alpha_decay_ratio=0.5,
+              init_epsilon=1.0,
+              min_epsilon=0.1,
+              epsilon_decay_ratio=0.9,
+              n_episodes=10000):
+        #nS, nA = env.observation_space.n, env.action_space.n
+        nA = env.action_space.n
+        if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
+            nS = ""
+            for i in env.observation_space:
+                nS = nS + str(i.n)
+            nS = int(nS)
+        else:
+            nS = env.observation_space.n
+        pi_track = []
+        Q = np.zeros((nS, nA), dtype=np.float64)
+        Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
+        select_action = lambda state, Q, epsilon: np.argmax(Q[state]) \
+            if np.random.random() > epsilon \
+            else np.random.randint(len(Q[state]))
+        alphas = self.decay_schedule(init_alpha,
+                                min_alpha,
+                                alpha_decay_ratio,
+                                n_episodes)
+        epsilons = self.decay_schedule(init_epsilon,
+                                  min_epsilon,
+                                  epsilon_decay_ratio,
+                                  n_episodes)
+
+        for e in tqdm(range(n_episodes), leave=False):
+            state, done = env.reset(), False
+            #check if state is tuple and convert
+            if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
+                state=int(f"{state[0]}{state[1]}{int(state[2])}")
+            action = select_action(state, Q, epsilons[e])
+            if e % 5000 == 0:
+                render=True
+            while not done:
+                if render==True:
+                    env.render()
+                next_state, reward, done, _ = env.step(action)
+                # check if state is tuple and convert
+                if isinstance(env.observation_space, gym.spaces.tuple.Tuple):
+                    next_state=int(f"{next_state[0]}{next_state[1]}{int(next_state[2])}")
+                next_action = select_action(next_state, Q, epsilons[e])
+                td_target = reward + gamma * Q[next_state][next_action] * (not done)
+                td_error = td_target - Q[state][action]
+                Q[state][action] = Q[state][action] + alphas[e] * td_error
+                state, action = next_state, next_action
+            Q_track[e] = Q
+            pi_track.append(np.argmax(Q, axis=1))
+            render=False
+
+        V = np.max(Q, axis=1)
+        pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
+        return Q, V, pi, Q_track, pi_track

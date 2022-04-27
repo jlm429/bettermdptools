@@ -24,12 +24,11 @@ class Blackjack():
 
     def convert_state(self, state):
         s = 0
-        if state[0] == 0: s = state[1] - 1
+        if state[0] == 0:
+            s = state[1] - 1
         else:
-            if state[2]:
-                s = state[0] + 6
-            else:
-                s = state[0] - 4
+            if state[2]: s = state[0] + 6
+            else: s = state[0] - 4
             s = int(f"{s}{state[1] - 1}")
         return s
 
@@ -55,7 +54,7 @@ class Blackjack():
 
 if __name__=="__main__":
     blackjack = Blackjack()
-    P=blackjack.create_transition_matrix()
-    V, pi = VI().value_iteration(P)
-    #Q, V, pi, Q_track, pi_track = QL().q_learning(blackjack.env)
-    blackjack.test_blackjack(pi, 100)
+    #P=blackjack.create_transition_matrix()
+    #V, pi = VI().value_iteration(P)
+    Q, V, pi, Q_track, pi_track = QL().sarsa(blackjack.env)
+    #blackjack.test_blackjack(pi, 100)
