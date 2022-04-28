@@ -56,5 +56,5 @@ if __name__=="__main__":
     blackjack = Blackjack()
     #P=blackjack.create_transition_matrix()
     #V, pi = VI().value_iteration(P)
-    Q, V, pi, Q_track, pi_track = QL().sarsa(blackjack.env)
-    #blackjack.test_blackjack(pi, 100)
+    Q, V, pi, Q_track, pi_track = QL().q_learning(blackjack.env)
+    blackjack.test_blackjack(pi, 100)
