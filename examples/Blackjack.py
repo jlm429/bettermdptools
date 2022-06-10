@@ -3,6 +3,11 @@
 Author: John Mansfield
 """
 
+#todo
+#fix pep8 issues
+#fix convert_state bugs and convert to lambda
+#add callbacks
+
 import gym
 import pygame
 from bettermdptoolbox.RL import QLearner as QL
@@ -21,7 +26,7 @@ class Blackjack():
         #https://github.com/rhalbersma/gym-blackjack-v1
         P = pickle.load( open( "blackjack-envP", "rb" ) )
         return P
-
+    
     def convert_state(self, state):
         s = 0
         if state[0] == 0:
