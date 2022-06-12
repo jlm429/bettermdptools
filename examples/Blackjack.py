@@ -4,10 +4,9 @@ Author: John Mansfield
 """
 
 #todo
-#pass lambda to RL
 #fix pep8 issues
-#add callbacks
 #update readme
+#add callbacks
 
 import gym
 import pygame
@@ -18,6 +17,7 @@ from bettermdptoolbox.Planning import Value_Iteration as VI
 from bettermdptoolbox.Planning import Policy_Iteration as PI
 import pickle
 
+
 class Blackjack():
     def __init__(self):
         self.env = gym.make('Blackjack-v1')
@@ -25,7 +25,8 @@ class Blackjack():
             -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(
                 f"{state[0] - 4}{(state[1] - 2) % 10}"))
 
-    def create_transition_matrix(self):
+    @staticmethod
+    def create_transition_matrix():
         #Transition probability matrix:
         #https://github.com/rhalbersma/gym-blackjack-v1
         P = pickle.load( open( "blackjack-envP", "rb" ) )

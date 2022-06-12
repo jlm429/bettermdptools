@@ -15,19 +15,20 @@ import numpy as np
 from tqdm import tqdm
 import gym
 
+
 class RL():
     def __init__(self):
         pass
 
-
-def decay_schedule(init_value, min_value, decay_ratio, max_steps, log_start=-2, log_base=10):
-    decay_steps = int(max_steps * decay_ratio)
-    rem_steps = max_steps - decay_steps
-    values = np.logspace(log_start, 0, decay_steps, base=log_base, endpoint=True)[::-1]
-    values = (values - values.min()) / (values.max() - values.min())
-    values = (init_value - min_value) * values + min_value
-    values = np.pad(values, (0, rem_steps), 'edge')
-    return values
+    @staticmethod
+    def decay_schedule(init_value, min_value, decay_ratio, max_steps, log_start=-2, log_base=10):
+        decay_steps = int(max_steps * decay_ratio)
+        rem_steps = max_steps - decay_steps
+        values = np.logspace(log_start, 0, decay_steps, base=log_base, endpoint=True)[::-1]
+        values = (values - values.min()) / (values.max() - values.min())
+        values = (init_value - min_value) * values + min_value
+        values = np.pad(values, (0, rem_steps), 'edge')
+        return values
 
 
 class QLearner(RL):
@@ -51,11 +52,11 @@ class QLearner(RL):
         select_action = lambda state, Q, epsilon: np.argmax(Q[state]) \
             if np.random.random() > epsilon \
             else np.random.randint(len(Q[state]))
-        alphas = decay_schedule(init_alpha,
+        alphas = RL.decay_schedule(init_alpha,
                                 min_alpha,
                                 alpha_decay_ratio,
                                 n_episodes)
-        epsilons = decay_schedule(init_epsilon,
+        epsilons = RL.decay_schedule(init_epsilon,
                                   min_epsilon,
                                   epsilon_decay_ratio,
                                   n_episodes)
@@ -104,11 +105,11 @@ class SARSA(RL):
         select_action = lambda state, Q, epsilon: np.argmax(Q[state]) \
             if np.random.random() > epsilon \
             else np.random.randint(len(Q[state]))
-        alphas = decay_schedule(init_alpha,
+        alphas = RL.decay_schedule(init_alpha,
                                 min_alpha,
                                 alpha_decay_ratio,
                                 n_episodes)
-        epsilons = decay_schedule(init_epsilon,
+        epsilons = RL.decay_schedule(init_epsilon,
                                   min_epsilon,
                                   epsilon_decay_ratio,
                                   n_episodes)
