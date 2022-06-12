@@ -7,10 +7,12 @@ Author: John Mansfield
 #pass lambda to RL
 #fix pep8 issues
 #add callbacks
+#update readme
 
 import gym
 import pygame
 from bettermdptoolbox.RL import QLearner as QL
+from bettermdptoolbox.RL import SARSA as SARSA
 import numpy as np
 from bettermdptoolbox.Planning import Value_Iteration as VI
 from bettermdptoolbox.Planning import Policy_Iteration as PI
@@ -50,7 +52,13 @@ class Blackjack():
 
 if __name__=="__main__":
     blackjack = Blackjack()
+
+    #VI
     #P=blackjack.create_transition_matrix()
     #V, pi = VI().value_iteration(P)
-    Q, V, pi, Q_track, pi_track = QL().q_learning(blackjack.env)
+
+    #Q-learning
+    QL = QL(blackjack.env)
+    nS, nA = 290, blackjack.env.action_space.n
+    Q, V, pi, Q_track, pi_track = QL.q_learning(nS, nA, blackjack.convert_state_obs)
     blackjack.test_blackjack(pi, 100)
