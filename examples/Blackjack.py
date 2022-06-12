@@ -4,8 +4,8 @@ Author: John Mansfield
 """
 
 #todo
+#pass lambda to RL
 #fix pep8 issues
-#fix convert_state bugs and convert to lambda
 #add callbacks
 
 import gym
@@ -19,37 +19,28 @@ import pickle
 class Blackjack():
     def __init__(self):
         self.env = gym.make('Blackjack-v1')
-        pass
+        self.convert_state_obs = lambda state, done: (
+            -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(
+                f"{state[0] - 4}{(state[1] - 2) % 10}"))
 
     def create_transition_matrix(self):
         #Transition probability matrix:
         #https://github.com/rhalbersma/gym-blackjack-v1
         P = pickle.load( open( "blackjack-envP", "rb" ) )
         return P
-    
-    def convert_state(self, state):
-        s = 0
-        if state[0] == 0:
-            s = state[1] - 1
-        else:
-            if state[2]: s = state[0] + 6
-            else: s = state[0] - 4
-            s = int(f"{s}{state[1] - 1}")
-        return s
 
     def test_blackjack(self, pi, n_iters):
         testScores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
-            done = False
-            state = self.env.reset()
-            state = self.convert_state(state)
+            state, done = self.env.reset(), False
+            state = self.convert_state_obs(state, done)
             totalReward = 0
             while not done:
                 self.env.render()
                 action = pi(state)
                 #action=np.random.randint(0,2)
                 next_state, reward, done, info = self.env.step(action)
-                next_state = self.convert_state(next_state)
+                next_state = self.convert_state_obs(next_state, done)
                 state = next_state
                 totalReward = reward + totalReward
             testScores[i] = totalReward
