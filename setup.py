@@ -2,11 +2,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='bettermdptoolbox',
+    name='bettermdptoolbox_v2',
     version='1.0',
     platforms=['Any'],
     license='New BSD',
     packages=[''],
-    install_requires=['numpy', 'scipy', 'gym', 'ipython'],
-    setup_requires=['pytest-runner'],
+    install_requires=['gyn', 'pygame', 'numpy', 'tqdm'],
 )
