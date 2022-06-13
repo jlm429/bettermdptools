@@ -7,5 +7,5 @@ setup(
     platforms=['Any'],
     license='New BSD',
     packages=[''],
-    install_requires=['gyn', 'pygame', 'numpy', 'tqdm'],
+    install_requires=['gym', 'pygame', 'numpy', 'tqdm'],
 )
