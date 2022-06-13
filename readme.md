@@ -1,4 +1,4 @@
-<h2>Reinforcement Learning Algorithms (RL)</h2>
+<h2>Reinforcement Learning (RL) Algorithms</h2>
 
 The RL algorithms expect the number of states and actions to be passed in.   They will work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that has a single discrete valued state space, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space).  
 If the state space is not in this format, a lambda function is required to convert it.  For example, the [blackjack state space](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
