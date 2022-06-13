@@ -15,6 +15,7 @@ Q-learning blackjack example:
 QL = QL(blackjack.env)
 Q, V, pi, Q_track, pi_track = QL.q_learning(n_states, n_actions, blackjack.convert_state_obs)
 ```
+Q-learning and SARSA return the final action-value function Q, final state-value function V, final policy pi, and action-values Q_track and policies pi_track as a function of episodes.  
 
 The default parameters for Q-learning and SARSA are: 
 
@@ -40,6 +41,7 @@ Frozen Lake VI example:
 env = gym.make('FrozenLake8x8-v1')
 V, pi = VI().value_iteration(env.P)
 ```
+PI and VI return the final state-value function and final policy pi.  
 
 The default parameters for VI and PI are: 
 ```
