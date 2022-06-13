@@ -41,7 +41,7 @@ Frozen Lake VI example:
 env = gym.make('FrozenLake8x8-v1')
 V, pi = VI().value_iteration(env.P)
 ```
-PI and VI return the final state-value function and final policy pi.  
+PI and VI return the final state-value function V and final policy pi.  
 
 The default parameters for VI and PI are: 
 ```
