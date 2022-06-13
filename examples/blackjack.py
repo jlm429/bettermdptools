@@ -4,7 +4,6 @@ Author: John Mansfield
 """
 
 # todo
-# update readme
 # add callbacks
 
 import gym
