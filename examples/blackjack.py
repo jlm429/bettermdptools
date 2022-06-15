@@ -8,11 +8,11 @@ Author: John Mansfield
 
 import gym
 import pygame
-from bettermdptoolbox.RL import QLearner as QL
-from bettermdptoolbox.RL import SARSA as SARSA
+from bettermdptoolbox.rl import QLearner as QL
+from bettermdptoolbox.rl import SARSA as SARSA
 import numpy as np
-from bettermdptoolbox.Planning import Value_Iteration as VI
-from bettermdptoolbox.Planning import Policy_Iteration as PI
+from bettermdptoolbox.planning import Value_Iteration as VI
+from bettermdptoolbox.planning import Policy_Iteration as PI
 import pickle
 
 

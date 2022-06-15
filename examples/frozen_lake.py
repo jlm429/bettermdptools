@@ -2,9 +2,9 @@
 
 import gym
 import pygame
-from bettermdptoolbox.RL import QLearner as QL
-from bettermdptoolbox.Planning import Value_Iteration as VI
-from bettermdptoolbox.Planning import Policy_Iteration as PI
+from bettermdptoolbox.rl import QLearner as QL
+from bettermdptoolbox.planning import Value_Iteration as VI
+from bettermdptoolbox.planning import Policy_Iteration as PI
 
 env = gym.make('FrozenLake8x8-v1')
 
