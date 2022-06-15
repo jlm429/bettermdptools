@@ -35,7 +35,9 @@ class QLearner(RL):
     def __init__(self, env):
         self.env=env
 
-    def q_learning(self, nS, nA,
+    def q_learning(self,
+                   nS=None,
+                   nA=None,
                    convert_state_obs=lambda state, done: state,
                    gamma=.99,
                    init_alpha=0.5,
@@ -45,6 +47,10 @@ class QLearner(RL):
                    min_epsilon=0.1,
                    epsilon_decay_ratio=0.9,
                    n_episodes=10000):
+        if nS==None:
+            nS=self.env.observation_space.n
+        if nA==None:
+            nA=self.env.action_space.n
         #nS, nA = env.observation_space.n, env.action_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
@@ -88,7 +94,9 @@ class SARSA(RL):
     def __init__(self, env):
         self.env = env
 
-    def sarsa(self, nS, nA,
+    def sarsa(self,
+              nS=None,
+              nA=None,
               convert_state_obs=lambda state, done: state,
               gamma=.99,
               init_alpha=0.5,
@@ -98,6 +106,10 @@ class SARSA(RL):
               min_epsilon=0.1,
               epsilon_decay_ratio=0.9,
               n_episodes=10000):
+        if nS==None:
+            nS=self.env.observation_space.n
+        if nA==None:
+            nA=self.env.action_space.n
         #nS, nA = env.observation_space.n, env.action_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)

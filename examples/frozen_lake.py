@@ -10,8 +10,7 @@ env = gym.make('FrozenLake8x8-v1')
 
 #Q-learning
 QL = QL(env)
-nS, nA = env.observation_space.n, env.action_space.n
-Q, V, pi, Q_track, pi_track = QL.q_learning(nS, nA)
+Q, V, pi, Q_track, pi_track = QL.q_learning()
 
 #V, pi = VI().value_iteration(env.P)
 #V, pi = PI().policy_iteration(env.P)
