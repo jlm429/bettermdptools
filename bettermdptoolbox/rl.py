@@ -13,6 +13,7 @@ edited by: John Mansfield
 
 import numpy as np
 from tqdm import tqdm
+from callback.callback import MyCallback
 import gym
 
 
@@ -34,6 +35,8 @@ class RL():
 class QLearner(RL):
     def __init__(self, env):
         self.env=env
+        self.callbacks=MyCallback()
+        self.render = False
 
     def q_learning(self,
                    nS=None,
@@ -47,9 +50,9 @@ class QLearner(RL):
                    min_epsilon=0.1,
                    epsilon_decay_ratio=0.9,
                    n_episodes=10000):
-        if nS==None:
+        if nS is None:
             nS=self.env.observation_space.n
-        if nA==None:
+        if nA is None:
             nA=self.env.action_space.n
         #nS, nA = env.observation_space.n, env.action_space.n
         pi_track = []
@@ -67,12 +70,12 @@ class QLearner(RL):
                                   epsilon_decay_ratio,
                                   n_episodes)
         for e in tqdm(range(n_episodes), leave=False):
+            self.callbacks.on_episode_begin(self)
+            self.callbacks.on_episode(self, episode=e)
             state, done = self.env.reset(), False
             state = convert_state_obs(state, done)
-            if e % 5000 == 0:
-                render=True
             while not done:
-                if render==True:
+                if self.render:
                     self.env.render()
                 action = select_action(state, Q, epsilons[e])
                 next_state, reward, done, _ = self.env.step(action)
@@ -83,7 +86,8 @@ class QLearner(RL):
                 state = next_state
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
-            render=False
+            self.render = False
+            self.callbacks.on_episode_end(self)
 
         V = np.max(Q, axis=1)
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
@@ -93,6 +97,8 @@ class QLearner(RL):
 class SARSA(RL):
     def __init__(self, env):
         self.env = env
+        self.callbacks=MyCallback()
+        self.render = False
 
     def sarsa(self,
               nS=None,
@@ -106,10 +112,10 @@ class SARSA(RL):
               min_epsilon=0.1,
               epsilon_decay_ratio=0.9,
               n_episodes=10000):
-        if nS==None:
-            nS=self.env.observation_space.n
-        if nA==None:
-            nA=self.env.action_space.n
+        if nS is None:
+            nS = self.env.observation_space.n
+        if nA is None:
+            nA = self.env.action_space.n
         #nS, nA = env.observation_space.n, env.action_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
@@ -127,13 +133,13 @@ class SARSA(RL):
                                   n_episodes)
 
         for e in tqdm(range(n_episodes), leave=False):
+            self.callbacks.on_episode_begin(self)
+            self.callbacks.on_episode(self, episode=e)
             state, done = self.env.reset(), False
             state = convert_state_obs(state, done)
             action = select_action(state, Q, epsilons[e])
-            if e % 5000 == 0:
-                render=True
             while not done:
-                if render==True:
+                if self.render:
                     self.env.render()
                 next_state, reward, done, _ = self.env.step(action)
                 next_state = convert_state_obs(next_state, done)
@@ -144,7 +150,8 @@ class SARSA(RL):
                 state, action = next_state, next_action
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
-            render=False
+            self.render = False
+            self.callbacks.on_episode_end(self)
 
         V = np.max(Q, axis=1)
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]

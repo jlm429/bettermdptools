@@ -3,9 +3,6 @@
 Author: John Mansfield
 """
 
-# todo
-# add callbacks
-
 import gym
 import pygame
 from bettermdptoolbox.rl import QLearner as QL
