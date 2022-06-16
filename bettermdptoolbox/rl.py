@@ -17,9 +17,11 @@ from callback.callback import MyCallback
 import gym
 
 
-class RL():
-    def __init__(self):
-        pass
+class RL:
+    def __init__(self, env):
+        self.env = env
+        self.callbacks = MyCallback()
+        self.render = False
 
     @staticmethod
     def decay_schedule(init_value, min_value, decay_ratio, max_steps, log_start=-2, log_base=10):
@@ -34,9 +36,7 @@ class RL():
 
 class QLearner(RL):
     def __init__(self, env):
-        self.env=env
-        self.callbacks=MyCallback()
-        self.render = False
+        RL.__init__(self, env)
 
     def q_learning(self,
                    nS=None,
@@ -96,9 +96,7 @@ class QLearner(RL):
 
 class SARSA(RL):
     def __init__(self, env):
-        self.env = env
-        self.callbacks=MyCallback()
-        self.render = False
+        RL.__init__(self, env)
 
     def sarsa(self,
               nS=None,
@@ -156,3 +154,4 @@ class SARSA(RL):
         V = np.max(Q, axis=1)
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return Q, V, pi, Q_track, pi_track
+    
