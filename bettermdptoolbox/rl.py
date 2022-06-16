@@ -54,7 +54,6 @@ class QLearner(RL):
             nS=self.env.observation_space.n
         if nA is None:
             nA=self.env.action_space.n
-        #nS, nA = env.observation_space.n, env.action_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
@@ -114,7 +113,6 @@ class SARSA(RL):
             nS = self.env.observation_space.n
         if nA is None:
             nA = self.env.action_space.n
-        #nS, nA = env.observation_space.n, env.action_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
@@ -154,4 +152,3 @@ class SARSA(RL):
         V = np.max(Q, axis=1)
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return Q, V, pi, Q_track, pi_track
-    
