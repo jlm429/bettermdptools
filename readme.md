@@ -17,9 +17,23 @@ Q, V, pi, Q_track, pi_track = QL.q_learning(n_states, n_actions, blackjack.conve
 ```
 Q-learning and SARSA return the final action-value function Q, final state-value function V, final policy pi, and action-values Q_track and policies pi_track as a function of episodes.  
 
-The default parameters for Q-learning and SARSA are: 
+<h3> Callbacks </h3>
+
+SARSA and Q-learning have callback hooks for episode number, begin and end.   To create a custom callback, define a child class that overrides one of the Callback parent class methods.  Here, on_episode prints the episode number and sets render to True every 1000 episodes.
+
+```
+class MyCallback(Callback):
+    def __init__(self):
+        pass
+
+    def on_episode(self, caller, episode):
+        if episode % 1000 == 0:
+            print(" episode=", episode)
+            caller.render = True
+```
 
 
+Default parameters for Q-learning and SARSA are: 
 ```
 nS=env.observation_space.n, 
 nA=env.action_space.n, 
