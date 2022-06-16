@@ -24,5 +24,5 @@ class MyCallback(Callback):
 
     def on_episode(self, caller, episode):
         if episode % 1000 == 0:
-            print("episode=", episode)
-            caller.render = True
+            print(" episode=", episode)
+            # caller.render = True
