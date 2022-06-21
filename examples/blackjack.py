@@ -24,8 +24,8 @@ class Blackjack():
     def create_transition_matrix():
         # Transition probability matrix:
         # https://github.com/rhalbersma/gym-blackjack-v1
-        p = pickle.load(open("blackjack-envP", "rb"))
-        return p
+        P = pickle.load(open("blackjack-envP", "rb"))
+        return P
 
     def test_blackjack(self, pi, n_iters):
         test_scores = np.full([n_iters], np.nan)
@@ -49,12 +49,12 @@ class Blackjack():
 
 if __name__ == "__main__":
     blackjack = Blackjack()
-    p = blackjack.create_transition_matrix()
-    n_states = len(p)
+    P = blackjack.create_transition_matrix()
+    n_states = len(P)
     n_actions = blackjack.env.action_space.n
 
     # VI
-    # V, pi = VI().value_iteration(p)
+    # V, pi = VI().value_iteration(P)
 
     # Q-learning
     QL = QL(blackjack.env)
