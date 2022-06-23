@@ -13,14 +13,14 @@ edited by: John Mansfield
 
 import numpy as np
 from tqdm import tqdm
-from callback.callback import MyCallback
+from callbacks.callbacks import MyCallbacks
 import gym
 
 
 class RL:
     def __init__(self, env):
         self.env = env
-        self.callbacks = MyCallback()
+        self.callbacks = MyCallbacks()
         self.render = False
 
     @staticmethod

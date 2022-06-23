@@ -4,7 +4,7 @@ Author: John Mansfield
 """
 
 
-class Callback:
+class Callbacks:
     def __init__(self):
         pass
 
@@ -18,7 +18,7 @@ class Callback:
         pass
 
 
-class MyCallback(Callback):
+class MyCallbacks(Callbacks):
     def __init__(self):
         pass
 
