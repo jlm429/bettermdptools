@@ -22,9 +22,10 @@ class TestEnv:
             total_reward = 0
             while not done:
                 env.render()
-                action = pi(state)
                 if pi is None:
                     action = np.random.randint(0, n_actions)
+                else:
+                    action = pi(state)
                 next_state, reward, done, info = env.step(action)
                 next_state = convert_state_obs(next_state, done)
                 state = next_state
