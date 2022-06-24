@@ -1,7 +1,20 @@
 import functools
+import time
 
 
-# example decorators taken from https://realpython.com/
+def print_runtime(func):
+    @functools.wraps(func)
+    def wrapper_print_runtime(*args, **kwargs):
+        start = time.time()
+        value = func(*args, **kwargs)
+        end = time.time()
+        running_time = end - start
+        print("runtime = %.2f seconds" % running_time)
+        return value
+    return wrapper_print_runtime
+
+
+# from https://realpython.com/
 def debug(func):
     """Print the function signature and return value"""
     @functools.wraps(func)

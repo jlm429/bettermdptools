@@ -14,6 +14,7 @@ edited by: John Mansfield
 import numpy as np
 from tqdm import tqdm
 from callbacks.callbacks import MyCallbacks
+from decorators.decorators import print_runtime
 import gym
 
 
@@ -38,6 +39,7 @@ class QLearner(RL):
     def __init__(self, env):
         RL.__init__(self, env)
 
+    @print_runtime
     def q_learning(self,
                    nS=None,
                    nA=None,
@@ -97,6 +99,7 @@ class SARSA(RL):
     def __init__(self, env):
         RL.__init__(self, env)
 
+    @print_runtime
     def sarsa(self,
               nS=None,
               nA=None,

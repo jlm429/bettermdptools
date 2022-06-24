@@ -6,7 +6,6 @@ Author: John Mansfield
 import gym
 import pygame
 import numpy as np
-from decorators.decorators import debug
 
 
 class TestEnv:
@@ -14,7 +13,6 @@ class TestEnv:
         pass
 
     @staticmethod
-    @debug
     def test_env(env, n_iters=10, pi=None, convert_state_obs=lambda state, done: state):
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
