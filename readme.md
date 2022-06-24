@@ -19,10 +19,10 @@ Q-learning and SARSA return the final action-value function Q, final state-value
 
 <h3> Callbacks </h3>
 
-SARSA and Q-learning have callback hooks for episode number, begin and end.   To create a callback, override one of the parent class methods in the child class MyCallback.  Here, on_episode prints the episode number and sets render to True every 1000 episodes.
+SARSA and Q-learning have callback hooks for episode number, begin and end.   To create a callback, override one of the parent class methods in the child class MyCallbacks.  Here, on_episode prints the episode number and sets render to True every 1000 episodes.
 
 ```
-class MyCallback(Callback):
+class MyCallbacks(Callbacks):
     def __init__(self):
         pass
 
@@ -32,21 +32,6 @@ class MyCallback(Callback):
             caller.render = True
 ```
 
-
-Default parameters for Q-learning and SARSA are: 
-```
-nS=env.observation_space.n, 
-nA=env.action_space.n, 
-convert_state_obs=lambda state, done: state
-gamma=.99
-init_alpha=0.5
-min_alpha=0.01
-alpha_decay_ratio=0.5
-init_epsilon=1.0
-min_epsilon=0.1
-epsilon_decay_ratio=0.9
-n_episodes=10000 
-```
 
 <h2> Planning Algorithms </h2>
 
@@ -58,9 +43,3 @@ env = gym.make('FrozenLake8x8-v1')
 V, pi = VI().value_iteration(env.P)
 ```
 PI and VI return the final state-value function V and final policy pi.  
-
-The default parameters for VI and PI are: 
-```
-gamma=1.0 
-theta=1e-10
-```
