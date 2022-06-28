@@ -1,15 +1,15 @@
 <h2>Reinforcement Learning (RL) Algorithms</h2>
 
-The RL algorithms will work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that has a single discrete valued state space, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
-If the state space is not in this format, a lambda function is required to convert it.  For example, the [blackjack state space](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
+The RL algorithms work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that has a single discrete valued state space, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
+A lambda function is required to convert the state space if not in this format.  For example, the [blackjack state space](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
 
-Here, blackjack.convert_state_obs is converting the 3-tuple into a discrete space with 290 states by concatenating player states 0-28 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
+Here, blackjack.convert_state_obs converts the 3-tuple into a discrete space with 290 states by concatenating player states 0-28 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
 
 ```
 self.convert_state_obs = lambda state, done: ( -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(f"{state[0] - 4}{(state[1] - 2) % 10}"))
 ```
 
-The number of states and actions is taken from the environment by default.  Since we've modified the number of states for blackjack, we'll pass this in as well. 
+The number of states and actions are taken from the environment by default.  Since the number of states for blackjack is modified, this is passed in as well. 
 ```
 # Q-learning
 QL = QL(blackjack.env)
