@@ -23,6 +23,13 @@ class MyCallbacks(Callbacks):
         pass
 
     def on_episode(self, caller, episode):
-        if episode % 1000 == 0:
-            print(" episode=", episode)
-            # caller.render = True
+        # do things for specific episodes
+        pass
+
+    def on_episode_begin(self, caller):
+        # do things on episode begin
+        pass
+
+    def on_episode_begin(self, caller):
+        # do things on episode begin
+        pass
