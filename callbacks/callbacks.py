@@ -23,13 +23,13 @@ class MyCallbacks(Callbacks):
         pass
 
     def on_episode(self, caller, episode):
-        # do things for specific episodes
+        # do things on specific episodes
         pass
 
     def on_episode_begin(self, caller):
         # do things on episode begin
         pass
 
-    def on_episode_begin(self, caller):
-        # do things on episode begin
+    def on_episode_end(self, caller):
+        # do things on episode end
         pass
