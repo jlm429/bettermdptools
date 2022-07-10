@@ -24,7 +24,7 @@ if __name__ == "__main__":
     #V, pi = VI().value_iteration(env.P)
     #V, pi = PI().policy_iteration(env.P)
 
-    test_scores = TestEnv.test_env(frozen_lake.env, 10, pi)
+    test_scores = TestEnv.test_env(env=frozen_lake.env, pi=pi)
     print(test_scores)
 
 

@@ -42,4 +42,5 @@ if __name__ == "__main__":
     QL = QL(blackjack.env)
     Q, V, pi, Q_track, pi_track = QL.q_learning(n_states, n_actions, blackjack.convert_state_obs)
 
-    test_scores = TestEnv.test_env(blackjack.env, 10, pi, blackjack.convert_state_obs)
+    test_scores = TestEnv.test_env(env=blackjack.env, pi=pi, user_input=False,
+                                   convert_state_obs=blackjack.convert_state_obs)
