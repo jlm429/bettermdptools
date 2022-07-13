@@ -8,7 +8,7 @@ https://github.com/mimoralea/gdrl/blob/master/LICENSE
 """
 
 """
-edited by: John Mansfield
+modified by: John Mansfield
 """
 
 import numpy as np

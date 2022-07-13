@@ -7,16 +7,24 @@ All rights reserved.
 https://github.com/mimoralea/gdrl/blob/master/LICENSE
 """
 
+"""
+modified by: John Mansfield
+"""
+
 import numpy as np
+from decorators.decorators import print_runtime
+
 
 class Planning():
     def __init__(self):
         pass
 
-class Value_Iteration(Planning):
+
+class ValueIteration(Planning):
     def __init__(self):
         pass
 
+    @print_runtime
     def value_iteration(self,P, gamma=1.0, theta=1e-10):
         V = np.zeros(len(P), dtype=np.float64)
         while True:
@@ -31,10 +39,12 @@ class Value_Iteration(Planning):
         pi = lambda s: {s:a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return V, pi
 
-class Policy_Iteration(Planning):
+
+class PolicyIteration(Planning):
     def __init__(self):
         pass
 
+    @print_runtime
     def policy_iteration(self, P, gamma=1.0, theta=1e-10):
         random_actions = np.random.choice(tuple(P[0].keys()), len(P))
         pi = lambda s: {s: a for s, a in enumerate(random_actions)}[s]

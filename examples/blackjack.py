@@ -8,8 +8,8 @@ import pygame
 from bettermdptoolbox.rl import QLearner as QL
 from bettermdptoolbox.rl import SARSA as SARSA
 import numpy as np
-from bettermdptoolbox.planning import Value_Iteration as VI
-from bettermdptoolbox.planning import Policy_Iteration as PI
+from bettermdptoolbox.planning import ValueIteration as VI
+from bettermdptoolbox.planning import PolicyIteration as PI
 from test_env import TestEnv
 import pickle
 
