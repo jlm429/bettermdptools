@@ -35,8 +35,9 @@ if __name__ == "__main__":
     n_states = len(P)
     n_actions = blackjack.env.action_space.n
 
-    # VI
-    # V, pi = VI().value_iteration(P)
+    # VI/PI
+    # V, pi = VI(P).value_iteration()
+    # V, pi = PI(P).policy_iteration()
 
     # Q-learning
     QL = QL(blackjack.env)

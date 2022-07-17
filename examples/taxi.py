@@ -17,11 +17,12 @@ if __name__ == "__main__":
 
     taxi = Taxi()
 
-    # Q-learning
-    QL = QL(taxi.env)
-    Q, V, pi, Q_track, pi_track = QL.q_learning()
+    # VI/PI
+    # V, pi = VI(taxi.env.P).value_iteration()
+    # V, pi = PI(taxi.env.P).policy_iteration()
 
-    # V, pi = VI().value_iteration(taxi.env.P)
-    # V, pi = PI().policy_iteration(taxi.env.P)
+    # Q-learning
+    #QL = QL(taxi.env)
+    #Q, V, pi, Q_track, pi_track = QL.q_learning()
 
     test_scores = TestEnv.test_env(env=taxi.env, user_input=False, pi=pi)

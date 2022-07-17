@@ -17,11 +17,12 @@ if __name__ == "__main__":
 
     frozen_lake = FrozenLake()
 
-    # Q-learning
-    QL = QL(frozen_lake.env)
-    Q, V, pi, Q_track, pi_track = QL.q_learning()
+    # VI/PI
+    # V, pi = VI(frozen_lake.env.P).value_iteration()
+    # V, pi = PI(frozen_lake.env.P).policy_iteration()
 
-    # V, pi = VI().value_iteration(frozen_lake.env.P)
-    # V, pi = PI().policy_iteration(frozen_lake.env.P)
+    # Q-learning
+    #QL = QL(frozen_lake.env)
+    #Q, V, pi, Q_track, pi_track = QL.q_learning()
 
     test_scores = TestEnv.test_env(env=frozen_lake.env, user_input=False, pi=pi)
