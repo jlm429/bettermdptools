@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # V, pi = PI(taxi.env.P).policy_iteration()
 
     # Q-learning
-    #QL = QL(taxi.env)
-    #Q, V, pi, Q_track, pi_track = QL.q_learning()
+    QL = QL(taxi.env)
+    Q, V, pi, Q_track, pi_track = QL.q_learning()
 
     test_scores = TestEnv.test_env(env=taxi.env, user_input=False, pi=pi)
