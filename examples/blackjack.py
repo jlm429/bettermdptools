@@ -74,8 +74,8 @@ if __name__ == "__main__":
     # V, pi = PI(blackjack.P).policy_iteration()
 
     # Q-learning
-    #QL = QL(blackjack.env)
-    #Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
+    QL = QL(blackjack.env)
+    Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
 
     test_scores = TestEnv.test_env(env=blackjack.env, pi=pi, user_input=False,
                                    convert_state_obs=blackjack.convert_state_obs)
