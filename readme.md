@@ -13,7 +13,7 @@ The number of states and actions are taken from the environment by default.  Sin
 ```
 # Q-learning
 QL = QL(blackjack.env)
-Q, V, pi, Q_track, pi_track = QL.q_learning(n_states, n_actions, blackjack.convert_state_obs)
+Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
 ```
 Q-learning and SARSA return the final action-value function Q, final state-value function V, final policy pi, and action-values Q_track and policies pi_track as a function of episodes.  
 
