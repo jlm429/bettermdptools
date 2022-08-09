@@ -80,6 +80,7 @@ class QLearner(RL):
                     self.env.render()
                 action = select_action(state, Q, epsilons[e])
                 next_state, reward, done, _ = self.env.step(action)
+                self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state,done)
                 td_target = reward + gamma * Q[next_state].max() * (not done)
                 td_error = td_target - Q[state][action]
@@ -141,6 +142,7 @@ class SARSA(RL):
                 if self.render:
                     self.env.render()
                 next_state, reward, done, _ = self.env.step(action)
+                self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state, done)
                 next_action = select_action(next_state, Q, epsilons[e])
                 td_target = reward + gamma * Q[next_state][next_action] * (not done)
