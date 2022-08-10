@@ -14,6 +14,15 @@ def print_runtime(func):
     return wrapper_print_runtime
 
 
+# from https://wiki.python.org/moin/PythonDecoratorLibrary
+def add_to(func):
+    @functools.wraps(func)
+    def decorator(*args, **kwargs):
+        setattr(func, args[0].__name__, args[0])
+        return func
+    return decorator
+
+
 # from https://realpython.com/
 def debug(func):
     """Print the function signature and return value"""
