@@ -9,7 +9,7 @@ Here, blackjack.convert_state_obs changes the 3-tuple into a discrete space with
 self.convert_state_obs = lambda state, done: ( -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(f"{state[0] - 4}{(state[1] - 2) % 10}"))
 ```
 
-The number of states and actions are taken from the environment by default.  Since the number of states for blackjack is modified, this is passed in as well. 
+The number of states and actions are taken from the environment by default.  Since the number of states for blackjack are modified, this is passed in as well. 
 ```
 # Q-learning
 QL = QL(blackjack.env)
