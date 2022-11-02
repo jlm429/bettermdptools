@@ -1,6 +1,6 @@
 <h2>Reinforcement Learning (RL) Algorithms</h2>
 
-The RL algorithms work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that have single discrete valued state spaces, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
+The RL algorithms (Q-learning, SARSA) work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that have single discrete valued state spaces, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
 A lambda function is required to convert state spaces not in this format.  For example, [blackjack](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
 
 Here, blackjack.convert_state_obs changes the 3-tuple into a discrete space with 290 states by concatenating player states 0-28 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
