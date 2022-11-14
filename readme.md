@@ -3,13 +3,14 @@
 The RL algorithms (Q-learning, SARSA) work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that have single discrete valued state spaces, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
 A lambda function is required to convert state spaces not in this format.  For example, [blackjack](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
 
-Here, blackjack.convert_state_obs changes the 3-tuple into a discrete space with 290 states by concatenating player states 0-28 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
+Here, blackjack.convert_state_obs changes the 3-tuple into a discrete space with 280 states by concatenating player states 0-28 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
 
 ```
 self.convert_state_obs = lambda state, done: ( -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(f"{state[0] - 4}{(state[1] - 2) % 10}"))
 ```
-
-The number of states and actions are taken from the environment by default.  Since the number of states for blackjack are modified, this is passed in as well. 
+ 
+Since n_states is modified by the state conversion, this new value is passed in along with n_actions, and convert_state_obs.    
+  
 ```
 # Q-learning
 QL = QL(blackjack.env)
