@@ -48,16 +48,17 @@ class PolicyIteration(Planning):
     def policy_iteration(self, gamma=1.0, theta=1e-10):
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
         pi = lambda s: {s: a for s, a in enumerate(random_actions)}[s]
+        # initial V to give to `policy_evaluation` for the first time
+        V = np.zeros(len(self.P), dtype=np.float64)
         while True:
             old_pi = {s: pi(s) for s in range(len(self.P))}
-            V = self.policy_evaluation(pi, gamma, theta)
+            V = self.policy_evaluation(pi, V, gamma, theta)
             pi = self.policy_improvement(V, gamma)
             if old_pi == {s: pi(s) for s in range(len(self.P))}:
                 break
         return V, pi
 
-    def policy_evaluation(self, pi, gamma=1.0, theta=1e-10):
-        prev_V = np.zeros(len(self.P), dtype=np.float64)
+    def policy_evaluation(self, pi, prev_V, gamma=1.0, theta=1e-10):
         while True:
             V = np.zeros(len(self.P), dtype=np.float64)
             for s in range(len(self.P)):
