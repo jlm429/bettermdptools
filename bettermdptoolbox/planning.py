@@ -9,6 +9,15 @@ https://github.com/mimoralea/gdrl/blob/master/LICENSE
 
 """
 modified by: John Mansfield
+
+documentation added by: Gagandeep Randhawa
+"""
+
+"""
+Model-based learning algorithms: Value Iteration and Policy Iteration
+
+Assumes prior knowledge of the type of reward available to the agent
+for iterating to an optimal policy and reward value for a given MDP.
 """
 
 import numpy as np
@@ -26,6 +35,23 @@ class ValueIteration(Planning):
 
     @print_runtime
     def value_iteration(self, gamma=1.0, theta=1e-10):
+        """
+        Parameters
+        ----------------------------
+        gamma {float}: discount factor
+        
+        theta {float}: Convergence criteria for checking convergence to optimal
+        
+        
+        Returns
+        ----------------------------
+        V {array-like}, shape(len(self.P)):
+            Optimal value array
+            
+        pi {lambda}, input state value, output action value:
+            Optimal policy which maps state action value
+        """
+        
         V = np.zeros(len(self.P), dtype=np.float64)
         while True:
             Q = np.zeros((len(self.P), len(self.P[0])), dtype=np.float64)
@@ -46,6 +72,23 @@ class PolicyIteration(Planning):
 
     @print_runtime
     def policy_iteration(self, gamma=1.0, theta=1e-10):
+        """
+        Parameters
+        ----------------------------
+        gamma {float}: discount factor
+        
+        theta {float}: Convergence criteria for checking convergence to optimal
+        
+        
+        Returns
+        ----------------------------
+        V {array-like}, shape(len(self.P)):
+            Optimal value array
+            
+        pi {lambda}, input state value, output action value:
+            Optimal policy which maps state action value
+        """
+
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
         pi = lambda s: {s: a for s, a in enumerate(random_actions)}[s]
         # initial V to give to `policy_evaluation` for the first time
