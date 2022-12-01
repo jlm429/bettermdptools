@@ -9,6 +9,15 @@ https://github.com/mimoralea/gdrl/blob/master/LICENSE
 
 """
 modified by: John Mansfield
+
+documentation added by: Gagandeep Randhawa
+"""
+
+"""
+Model-free learning algorithms: Q-Learning and SARSA
+
+Assumes no prior knowledge of the type of reward available to the agent.
+Given enough episodes, tries to find an estimate of the optimal policy.
 """
 
 import numpy as np
@@ -26,6 +35,35 @@ class RL:
 
     @staticmethod
     def decay_schedule(init_value, min_value, decay_ratio, max_steps, log_start=-2, log_base=10):
+        """
+        Parameters
+        ----------------------------
+        init_value {float}:
+            Initial value of the quantity being decayed
+        
+        min_value {float}:
+            Minimum value init_value is allowed to decay to
+            
+        decay_ratio {float}:
+            The exponential factor exp(decay_ratio).
+            Updated decayed value is calculated as 
+        
+        max_steps {int}:
+            Max iteration steps for decaying init_value
+        
+        log_start {array-like}, default = -2:
+            Starting value of the decay sequence.
+            Default value starts it at 0.01
+        
+        log_base {array-like}, default = 10:
+            Base of the log space.
+        
+        
+        Returns
+        ----------------------------
+        values {array-like}, shape(max_steps):
+            Decay values where values[i] is the value used at i-th step
+        """
         decay_steps = int(max_steps * decay_ratio)
         rem_steps = max_steps - decay_steps
         values = np.logspace(log_start, 0, decay_steps, base=log_base, endpoint=True)[::-1]
@@ -52,6 +90,62 @@ class QLearner(RL):
                    min_epsilon=0.1,
                    epsilon_decay_ratio=0.9,
                    n_episodes=10000):
+        """
+        Parameters
+        ----------------------------
+        nS {array-like}:
+            Number of states
+        
+        nA {array-like}:
+            Number of available actions
+            
+        convert_state_obs {lambda}:
+            The state conversion utilized in BlackJack ToyText problem.
+            Returns three state tuple as one of the 280 converted states.
+        
+        gamma {float}, default = 0.99:
+            Discount factor
+        
+        init_alpha {float}, default = 0.5:
+            Learning rate
+        
+        min_alpha {float}, default = 0.01:
+            Minimum learning rate
+        
+        alpha_decay_ratio {float}, default = 0.5:
+            Decay schedule of learing rate for future iterations
+        
+        init_epsilon {float}, default = 0.1:
+            Initial epsilon value for epsilon greedy strategy.
+            Chooses max(Q) over available actions with probability 1-epsilon.
+        
+        min_epsilon {float}, default = 0.1:
+            Minimum epsilon. Used to balance exploration in later stages.
+        
+        epsilon_decay_ratio {float}, default = 0.9:
+            Decay schedule of epsilon for future iterations
+            
+        n_episodes {int}, default = 10000:
+            Number of episodes for the agent
+
+
+        Returns
+        ----------------------------
+        Q {array-like}, shape(nS, nA):
+            Final action-value function Q(s,a)
+
+        pi {lambda}, input state value, output action value:
+            Optimal policy which maps state action value
+
+        V {numpy array}, shape(nS):
+            Optimal value array
+
+        Q_track {array-like}, shape(n_episodes, nS, nA):
+            Log of Q(s,a) for each episode
+
+        pi_track {list}, len(n_episodes):
+            Log of V[s] for each episode
+        """
         if nS is None:
             nS=self.env.observation_space.n
         if nA is None:
@@ -113,6 +207,62 @@ class SARSA(RL):
               min_epsilon=0.1,
               epsilon_decay_ratio=0.9,
               n_episodes=10000):
+        """
+        Parameters
+        ----------------------------
+        nS {array-like}:
+            Number of states
+        
+        nA {array-like}:
+            Number of available actions
+            
+        convert_state_obs {lambda}:
+            The state conversion utilized in BlackJack ToyText problem.
+            Returns three state tuple as one of the 280 converted states.
+        
+        gamma {float}, default = 0.99:
+            Discount factor
+        
+        init_alpha {float}, default = 0.5:
+            Learning rate
+        
+        min_alpha {float}, default = 0.01:
+            Minimum learning rate
+        
+        alpha_decay_ratio {float}, default = 0.5:
+            Decay schedule of learing rate for future iterations
+        
+        init_epsilon {float}, default = 0.1:
+            Initial epsilon value for epsilon greedy strategy.
+            Chooses max(Q) over available actions with probability 1-epsilon.
+        
+        min_epsilon {float}, default = 0.1:
+            Minimum epsilon. Used to balance exploration in later stages.
+        
+        epsilon_decay_ratio {float}, default = 0.9:
+            Decay schedule of epsilon for future iterations
+            
+        n_episodes {int}, default = 10000:
+            Number of episodes for the agent
+
+
+        Returns
+        ----------------------------
+        Q {array-like}, shape(nS, nA):
+            Final action-value function Q(s,a)
+
+        pi {lambda}, input state value, output action value:
+            Optimal policy which maps state action value
+
+        V {numpy array}, shape(nS):
+            Optimal value array
+
+        Q_track {array-like}, shape(n_episodes, nS, nA):
+            Log of Q(s,a) for each episode
+
+        pi_track {list}, len(n_episodes):
+            Log of V[s] for each episode
+        """
         if nS is None:
             nS = self.env.observation_space.n
         if nA is None:
