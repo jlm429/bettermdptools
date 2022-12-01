@@ -38,20 +38,21 @@ class ValueIteration(Planning):
         """
         Parameters
         ----------------------------
-        gamma {float}: discount factor
+        gamma {float}:
+            Discount factor
         
-        theta {float}: Convergence criteria for checking convergence to optimal
+        theta {float}:
+            Convergence criteria for checking convergence to optimal
         
         
         Returns
         ----------------------------
-        V {array-like}, shape(len(self.P)):
+        V {numpy array}, shape(possible states):
             Optimal value array
             
         pi {lambda}, input state value, output action value:
             Optimal policy which maps state action value
         """
-        
         V = np.zeros(len(self.P), dtype=np.float64)
         while True:
             Q = np.zeros((len(self.P), len(self.P[0])), dtype=np.float64)
@@ -62,6 +63,12 @@ class ValueIteration(Planning):
             if np.max(np.abs(V - np.max(Q, axis=1))) < theta:
                 break
             V = np.max(Q, axis=1)
+        # Explanation of lambda:
+        # def pi(s):
+        #   policy = dict()
+        #   for state, action in enumerate(np.argmax(Q, axis=1)):
+        #       policy[state] = action
+        #   return policy[s]
         pi = lambda s: {s:a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return V, pi
 
@@ -75,21 +82,28 @@ class PolicyIteration(Planning):
         """
         Parameters
         ----------------------------
-        gamma {float}: discount factor
+        gamma {float}:
+            Discount factor
         
-        theta {float}: Convergence criteria for checking convergence to optimal
+        theta {float}:
+            Convergence criteria for checking convergence to optimal
         
         
         Returns
         ----------------------------
-        V {array-like}, shape(len(self.P)):
+        V {numpy array}, shape(possible states):
             Optimal value array
             
         pi {lambda}, input state value, output action value:
             Optimal policy which maps state action value
         """
-
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
+        # Explanation of lambda:
+        # def pi(s):
+        #   policy = dict()
+        #   for state, action in enumerate(np.argmax(Q, axis=1)):
+        #       policy[state] = action
+        #   return policy[s]
         pi = lambda s: {s: a for s, a in enumerate(random_actions)}[s]
         # initial V to give to `policy_evaluation` for the first time
         V = np.zeros(len(self.P), dtype=np.float64)
@@ -102,6 +116,27 @@ class PolicyIteration(Planning):
         return V, pi
 
     def policy_evaluation(self, pi, prev_V, gamma=1.0, theta=1e-10):
+        """
+        Parameters
+        ----------------------------
+        pi {lambda}, input state value, output action value:
+            Policy which maps state action value
+        
+        prev_V {numpy array}, shape(possible states):
+            Discounted values from previous iteration
+        
+        gamma {float}:
+            Discount factor
+        
+        theta {float}:
+            Convergence criteria for checking convergence to optimal
+        
+        
+        Returns
+        ----------------------------
+        V {numpy array}, shape(possible states):
+            Optimal value array
+        """
         while True:
             V = np.zeros(len(self.P), dtype=np.float64)
             for s in range(len(self.P)):
@@ -113,10 +148,31 @@ class PolicyIteration(Planning):
         return V
 
     def policy_improvement(self, V, gamma=1.0):
+        """
+        Parameters
+        ----------------------------
+        V {numpy array}, shape(possible states):
+            Value array
+
+        gamma {float}:
+            Discount factor
+                
+        
+        Returns
+        ----------------------------
+        new_pi {lambda}, input state value, output action value:
+            Improved policy which maps state action value
+        """
         Q = np.zeros((len(self.P), len(self.P[0])), dtype=np.float64)
         for s in range(len(self.P)):
             for a in range(len(self.P[s])):
                 for prob, next_state, reward, done in self.P[s][a]:
                     Q[s][a] += prob * (reward + gamma * V[next_state] * (not done))
+        # Explanation of lambda:
+        # def new_pi(s):
+        #   policy = dict()
+        #   for state, action in enumerate(np.argmax(Q, axis=1)):
+        #       policy[state] = action
+        #   return policy[s]
         new_pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return new_pi
