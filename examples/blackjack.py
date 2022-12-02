@@ -17,6 +17,15 @@ import pickle
 class Blackjack:
     def __init__(self):
         self._env = gym.make('Blackjack-v1')
+        # Explanation of convert_state_obs lambda:
+        # def function(state, done):
+        # 	if done:
+		#         return -1
+        #     else:
+        #         if state[2]:
+        #             int(f"{state[0]+6}{(state[1]-2)%10}")
+        #         else:
+        #             int(f"{state[0]-4}{(state[1]-2)%10}")
         self._convert_state_obs = lambda state, done: (
             -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(
                 f"{state[0] - 4}{(state[1] - 2) % 10}"))
