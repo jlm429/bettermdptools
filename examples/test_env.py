@@ -21,6 +21,7 @@ class TestEnv:
             state = convert_state_obs(state, done)
             total_reward = 0
             while not done:
+                # This will render the current iteration, delete if not needed
                 env.render()
                 if user_input:
                     # get user input and suggest policy output
