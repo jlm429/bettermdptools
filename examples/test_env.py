@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Author: John Mansfield
+
+documentation added by: Gagandeep Randhawa
+"""
+
+"""
+Simulation of the agent's decision process after it has learned a policy.
 """
 
 import gym
