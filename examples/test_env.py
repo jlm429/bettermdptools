@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Author: John Mansfield
+
+documentation added by: Gagandeep Randhawa
+"""
+
+"""
+Simulation of the agent's decision process after it has learned a policy.
 """
 
 import gym
@@ -14,6 +20,31 @@ class TestEnv:
 
     @staticmethod
     def test_env(env, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state, done: state):
+        """
+        Parameters
+        ----------------------------
+        env {OpenAI Gym Environment}:
+            MDP problem
+        
+        n_iters {int}, default = 10:
+            Number of iterations to simulate the agent for
+        
+        pi {lambda}:
+            Policy used to calculate action value at a given state
+        
+        user_input {Boolean}:
+            Prompt for letting user decide which action to take at a given state
+        
+        convert_state_obs {lambda}:
+            The state conversion utilized in BlackJack ToyText problem.
+            Returns three state tuple as one of the 280 converted states.
+
+        
+        Returns
+        ----------------------------
+        test_scores {list}:
+            Log of reward at the end of each iteration
+        """
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
@@ -21,6 +52,7 @@ class TestEnv:
             state = convert_state_obs(state, done)
             total_reward = 0
             while not done:
+                # This will render the current iteration, delete if not needed
                 env.render()
                 if user_input:
                     # get user input and suggest policy output
