@@ -144,7 +144,7 @@ class QLearner(RL):
             Log of Q(s,a) for each episode
 
         pi_track {list}, len(n_episodes):
-            Log of V[s] for each episode
+            Log of complete policy for each episode
         """
         if nS is None:
             nS=self.env.observation_space.n
@@ -153,6 +153,12 @@ class QLearner(RL):
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
+        # Explanation of lambda:
+        # def select_action(state, Q, epsilon):
+        #   if np.random.random() > epsilon:
+        #       return np.argmax(Q[state])
+        #   else:
+        #       return np.random.randint(len(Q[state]))
         select_action = lambda state, Q, epsilon: np.argmax(Q[state]) \
             if np.random.random() > epsilon \
             else np.random.randint(len(Q[state]))
@@ -186,6 +192,12 @@ class QLearner(RL):
             self.callbacks.on_episode_end(self)
 
         V = np.max(Q, axis=1)
+        # Explanation of lambda:
+        # def pi(s):
+        #   policy = dict()
+        #   for state, action in enumerate(np.argmax(Q, axis=1)):
+        #       policy[state] = action
+        #   return policy[s]
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return Q, V, pi, Q_track, pi_track
 
@@ -261,7 +273,7 @@ class SARSA(RL):
             Log of Q(s,a) for each episode
 
         pi_track {list}, len(n_episodes):
-            Log of V[s] for each episode
+            Log of complete policy for each episode
         """
         if nS is None:
             nS = self.env.observation_space.n
@@ -270,6 +282,12 @@ class SARSA(RL):
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
+        # Explanation of lambda:
+        # def select_action(state, Q, epsilon):
+        #   if np.random.random() > epsilon:
+        #       return np.argmax(Q[state])
+        #   else:
+        #       return np.random.randint(len(Q[state]))
         select_action = lambda state, Q, epsilon: np.argmax(Q[state]) \
             if np.random.random() > epsilon \
             else np.random.randint(len(Q[state]))
@@ -305,5 +323,11 @@ class SARSA(RL):
             self.callbacks.on_episode_end(self)
 
         V = np.max(Q, axis=1)
+        # Explanation of lambda:
+        # def pi(s):
+        #   policy = dict()
+        #   for state, action in enumerate(np.argmax(Q, axis=1)):
+        #       policy[state] = action
+        #   return policy[s]
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return Q, V, pi, Q_track, pi_track
