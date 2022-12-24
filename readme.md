@@ -20,7 +20,7 @@ Q-learning and SARSA return the final action-value function Q, final state-value
 
 <h3> Callbacks </h3>
 
-SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.   To create a callback, override one of the parent class methods in the child class MyCallbacks.  Here, on_episode prints the episode number and sets render to True every 1000 episodes.
+SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.   To create a callback, override one of the parent class methods in the child class MyCallbacks.  Here, on_episode prints the episode number every 1000 episodes.
 
 ```
 class MyCallbacks(Callbacks):
@@ -30,7 +30,6 @@ class MyCallbacks(Callbacks):
     def on_episode(self, caller, episode):
         if episode % 1000 == 0:
             print(" episode=", episode)
-            caller.render = True
 ```
 
 Or, you can use the add_to decorator and define the override outside of the class definition. 
