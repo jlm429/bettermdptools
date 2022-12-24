@@ -25,6 +25,7 @@ from tqdm import tqdm
 from callbacks.callbacks import MyCallbacks
 from decorators.decorators import print_runtime
 import gym
+import warnings
 
 
 class RL:
@@ -177,7 +178,7 @@ class QLearner(RL):
             state = convert_state_obs(state, done)
             while not done:
                 if self.render:
-                    self.env.render()
+                    warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
                 action = select_action(state, Q, epsilons[e])
                 next_state, reward, done, _ = self.env.step(action)
                 self.callbacks.on_env_step(self)
@@ -308,7 +309,7 @@ class SARSA(RL):
             action = select_action(state, Q, epsilons[e])
             while not done:
                 if self.render:
-                    self.env.render()
+                    warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
                 next_state, reward, done, _ = self.env.step(action)
                 self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state, done)

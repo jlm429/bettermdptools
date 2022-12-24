@@ -45,6 +45,9 @@ class TestEnv:
         test_scores {list}:
             Log of reward at the end of each iteration
         """
+        # unwrap env and and reinit in 'human' render_mode
+        env_name = env.unwrapped.spec.id
+        env = gym.make(env_name, render_mode='human')
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
