@@ -19,12 +19,15 @@ class TestEnv:
         pass
 
     @staticmethod
-    def test_env(env, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state, done: state):
+    def test_env(env, render=True, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state, done: state):
         """
         Parameters
         ----------------------------
         env {OpenAI Gym Environment}:
             MDP problem
+
+        render {Boolean}:
+            openAI human render mode
         
         n_iters {int}, default = 10:
             Number of iterations to simulate the agent for
@@ -45,9 +48,10 @@ class TestEnv:
         test_scores {list}:
             Log of reward at the end of each iteration
         """
-        # unwrap env and and reinit in 'human' render_mode
-        env_name = env.unwrapped.spec.id
-        env = gym.make(env_name, render_mode='human')
+        if render:
+            # unwrap env and and reinit in 'human' render_mode
+            env_name = env.unwrapped.spec.id
+            env = gym.make(env_name, render_mode='human')
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
@@ -55,8 +59,6 @@ class TestEnv:
             state = convert_state_obs(state, done)
             total_reward = 0
             while not done:
-                # This will render the current iteration, delete if not needed
-                env.render()
                 if user_input:
                     # get user input and suggest policy output
                     print("state is %i" % state)
