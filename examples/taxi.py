@@ -10,7 +10,7 @@ from test_env import TestEnv
 
 class Taxi:
     def __init__(self):
-        self.env = gym.make('Taxi-v3')
+        self.env = gym.make('Taxi-v3', new_step_api=True)
 
 
 if __name__ == "__main__":
@@ -25,4 +25,4 @@ if __name__ == "__main__":
     QL = QL(taxi.env)
     Q, V, pi, Q_track, pi_track = QL.q_learning()
 
-    test_scores = TestEnv.test_env(env=taxi.env, user_input=False, pi=pi)
+    test_scores = TestEnv.test_env(env=taxi.env, render=True, user_input=False, pi=pi)

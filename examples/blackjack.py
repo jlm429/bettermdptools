@@ -16,7 +16,7 @@ import pickle
 
 class Blackjack:
     def __init__(self):
-        self._env = gym.make('Blackjack-v1')
+        self._env = gym.make('Blackjack-v1', new_step_api=True)
         # Explanation of convert_state_obs lambda:
         # def function(state, done):
         # 	if done:
@@ -86,5 +86,5 @@ if __name__ == "__main__":
     QL = QL(blackjack.env)
     Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
 
-    test_scores = TestEnv.test_env(env=blackjack.env, pi=pi, user_input=False,
+    test_scores = TestEnv.test_env(env=blackjack.env, render=True, pi=pi, user_input=False,
                                    convert_state_obs=blackjack.convert_state_obs)

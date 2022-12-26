@@ -51,7 +51,7 @@ class TestEnv:
         if render:
             # unwrap env and and reinit in 'human' render_mode
             env_name = env.unwrapped.spec.id
-            env = gym.make(env_name, render_mode='human')
+            env = gym.make(env_name, new_step_api=True, render_mode='human')
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
@@ -76,7 +76,8 @@ class TestEnv:
                             print("please enter a valid action, 0 - %i \n" % int(n_actions - 1))
                 else:
                     action = pi(state)
-                next_state, reward, done, info = env.step(action)
+                next_state, reward, terminated, truncated, info = env.step(action)
+                done = terminated or truncated
                 next_state = convert_state_obs(next_state, done)
                 state = next_state
                 total_reward = reward + total_reward

@@ -10,7 +10,7 @@ from test_env import TestEnv
 
 class FrozenLake:
     def __init__(self):
-        self.env = gym.make('FrozenLake8x8-v1')
+        self.env = gym.make('FrozenLake8x8-v1', new_step_api=True)
 
 
 if __name__ == "__main__":
@@ -25,4 +25,4 @@ if __name__ == "__main__":
     QL = QL(frozen_lake.env)
     Q, V, pi, Q_track, pi_track = QL.q_learning()
 
-    test_scores = TestEnv.test_env(env=frozen_lake.env, user_input=False, pi=pi)
+    test_scores = TestEnv.test_env(env=frozen_lake.env, render=True, user_input=False, pi=pi)
