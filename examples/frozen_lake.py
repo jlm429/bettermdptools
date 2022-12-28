@@ -10,7 +10,7 @@ from test_env import TestEnv
 
 class FrozenLake:
     def __init__(self):
-        self.env = gym.make('FrozenLake8x8-v1', new_step_api=True)
+        self.env = gym.make('FrozenLake8x8-v1', render_mode=None)
 
 
 if __name__ == "__main__":

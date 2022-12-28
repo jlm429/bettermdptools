@@ -174,7 +174,8 @@ class QLearner(RL):
         for e in tqdm(range(n_episodes), leave=False):
             self.callbacks.on_episode_begin(self)
             self.callbacks.on_episode(self, episode=e)
-            state, done = self.env.reset(), False
+            state, info = self.env.reset()
+            done = False
             state = convert_state_obs(state, done)
             while not done:
                 if self.render:
@@ -307,7 +308,8 @@ class SARSA(RL):
         for e in tqdm(range(n_episodes), leave=False):
             self.callbacks.on_episode_begin(self)
             self.callbacks.on_episode(self, episode=e)
-            state, done = self.env.reset(), False
+            state, info = self.env.reset()
+            done = False
             state = convert_state_obs(state, done)
             action = select_action(state, Q, epsilons[e])
             while not done:

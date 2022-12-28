@@ -51,11 +51,12 @@ class TestEnv:
         if render:
             # unwrap env and and reinit in 'human' render_mode
             env_name = env.unwrapped.spec.id
-            env = gym.make(env_name, new_step_api=True, render_mode='human')
+            env = gym.make(env_name, render_mode='human')
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
-            state, done = env.reset(), False
+            state, info = env.reset()
+            done = False
             state = convert_state_obs(state, done)
             total_reward = 0
             while not done:

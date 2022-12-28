@@ -10,7 +10,7 @@ from test_env import TestEnv
 
 class Taxi:
     def __init__(self):
-        self.env = gym.make('Taxi-v3', new_step_api=True)
+        self.env = gym.make('Taxi-v3', render_mode=None)
 
 
 if __name__ == "__main__":
