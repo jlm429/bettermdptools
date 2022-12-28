@@ -3,4 +3,7 @@
 *.jython_cache
 /.idea/
 /venv/
+/bettermdptoolbox_v2.egg-info/
+/bettermdptools.egg-info/
+/build/
 __pycache__

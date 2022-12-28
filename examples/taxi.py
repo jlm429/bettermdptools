@@ -2,9 +2,9 @@
 
 import gym
 import pygame
-from bettermdptoolbox.rl import QLearner as QL
-from bettermdptoolbox.planning import ValueIteration as VI
-from bettermdptoolbox.planning import PolicyIteration as PI
+from algorithms.rl import QLearner as QL
+from algorithms.planning import ValueIteration as VI
+from algorithms.planning import PolicyIteration as PI
 from test_env import TestEnv
 
 

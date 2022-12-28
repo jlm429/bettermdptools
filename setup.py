@@ -11,10 +11,12 @@ https://stackoverflow.com/questions/74188013/python-pygame-not-installing
 """
 
 setup(
-    name='bettermdptoolbox_v2',
-    version='1.0',
+    name='bettermdptools',
+    version='2.0',
     platforms=['Any'],
     license='New BSD',
-    packages=[''],
+    author='John Mansfield',
+    author_email='jlm429@gmail.com',
+    packages=["algorithms", "callbacks", "decorators"],
     install_requires=['gym>=0.26, <=0.26.2', 'pygame', 'numpy', 'tqdm'],
 )

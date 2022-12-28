@@ -5,11 +5,11 @@ Author: John Mansfield
 
 import gym
 import pygame
-from bettermdptoolbox.rl import QLearner as QL
-from bettermdptoolbox.rl import SARSA as SARSA
+from algorithms.rl import QLearner as QL
+from algorithms.rl import SARSA as SARSA
 import numpy as np
-from bettermdptoolbox.planning import ValueIteration as VI
-from bettermdptoolbox.planning import PolicyIteration as PI
+from algorithms.planning import ValueIteration as VI
+from algorithms.planning import PolicyIteration as PI
 from test_env import TestEnv
 import pickle
 
