@@ -3,6 +3,9 @@
 Author: John Mansfield
 """
 
+import os
+import warnings
+
 import gym
 import pygame
 from algorithms.rl import QLearner as QL
@@ -30,7 +33,13 @@ class Blackjack:
             -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(
                 f"{state[0] - 4}{(state[1] - 2) % 10}"))
         # Transitions and rewards matrix from: https://github.com/rhalbersma/gym-blackjack-v1
-        self._P = pickle.load(open("blackjack-envP", "rb"))
+        current_dir = os.path.dirname(__file__)
+        file_name = 'blackjack-envP'
+        f = os.path.join(current_dir, file_name)
+        try:
+            self._P = pickle.load(open(f, "rb"))
+        except IOError:
+            print("Pickle load failed.  Check path", f)
         self._n_actions = self.env.action_space.n
         self._n_states = len(self._P)
 
