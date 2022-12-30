@@ -1,3 +1,44 @@
+<h2>Getting Started</h2>
+
+pip install or git clone bettermdptools.   
+
+```
+pip3 install bettermdptools
+```
+
+```
+git clone https://github.com/jlm429/bettermdptools
+```
+
+Here's a quick Q-learning example using OpenAI's frozen lake environment. See bettermdptools/examples for more.  
+
+```
+import gym
+import pygame
+from algorithms.rl import QLearner as QL
+from examples.test_env import TestEnv
+
+frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
+
+# Q-learning
+QL = QL(frozen_lake.env)
+Q, V, pi, Q_track, pi_track = QL.q_learning()
+
+test_scores = TestEnv.test_env(env=frozen_lake.env, render=True, user_input=False, pi=pi)
+```
+
+<h2> Planning Algorithms </h2>
+
+The planning algorithms, policy iteration (PI) and value iteration (VI), require an [OpenAI Gym](https://www.gymlibrary.ml/) discrete environment style transition and reward matrix (i.e., P[s][a]=[(prob, next, reward, done), ...]).  
+
+Frozen Lake VI example:
+```
+env = gym.make('FrozenLake8x8-v1')
+V, pi = VI().value_iteration(env.P)
+```
+PI and VI return the final state-value function V and final policy pi.  
+
+
 <h2>Reinforcement Learning (RL) Algorithms</h2>
 
 The RL algorithms (Q-learning, SARSA) work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that have single discrete valued state spaces, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
@@ -42,14 +83,3 @@ from callbacks.callbacks import MyCallbacks
 def on_episode_end(self, caller):
 	print("toasty!")
 ```
-
-<h2> Planning Algorithms </h2>
-
-The planning algorithms, policy iteration (PI) and value iteration (VI), require an [OpenAI Gym](https://www.gymlibrary.ml/) discrete environment style transition and reward matrix (i.e., P[s][a]=[(prob, next, reward, done), ...]).  
-
-Frozen Lake VI example:
-```
-env = gym.make('FrozenLake8x8-v1')
-V, pi = VI().value_iteration(env.P)
-```
-PI and VI return the final state-value function V and final policy pi.  
