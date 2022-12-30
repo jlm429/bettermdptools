@@ -5,7 +5,7 @@ import pygame
 from algorithms.rl import QLearner as QL
 from algorithms.planning import ValueIteration as VI
 from algorithms.planning import PolicyIteration as PI
-from test_env import TestEnv
+from examples.test_env import TestEnv
 
 
 class FrozenLake:

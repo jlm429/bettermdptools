@@ -13,7 +13,7 @@ from algorithms.rl import SARSA as SARSA
 import numpy as np
 from algorithms.planning import ValueIteration as VI
 from algorithms.planning import PolicyIteration as PI
-from test_env import TestEnv
+from examples.test_env import TestEnv
 import pickle
 
 
