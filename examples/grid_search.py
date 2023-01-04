@@ -8,7 +8,6 @@ import itertools
 
 
 class GridSearch:
-
     @staticmethod
     def Q_learning_grid_search(env, epsilon_decay, iters):
         QL = QLearner(env)
@@ -18,7 +17,6 @@ class GridSearch:
 
 
 if __name__ == "__main__":
-
     frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
     epsilon_decay = [.4, .7, .9]
     iters = [500, 5000, 50000]
