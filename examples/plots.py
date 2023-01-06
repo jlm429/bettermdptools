@@ -12,7 +12,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-class PlotExamples:
+class Plots:
     @staticmethod
     def policy_plot():
         pass
@@ -36,10 +36,10 @@ class PlotExamples:
 
 if __name__ == "__main__":
     frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
-    
+
     #Q-learning
     QL = QL(frozen_lake.env)
     Q, V, pi, Q_track, pi_track = QL.q_learning()
 
     max_reward_per_iter = np.amax(np.amax(Q_track, axis=2), axis=1)
-    PlotExamples.reward_v_iters_plot(max_reward_per_iter)
+    Plots.reward_v_iters_plot(max_reward_per_iter)
