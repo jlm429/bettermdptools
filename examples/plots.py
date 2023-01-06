@@ -35,13 +35,8 @@ class PlotExamples:
 
 
 if __name__ == "__main__":
-
     frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
-
-    # VI/PI
-    #V, pi = VI(frozen_lake.env.P).value_iteration()
-    #V, pi = PI(frozen_lake.env.P).policy_iteration()
-
+    
     #Q-learning
     QL = QL(frozen_lake.env)
     Q, V, pi, Q_track, pi_track = QL.q_learning()
