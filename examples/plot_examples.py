@@ -14,23 +14,23 @@ import matplotlib.pyplot as plt
 
 class PlotExamples:
     @staticmethod
-    def policy_plot(self):
+    def policy_plot():
         pass
 
     @staticmethod
-    def state_values_plot(self):
+    def state_values_plot():
         pass
 
     @staticmethod
-    def max_value_v_iters_plot(self):
+    def max_value_v_iters_plot():
         pass
 
     @staticmethod
-    def max_reward_v_iters_plot(rewards):
+    def reward_v_iters_plot(rewards):
         df = pd.DataFrame(data=rewards)
-        df.columns = ["Max Reward"]
+        df.columns = ["Reward"]
         sns.set_theme(style="whitegrid")
-        sns.lineplot(x=df.index, y="Max Reward", data=df).set_title('Max Reward v Iterations')
+        sns.lineplot(x=df.index, y="Reward", data=df).set_title('Reward v Iterations')
         plt.show()
 
 
@@ -47,4 +47,4 @@ if __name__ == "__main__":
     Q, V, pi, Q_track, pi_track = QL.q_learning()
 
     max_reward_per_iter = np.amax(np.amax(Q_track, axis=2), axis=1)
-    PlotExamples.max_reward_v_iters_plot(max_reward_per_iter)
+    PlotExamples.reward_v_iters_plot(max_reward_per_iter)
