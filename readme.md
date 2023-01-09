@@ -34,9 +34,9 @@ The planning algorithms, policy iteration (PI) and value iteration (VI), require
 Frozen Lake VI example:
 ```
 env = gym.make('FrozenLake8x8-v1')
-V, pi = VI().value_iteration(env.P)
+V, V_track, pi = VI(env.P).value_iteration()
 ```
-PI and VI return the final state-value function V and final policy pi.  
+PI and VI return the final state-value function V, per iteration values V_track, and final policy pi.  
 
 
 <h2>Reinforcement Learning (RL) Algorithms</h2>
