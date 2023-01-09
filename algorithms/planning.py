@@ -21,6 +21,7 @@ for iterating to an optimal policy and reward value for a given MDP.
 """
 
 import numpy as np
+import warnings
 from decorators.decorators import print_runtime
 
 
@@ -34,35 +35,48 @@ class ValueIteration(Planning):
         Planning.__init__(self, P)
 
     @print_runtime
-    def value_iteration(self, gamma=1.0, theta=1e-10):
+    def value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10):
         """
         Parameters
         ----------------------------
         gamma {float}:
             Discount factor
-        
+
+        n_iters {int}:
+            Number of iterations
+
         theta {float}:
-            Convergence criteria for checking convergence to optimal
+            Convergence criteria for checking convergence to optimal.  Stop at n_iters or theta convergence - whichever comes first.
         
         
         Returns
         ----------------------------
         V {numpy array}, shape(possible states):
             Optimal value array
+
+        V_track {numpy array}, shape(n_episodes, nS):
+            Log of V(s) for each iteration
             
         pi {lambda}, input state value, output action value:
             Optimal policy which maps state action value
         """
         V = np.zeros(len(self.P), dtype=np.float64)
-        while True:
+        V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
+        i = 0
+        converged = False
+        while i < n_iters-1 and not converged:
+            i += 1
             Q = np.zeros((len(self.P), len(self.P[0])), dtype=np.float64)
             for s in range(len(self.P)):
                 for a in range(len(self.P[s])):
                     for prob, next_state, reward, done in self.P[s][a]:
                         Q[s][a] += prob * (reward + gamma * V[next_state] * (not done))
             if np.max(np.abs(V - np.max(Q, axis=1))) < theta:
-                break
+                converged = True
             V = np.max(Q, axis=1)
+            V_track[i] = V
+        if not converged:
+            warnings.warn("Max iterations reached before convergence.  Check theta and n_iters.  ")
         # Explanation of lambda:
         # def pi(s):
         #   policy = dict()
@@ -70,7 +84,7 @@ class ValueIteration(Planning):
         #       policy[state] = action
         #   return policy[s]
         pi = lambda s: {s:a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
-        return V, pi
+        return V, V_track, pi
 
 
 class PolicyIteration(Planning):
@@ -78,12 +92,15 @@ class PolicyIteration(Planning):
         Planning.__init__(self, P)
 
     @print_runtime
-    def policy_iteration(self, gamma=1.0, theta=1e-10):
+    def policy_iteration(self, gamma=1.0, n_iters=50, theta=1e-10):
         """
         Parameters
         ----------------------------
         gamma {float}:
             Discount factor
+
+        n_iters {int}:
+            Number of iterations
         
         theta {float}:
             Convergence criteria for checking convergence to optimal
@@ -93,6 +110,9 @@ class PolicyIteration(Planning):
         ----------------------------
         V {numpy array}, shape(possible states):
             Optimal value array
+
+        V_track {numpy array}, shape(n_episodes, nS):
+            Log of V(s) for each iteration
             
         pi {lambda}, input state value, output action value:
             Optimal policy which maps state action value
@@ -107,13 +127,20 @@ class PolicyIteration(Planning):
         pi = lambda s: {s: a for s, a in enumerate(random_actions)}[s]
         # initial V to give to `policy_evaluation` for the first time
         V = np.zeros(len(self.P), dtype=np.float64)
-        while True:
+        V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
+        i = 0
+        converged = False
+        while i < n_iters and not converged:
+            i += 1
             old_pi = {s: pi(s) for s in range(len(self.P))}
             V = self.policy_evaluation(pi, V, gamma, theta)
+            V_track[i] = V
             pi = self.policy_improvement(V, gamma)
             if old_pi == {s: pi(s) for s in range(len(self.P))}:
-                break
-        return V, pi
+                converged = True
+        if not converged:
+            warnings.warn("Max iterations reached before convergence.  Check n_iters.")
+        return V, V_track, pi
 
     def policy_evaluation(self, pi, prev_V, gamma=1.0, theta=1e-10):
         """

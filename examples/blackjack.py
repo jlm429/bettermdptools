@@ -88,8 +88,8 @@ if __name__ == "__main__":
     blackjack = Blackjack()
 
     # VI/PI
-    # V, pi = VI(blackjack.P).value_iteration()
-    # V, pi = PI(blackjack.P).policy_iteration()
+    # V, V_track, pi = VI(blackjack.P).value_iteration()
+    # V, V_track, pi = PI(blackjack.P).policy_iteration()
 
     # Q-learning
     QL = QL(blackjack.env)

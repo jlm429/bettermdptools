@@ -18,8 +18,8 @@ if __name__ == "__main__":
     taxi = Taxi()
 
     # VI/PI
-    # V, pi = VI(taxi.env.P).value_iteration()
-    # V, pi = PI(taxi.env.P).policy_iteration()
+    # V, V_track, pi = VI(taxi.env.P).value_iteration()
+    # V, V_track, pi = PI(taxi.env.P).policy_iteration()
 
     # Q-learning
     QL = QL(taxi.env)
