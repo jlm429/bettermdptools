@@ -1,6 +1,7 @@
 # bettermdptools
+
 1. [Getting Started](#getting-started)
-2. [API] (#API)
+2. [API](#api)
 3. [Contributing](#contributing)
 
 ## Getting Started
@@ -91,6 +92,7 @@ def on_episode_end(self, caller):
 <h3> Planning </h3>
 
 <h3> Policy Iteration </h3>
+
 ```
 class algorithms.planning.PolicyIteration(P) 
 ```
@@ -107,6 +109,7 @@ about
 function bettermdptools.algorithms.planning.ValueIteration.value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
 Parameters:
+
 gamma {float}:
 	Discount factor
 
@@ -118,6 +121,7 @@ theta {float}:
 
 
 Returns:
+
 V {numpy array}, shape(possible states):
 	State values array 
 
