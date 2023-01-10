@@ -176,12 +176,6 @@ pi {lambda}, input state value, output action value:
 	Policy which maps state action value
 	
 	
-2. [RL](#rl)
-	1. [decay_schedule (*function*)](#decay_schedule)
-	2. [QLearner (*class*)](#QLearner)
-		1. [q_learning (*function*)](#q_learning)	 
-	3. [SARSA (*class*)](#sarsa)
-		1. [sarsa (*function*)](#sarsa)
 ### RL 
 
 ##### decay_schedule
