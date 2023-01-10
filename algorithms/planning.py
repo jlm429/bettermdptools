@@ -94,28 +94,28 @@ class PolicyIteration(Planning):
     @print_runtime
     def policy_iteration(self, gamma=1.0, n_iters=50, theta=1e-10):
         """
-        Parameters
-        ----------------------------
+        PARAMETERS:
+
         gamma {float}:
             Discount factor
 
         n_iters {int}:
             Number of iterations
-        
+
         theta {float}:
-            Convergence criteria for checking convergence to optimal
-        
-        
-        Returns
-        ----------------------------
+            Convergence criterion for value iteration.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta. Stops at n_iters or theta convergence - whichever comes first.
+
+
+        RETURNS:
+
         V {numpy array}, shape(possible states):
-            Optimal value array
+            State values array
 
         V_track {numpy array}, shape(n_episodes, nS):
             Log of V(s) for each iteration
-            
+
         pi {lambda}, input state value, output action value:
-            Optimal policy which maps state action value
+            Policy which maps state action value
         """
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
         # Explanation of lambda:
@@ -144,25 +144,28 @@ class PolicyIteration(Planning):
 
     def policy_evaluation(self, pi, prev_V, gamma=1.0, theta=1e-10):
         """
-        Parameters
-        ----------------------------
-        pi {lambda}, input state value, output action value:
-            Policy which maps state action value
-        
-        prev_V {numpy array}, shape(possible states):
-            Discounted values from previous iteration
-        
+        PARAMETERS:
+
         gamma {float}:
             Discount factor
-        
+
+        n_iters {int}:
+            Number of iterations
+
         theta {float}:
-            Convergence criteria for checking convergence to optimal
-        
-        
-        Returns
-        ----------------------------
+            Convergence criterion for policy evaluation.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta.
+
+
+        RETURNS:
+
         V {numpy array}, shape(possible states):
-            Optimal value array
+            State values array
+
+        V_track {numpy array}, shape(n_episodes, nS):
+            Log of V(s) for each iteration
+
+        pi {lambda}, input state value, output action value:
+            Policy which maps state action value
         """
         while True:
             V = np.zeros(len(self.P), dtype=np.float64)
