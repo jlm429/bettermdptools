@@ -93,11 +93,10 @@ def on_episode_end(self, caller):
 		1. [value_iteration (*function*)](#value_iteration)
 	2. [Policy Iteration (*class*)](#policyiteration)
 		1. [policy_iteration (*function*)](#policy_iteration)
-2. [RL (*class*](#rl)
-	1. [decay_schedule (*function*)](#decay_schedule)
-	2. [QLearner (*class*)](#QLearner)
+2. [RL (*class*)](#rl)
+	1. [QLearner (*class*)](#QLearner)
 		1. [q_learning (*function*)](#q_learning)	 
-	3. [SARSA (*class*)](#sarsa)
+	2. [SARSA (*class*)](#sarsa)
 		1. [sarsa (*function*)](#sarsa)
 		
 		
@@ -178,8 +177,6 @@ pi {lambda}, input state value, output action value:
 	
 ### RL 
 
-##### decay_schedule
-
 #### QLearner 
 
 ```
@@ -191,7 +188,8 @@ about class
 ##### q_learning
 
 ```
-function bettermdptools.algorithms.rl.QLearner.q_learning(self, nS=None, nA=None, convert_state_obs=lambda state, done: state, 
+function bettermdptools.algorithms.rl.QLearner.q_learning(self, nS=None, nA=None, 
+	convert_state_obs=lambda state, done: state, 
 	gamma=.99, init_alpha=0.5, min_alpha=0.01, alpha_decay_ratio=0.5, 
 	init_epsilon=1.0, min_epsilon=0.1, epsilon_decay_ratio=0.9, n_episodes=10000)  
 	->  Q, V, pi, Q_track, pi_track
@@ -199,10 +197,10 @@ function bettermdptools.algorithms.rl.QLearner.q_learning(self, nS=None, nA=None
 
 PARAMETERS: 
 
-nS {array-like}:
+nS {int}:
 	Number of states
 
-nA {array-like}:
+nA {int}:
 	Number of available actions
 	
 convert_state_obs {lambda}:
@@ -237,7 +235,7 @@ n_episodes {int}, default = 10000:
 
 RETURNS: 
 
-Q {array-like}, shape(nS, nA):
+Q {numpy array}, shape(nS, nA):
 	Final action-value function Q(s,a)
 
 pi {lambda}, input state value, output action value:
@@ -246,7 +244,7 @@ pi {lambda}, input state value, output action value:
 V {numpy array}, shape(nS):
 	Optimal value array
 
-Q_track {array-like}, shape(n_episodes, nS, nA):
+Q_track {numpy array}, shape(n_episodes, nS, nA):
 	Log of Q(s,a) for each episode
 
 pi_track {list}, len(n_episodes):
