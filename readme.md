@@ -263,8 +263,69 @@ about class
 
 ##### SARSA
 
+```
+function bettermdptools.algorithms.rl.SARSA.sarsa(self, nS=None, nA=None, 
+	convert_state_obs=lambda state, done: state, 
+	gamma=.99, init_alpha=0.5, min_alpha=0.01, alpha_decay_ratio=0.5, 
+	init_epsilon=1.0, min_epsilon=0.1, epsilon_decay_ratio=0.9, n_episodes=10000)
+	-> Q, V, pi, Q_track, pi_track
+```
 
+**PARAMETERS**:
+
+nS {int}:
+	Number of states
+
+nA {int}:
+	Number of available actions
 	
+convert_state_obs {lambda}:
+	The state conversion utilized in BlackJack ToyText problem.
+	Returns three state tuple as one of the 280 converted states.
+
+gamma {float}, default = 0.99:
+	Discount factor
+
+init_alpha {float}, default = 0.5:
+	Learning rate
+
+min_alpha {float}, default = 0.01:
+	Minimum learning rate
+
+alpha_decay_ratio {float}, default = 0.5:
+	Decay schedule of learing rate for future iterations
+
+init_epsilon {float}, default = 0.1:
+	Initial epsilon value for epsilon greedy strategy.
+	Chooses max(Q) over available actions with probability 1-epsilon.
+
+min_epsilon {float}, default = 0.1:
+	Minimum epsilon. Used to balance exploration in later stages.
+
+epsilon_decay_ratio {float}, default = 0.9:
+	Decay schedule of epsilon for future iterations
+	
+n_episodes {int}, default = 10000:
+	Number of episodes for the agent
+
+
+**RETURNS**:
+
+Q {numpy array}, shape(nS, nA):
+	Final action-value function Q(s,a)
+
+pi {lambda}, input state value, output action value:
+	Optimal policy which maps state action value
+
+V {numpy array}, shape(nS):
+	Optimal value array
+
+Q_track {numpy array}, shape(n_episodes, nS, nA):
+	Log of Q(s,a) for each episode
+
+pi_track {list}, len(n_episodes):
+	Log of complete policy for each episode
+
 ## Contributing
 
 Pull requests are welcome.  
