@@ -88,14 +88,6 @@ def on_episode_end(self, caller):
 
 ## API
 
-<h3> Policy Iteration </h3>
-
-```
-class algorithms.planning.PolicyIteration(P) 
-```
-
-about class
-
 <h3> Value Iteration </h3>
 
 ```
@@ -108,7 +100,8 @@ about class
 ```
 function bettermdptools.algorithms.planning.ValueIteration.value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
-Parameters:
+
+PARAMETERS:
 
 gamma {float}:
 	Discount factor
@@ -117,10 +110,45 @@ n_iters {int}:
 	Number of iterations
 
 theta {float}:
-	Convergence criterion when the maximum difference between new and previous state values is less than theta. Stop at n_iters or theta convergence - whichever comes first.
+	Convergence criterion theta.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta. Stops at n_iters or theta convergence - whichever comes first.
 
 
-Returns:
+RETURNS:
+
+V {numpy array}, shape(possible states):
+	State values array 
+
+V_track {numpy array}, shape(n_episodes, nS):
+	Log of V(s) for each iteration
+	
+pi {lambda}, input state value, output action value:
+	Policy which maps state action value
+
+<h3> Policy Iteration </h3>
+
+```
+class algorithms.planning.PolicyIteration(P) 
+```
+
+about class
+
+```
+function bettermdptools.algorithms.planning.PolicyIteration.policy_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
+```
+
+PARAMETERS:
+
+gamma {float}:
+	Discount factor
+
+n_iters {int}:
+	Number of iterations
+
+theta {float}:
+	Convergence criterion for policy evaluation.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta.  
+
+
+RETURNS:
 
 V {numpy array}, shape(possible states):
 	State values array 
@@ -132,3 +160,11 @@ pi {lambda}, input state value, output action value:
 	Policy which maps state action value
 	
 ## Contributing
+
+Pull requests are welcome.  
+
+* Fork bettermdptools.
+* Create a branch (`git checkout -b branch_name`)
+* Commit changes (`git commit -m "Comments"`)
+* Push to branch (`git push origin branch_name`)
+* Open a pull request
