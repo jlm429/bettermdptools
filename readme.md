@@ -112,10 +112,11 @@ about class
 
 ##### value_iteration  
 ```
-function bettermdptools.algorithms.planning.ValueIteration.value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
+function bettermdptools.algorithms.planning.ValueIteration.value_iteration(self, 
+	gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
 
-PARAMETERS:
+**PARAMETERS**:
 
 gamma {float}:
 	Discount factor
@@ -127,7 +128,7 @@ theta {float}:
 	Convergence criterion for value iteration.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta. Stops at n_iters or theta convergence - whichever comes first.
 
 
-RETURNS:
+**RETURNS**:
 
 V {numpy array}, shape(possible states):
 	State values array 
@@ -148,10 +149,11 @@ about class
 
 ##### policy_iteration
 ```
-function bettermdptools.algorithms.planning.PolicyIteration.policy_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
+function bettermdptools.algorithms.planning.PolicyIteration.policy_iteration(self, 
+	gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
 
-PARAMETERS:
+**PARAMETERS**:
 
 gamma {float}:
 	Discount factor
@@ -163,7 +165,7 @@ theta {float}:
 	Convergence criterion for policy evaluation.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta.  
 
 
-RETURNS:
+**RETURNS**:
 
 V {numpy array}, shape(possible states):
 	State values array 
@@ -195,7 +197,7 @@ function bettermdptools.algorithms.rl.QLearner.q_learning(self, nS=None, nA=None
 	->  Q, V, pi, Q_track, pi_track
 ```
 
-PARAMETERS: 
+**PARAMETERS**: 
 
 nS {int}:
 	Number of states
@@ -233,7 +235,7 @@ n_episodes {int}, default = 10000:
 	Number of episodes for the agent
 
 
-RETURNS: 
+**RETURNS**: 
 
 Q {numpy array}, shape(nS, nA):
 	Final action-value function Q(s,a)
