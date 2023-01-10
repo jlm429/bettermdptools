@@ -37,8 +37,8 @@ class ValueIteration(Planning):
     @print_runtime
     def value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10):
         """
-        Parameters
-        ----------------------------
+        PARAMETERS:
+
         gamma {float}:
             Discount factor
 
@@ -46,19 +46,21 @@ class ValueIteration(Planning):
             Number of iterations
 
         theta {float}:
-            Convergence criteria for checking convergence to optimal.  Stop at n_iters or theta convergence - whichever comes first.
-        
-        
-        Returns
-        ----------------------------
+            Convergence criterion for value iteration.
+            State values are considered to be converged when the maximum difference between new and previous state values is less than theta.
+            Stops at n_iters or theta convergence - whichever comes first.
+
+
+        RETURNS:
+
         V {numpy array}, shape(possible states):
-            Optimal value array
+            State values array
 
         V_track {numpy array}, shape(n_episodes, nS):
             Log of V(s) for each iteration
-            
+
         pi {lambda}, input state value, output action value:
-            Optimal policy which maps state action value
+            Policy which maps state action value
         """
         V = np.zeros(len(self.P), dtype=np.float64)
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
@@ -103,7 +105,9 @@ class PolicyIteration(Planning):
             Number of iterations
 
         theta {float}:
-            Convergence criterion for value iteration.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta. Stops at n_iters or theta convergence - whichever comes first.
+            Convergence criterion for policy evaluation.
+            State values are considered to be converged when the maximum difference between new and previous state
+            values is less than theta.
 
 
         RETURNS:
