@@ -1,6 +1,6 @@
 # bettermdptools
 1. [Getting Started](#getting-started)
-2. [API] (#api)
+2. [API] (#API)
 3. [Contributing](#contributing)
 
 ## Getting Started
