@@ -15,7 +15,7 @@ pip3 install bettermdptools
 git clone https://github.com/jlm429/bettermdptools
 ```
 
-Here's a quick Q-learning example using OpenAI's frozen lake environment. See bettermdptools/examples for more.  
+Here's a quick Q-learning example using OpenAI's frozen lake environment. See bettermdptools/examples for more starter code.  
 
 ```
 import gym
@@ -108,7 +108,8 @@ def on_episode_end(self, caller):
 class bettermdptools.algorithms.planning.ValueIteration(P) 
 ```
 
-about class 
+Class that contains functions related to Value Iteration.   ValueIteration __init__ expects a reward and transitions matrix P -
+a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal).    
 
 ##### value_iteration  
 ```
@@ -145,7 +146,9 @@ pi {lambda}, input state value, output action value:
 class algorithms.planning.PolicyIteration(P) 
 ```
 
-about class
+Class that contains functions related to Policy Iteration.   ValueIteration __init__ expects a reward and transitions matrix P -
+a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal). 
+
 
 ##### policy_iteration
 ```
@@ -185,7 +188,7 @@ pi {lambda}, input state value, output action value:
 class bettermdptools.algorithms.rl.QLearner(env) 
 ```
 
-about class
+Class that contains functions related to Q-learning.   QLearner __init__ expects an OpenAI environment (env).   
 
 ##### q_learning
 
@@ -259,7 +262,7 @@ pi_track {list}, len(n_episodes):
 class bettermdptools.algorithms.rl.SARSA(env) 
 ```
 
-about class
+Class that contains functions related to SARSA.   SARSA __init__ expects an OpenAI environment (env).   
 
 ##### SARSA
 
