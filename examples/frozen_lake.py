@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # V, V_track, pi = PI(frozen_lake.env.P).policy_iteration()
 
     # Q-learning
-    #QL = QL(frozen_lake.env)
-    #Q, V, pi, Q_track, pi_track = QL.q_learning()
+    QL = QL(frozen_lake.env)
+    Q, V, pi, Q_track, pi_track = QL.q_learning()
 
     test_scores = TestEnv.test_env(env=frozen_lake.env, render=True, user_input=False, pi=pi)
