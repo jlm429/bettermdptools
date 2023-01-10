@@ -88,7 +88,22 @@ def on_episode_end(self, caller):
 
 ## API
 
-<h3> Value Iteration </h3>
+1. [Planning (*class*)](#planning)
+	1. [Value Iteration (*class*)](#value-iteration)
+		1. [value_iteration (*function*)](#value_iteration)
+	2. [Policy Iteration (*class*)](#policy-iteration)
+		1. [policy_iteration (*function*)](#policy_iteration)
+2. [RL](#rl)
+	1. [decay_schedule (*function*)](#decay_schedule)
+	2. [QLearner (*class*)](#QLearner)
+		1. [q_learning (*function*)](#q_learning)	 
+	3. [SARSA (*class*)](#sarsa)
+		1. [sarsa (*function*)](#sarsa)
+		
+		
+### Planning 
+
+#### Value Iteration 
 
 ```
 class bettermdptools.algorithms.planning.ValueIteration(P) 
@@ -96,7 +111,7 @@ class bettermdptools.algorithms.planning.ValueIteration(P)
 
 about class 
 
-
+##### value_iteration  
 ```
 function bettermdptools.algorithms.planning.ValueIteration.value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
@@ -110,7 +125,7 @@ n_iters {int}:
 	Number of iterations
 
 theta {float}:
-	Convergence criterion theta.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta. Stops at n_iters or theta convergence - whichever comes first.
+	Convergence criterion for value iteration.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta. Stops at n_iters or theta convergence - whichever comes first.
 
 
 RETURNS:
@@ -124,7 +139,7 @@ V_track {numpy array}, shape(n_episodes, nS):
 pi {lambda}, input state value, output action value:
 	Policy which maps state action value
 
-<h3> Policy Iteration </h3>
+#### Policy Iteration
 
 ```
 class algorithms.planning.PolicyIteration(P) 
@@ -132,6 +147,7 @@ class algorithms.planning.PolicyIteration(P)
 
 about class
 
+##### policy_iteration
 ```
 function bettermdptools.algorithms.planning.PolicyIteration.policy_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
@@ -158,6 +174,27 @@ V_track {numpy array}, shape(n_episodes, nS):
 	
 pi {lambda}, input state value, output action value:
 	Policy which maps state action value
+	
+	
+2. [RL](#rl)
+	1. [decay_schedule (*function*)](#decay_schedule)
+	2. [QLearner (*class*)](#QLearner)
+		1. [q_learning (*function*)](#q_learning)	 
+	3. [SARSA (*class*)](#sarsa)
+		1. [sarsa (*function*)](#sarsa)
+### RL 
+
+##### decay_schedule
+
+#### QLearner
+
+##### q_learning
+
+#### SARSA
+
+##### SARSA
+
+
 	
 ## Contributing
 
