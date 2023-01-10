@@ -147,30 +147,6 @@ class PolicyIteration(Planning):
         return V, V_track, pi
 
     def policy_evaluation(self, pi, prev_V, gamma=1.0, theta=1e-10):
-        """
-        PARAMETERS:
-
-        gamma {float}:
-            Discount factor
-
-        n_iters {int}:
-            Number of iterations
-
-        theta {float}:
-            Convergence criterion for policy evaluation.  State values are considered to be converged when the maximum difference between new and previous state values is less than theta.
-
-
-        RETURNS:
-
-        V {numpy array}, shape(possible states):
-            State values array
-
-        V_track {numpy array}, shape(n_episodes, nS):
-            Log of V(s) for each iteration
-
-        pi {lambda}, input state value, output action value:
-            Policy which maps state action value
-        """
         while True:
             V = np.zeros(len(self.P), dtype=np.float64)
             for s in range(len(self.P)):
@@ -182,21 +158,6 @@ class PolicyIteration(Planning):
         return V
 
     def policy_improvement(self, V, gamma=1.0):
-        """
-        Parameters
-        ----------------------------
-        V {numpy array}, shape(possible states):
-            Value array
-
-        gamma {float}:
-            Discount factor
-                
-        
-        Returns
-        ----------------------------
-        new_pi {lambda}, input state value, output action value:
-            Improved policy which maps state action value
-        """
         Q = np.zeros((len(self.P), len(self.P[0])), dtype=np.float64)
         for s in range(len(self.P)):
             for a in range(len(self.P[s])):
