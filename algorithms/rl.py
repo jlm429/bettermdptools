@@ -94,10 +94,10 @@ class QLearner(RL):
         """
         Parameters
         ----------------------------
-        nS {array-like}:
+        nS {int}:
             Number of states
         
-        nA {array-like}:
+        nA {int}:
             Number of available actions
             
         convert_state_obs {lambda}:
@@ -132,7 +132,7 @@ class QLearner(RL):
 
         Returns
         ----------------------------
-        Q {array-like}, shape(nS, nA):
+        Q {numpy array}, shape(nS, nA):
             Final action-value function Q(s,a)
 
         pi {lambda}, input state value, output action value:
@@ -141,7 +141,7 @@ class QLearner(RL):
         V {numpy array}, shape(nS):
             Optimal value array
 
-        Q_track {array-like}, shape(n_episodes, nS, nA):
+        Q_track {numpy array}, shape(n_episodes, nS, nA):
             Log of Q(s,a) for each episode
 
         pi_track {list}, len(n_episodes):
@@ -227,10 +227,10 @@ class SARSA(RL):
         """
         Parameters
         ----------------------------
-        nS {array-like}:
+        nS {int}:
             Number of states
         
-        nA {array-like}:
+        nA {int}:
             Number of available actions
             
         convert_state_obs {lambda}:
@@ -265,7 +265,7 @@ class SARSA(RL):
 
         Returns
         ----------------------------
-        Q {array-like}, shape(nS, nA):
+        Q {numpy array}, shape(nS, nA):
             Final action-value function Q(s,a)
 
         pi {lambda}, input state value, output action value:
@@ -274,7 +274,7 @@ class SARSA(RL):
         V {numpy array}, shape(nS):
             Optimal value array
 
-        Q_track {array-like}, shape(n_episodes, nS, nA):
+        Q_track {numpy array}, shape(n_episodes, nS, nA):
             Log of Q(s,a) for each episode
 
         pi_track {list}, len(n_episodes):
