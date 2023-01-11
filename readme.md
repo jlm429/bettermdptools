@@ -63,7 +63,7 @@ Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_acti
 
 #### Plotting and Grid Search
 
-Here's a quick plotting example that graphs out state values for a grid world type environment like frozen lake.  See bettermdptools/examples for more plots and grid search starter code.    
+Here's a plotting example for graphing out state values on a grid world type environment like frozen lake.  See bettermdptools/examples for more plots and grid search starter code.    
 
 ```
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
