@@ -61,6 +61,18 @@ QL = QL(blackjack.env)
 Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
 ```
 
+#### Plotting and Grid Search
+
+Here's a quick plotting example that graphs out state values for a grid world type environment like frozen lake.  See bettermdptools/examples for more plots and grid search starter code.    
+
+```
+frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
+V, V_track, pi = VI(frozen_lake.env.P).value_iteration()
+Plots.grid_values_heat_map(V, "State Values")
+```
+
+![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
+
 #### Callbacks 
 
 SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.   To create a callback, override one of the parent class methods in the child class MyCallbacks.  Here, on_episode prints the episode number every 1000 episodes.
