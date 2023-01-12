@@ -88,5 +88,5 @@ if __name__ == "__main__":
 
     # VI/PI grid_values_heat_map
     V, V_track, pi = VI(frozen_lake.env.P).value_iteration()
-    V, V_track, pi = PI(frozen_lake.env.P).policy_iteration()
+    # V, V_track, pi = PI(frozen_lake.env.P).policy_iteration()
     Plots.grid_values_heat_map(V, "State Values")
