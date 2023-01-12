@@ -23,9 +23,9 @@ class Plots:
         else:
             data = np.around(np.array(data).reshape((8, 8)), 2)
             df = pd.DataFrame(data=data)
-            myColors = ((0.0, 0.0, 0.0, 1.0), (0.8, 0.0, 0.0, 1.0), (0.0, 0.8, 0.0, 1.0), (0.0, 0.0, 0.8, 1.0))
-            cmap = LinearSegmentedColormap.from_list('Custom', myColors, len(myColors))
-            ax = sns.heatmap(df, cmap=cmap, linewidths=.5, linecolor='lightgray')
+            my_colors = ((0.0, 0.0, 0.0, 1.0), (0.8, 0.0, 0.0, 1.0), (0.0, 0.8, 0.0, 1.0), (0.0, 0.0, 0.8, 1.0))
+            cmap = LinearSegmentedColormap.from_list('Custom', my_colors, len(my_colors))
+            ax = sns.heatmap(df, cmap=cmap, linewidths=1.0)
             colorbar = ax.collections[0].colorbar
             colorbar.set_ticks([.4, 1.1, 1.9, 2.6])
             colorbar.set_ticklabels(['Left', 'Down', 'Right', 'Up'])
