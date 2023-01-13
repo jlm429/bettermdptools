@@ -114,13 +114,15 @@ def on_episode_end(self, caller):
 		
 ### Planning 
 
+Parent class for planning algorithms.  
+
 #### ValueIteration 
 
 ```
 class bettermdptools.algorithms.planning.ValueIteration(P) 
 ```
 
-Class that contains functions related to Value Iteration.   ValueIteration __init__ expects a reward and transitions matrix P -
+Planning subclass that contains functions related to Value Iteration.   ValueIteration __init__ expects a reward and transitions matrix P, which is a
 a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal).    
 
 ##### value_iteration  
@@ -158,7 +160,7 @@ pi {lambda}, input state value, output action value:
 class algorithms.planning.PolicyIteration(P) 
 ```
 
-Class that contains functions related to Policy Iteration.   ValueIteration __init__ expects a reward and transitions matrix P -
+Planning subclass that contains functions related to Policy Iteration.   ValueIteration __init__ expects a reward and transitions matrix P, which is a
 a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal). 
 
 
@@ -194,13 +196,15 @@ pi {lambda}, input state value, output action value:
 	
 ### RL 
 
+Parent class for reinforcement learning algorithms.  
+
 #### QLearner 
 
 ```
 class bettermdptools.algorithms.rl.QLearner(env) 
 ```
 
-Class that contains functions related to Q-learning.   QLearner __init__ expects an OpenAI environment (env).   
+RL subclass that contains functions related to Q-learning.   QLearner __init__ expects an OpenAI environment (env).   
 
 ##### q_learning
 
@@ -274,7 +278,7 @@ pi_track {list}, len(n_episodes):
 class bettermdptools.algorithms.rl.SARSA(env) 
 ```
 
-Class that contains functions related to SARSA.   SARSA __init__ expects an OpenAI environment (env).   
+RL subclass that contains functions related to SARSA.   SARSA __init__ expects an OpenAI environment (env).   
 
 ##### SARSA
 
