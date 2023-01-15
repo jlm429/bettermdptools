@@ -2,9 +2,8 @@
 
 import gym
 import pygame
-from algorithms.rl import QLearner as QL
-from algorithms.planning import ValueIteration as VI
-from algorithms.planning import PolicyIteration as PI
+from algorithms.rl import RL
+from algorithms.planner import Planner
 from examples.test_env import TestEnv
 
 
@@ -18,11 +17,10 @@ if __name__ == "__main__":
     frozen_lake = FrozenLake()
 
     # VI/PI
-    # V, V_track, pi = VI(frozen_lake.env.P).value_iteration()
-    # V, V_track, pi = PI(frozen_lake.env.P).policy_iteration()
+    # V, V_track, pi = Planner(frozen_lake.env.P).value_iteration()
+    # V, V_track, pi = Planner(frozen_lake.env.P).policy_iteration()
 
     # Q-learning
-    QL = QL(frozen_lake.env)
-    Q, V, pi, Q_track, pi_track = QL.q_learning()
+    Q, V, pi, Q_track, pi_track = RL(frozen_lake.env).q_learning()
 
     test_scores = TestEnv.test_env(env=frozen_lake.env, render=True, user_input=False, pi=pi)

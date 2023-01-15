@@ -73,11 +73,6 @@ class RL:
         values = np.pad(values, (0, rem_steps), 'edge')
         return values
 
-
-class QLearner(RL):
-    def __init__(self, env):
-        RL.__init__(self, env)
-
     @print_runtime
     def q_learning(self,
                    nS=None,
@@ -205,11 +200,6 @@ class QLearner(RL):
         #   return policy[s]
         pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
         return Q, V, pi, Q_track, pi_track
-
-
-class SARSA(RL):
-    def __init__(self, env):
-        RL.__init__(self, env)
 
     @print_runtime
     def sarsa(self,

@@ -8,11 +8,8 @@ import warnings
 
 import gym
 import pygame
-from algorithms.rl import QLearner as QL
-from algorithms.rl import SARSA as SARSA
-import numpy as np
-from algorithms.planning import ValueIteration as VI
-from algorithms.planning import PolicyIteration as PI
+from algorithms.rl import RL
+from algorithms.planner import Planner
 from examples.test_env import TestEnv
 import pickle
 
@@ -88,12 +85,11 @@ if __name__ == "__main__":
     blackjack = Blackjack()
 
     # VI/PI
-    # V, V_track, pi = VI(blackjack.P).value_iteration()
-    # V, V_track, pi = PI(blackjack.P).policy_iteration()
+    # V, V_track, pi = Planner(blackjack.P).value_iteration()
+    # V, V_track, pi = Planner(blackjack.P).policy_iteration()
 
     # Q-learning
-    QL = QL(blackjack.env)
-    Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
+    Q, V, pi, Q_track, pi_track = RL(blackjack.env).q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
 
     test_scores = TestEnv.test_env(env=blackjack.env, render=True, pi=pi, user_input=False,
                                    convert_state_obs=blackjack.convert_state_obs)
