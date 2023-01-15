@@ -13,7 +13,7 @@ https://stackoverflow.com/questions/74188013/python-pygame-not-installing
 setup(
     name='bettermdptools',
     url='https://github.com/jlm429/bettermdptools',
-    version='0.2.1',
+    version='0.3.0',
     platforms=['Any'],
     license='New BSD',
     author='John Mansfield',
