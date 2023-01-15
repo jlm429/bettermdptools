@@ -20,14 +20,13 @@ Here's a quick Q-learning example using OpenAI's frozen lake environment. See be
 ```
 import gym
 import pygame
-from algorithms.rl import QLearner as QL
+from algorithms.rl import RL
 from examples.test_env import TestEnv
 
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
 # Q-learning
-QL = QL(frozen_lake.env)
-Q, V, pi, Q_track, pi_track = QL.q_learning()
+Q, V, pi, Q_track, pi_track = RL(frozen_lake.env).q_learning()
 
 test_scores = TestEnv.test_env(env=frozen_lake.env, render=True, user_input=False, pi=pi)
 ```
@@ -39,7 +38,7 @@ The planning algorithms, policy iteration (PI) and value iteration (VI), require
 Frozen Lake VI example:
 ```
 env = gym.make('FrozenLake8x8-v1')
-V, V_track, pi = VI(env.P).value_iteration()
+V, V_track, pi = Planner(env.P).value_iteration()
 ```
 
 #### Reinforcement Learning (RL) Algorithms
@@ -57,8 +56,7 @@ Since n_states is modified by the state conversion, this new value is passed in 
   
 ```
 # Q-learning
-QL = QL(blackjack.env)
-Q, V, pi, Q_track, pi_track = QL.q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
+Q, V, pi, Q_track, pi_track = RL(blackjack.env).q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
 ```
 
 #### Plotting and Grid Search
@@ -67,7 +65,7 @@ Here's a plotting example for state values on frozen lake.  See bettermdptools/e
 
 ```
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
-V, V_track, pi = VI(frozen_lake.env.P).value_iteration()
+V, V_track, pi = Planner(frozen_lake.env.P).value_iteration()
 Plots.grid_values_heat_map(V, "State Values")
 ```
 
@@ -100,34 +98,26 @@ def on_episode_end(self, caller):
 
 ## API
 
-1. [Planning (*class*)](#planning)
-	1. [Value Iteration (*class*)](#valueiteration)
-		1. [value_iteration (*function*)](#value_iteration)
-	2. [Policy Iteration (*class*)](#policyiteration)
-		1. [policy_iteration (*function*)](#policy_iteration)
+1. [Planner (*class*)](#planner)
+   1. [value_iteration (*function*)](#value_iteration)
+   2. [policy_iteration (*function*)](#policy_iteration)
 2. [RL (*class*)](#rl)
-	1. [QLearner (*class*)](#QLearner)
-		1. [q_learning (*function*)](#q_learning)	 
-	2. [SARSA (*class*)](#sarsa)
-		1. [sarsa (*function*)](#sarsa)
+   1. [q_learning (*function*)](#q_learning)
+   2. [sarsa (*function*)](#sarsa)
 		
 		
-### Planning 
-
-Parent class for planning algorithms.  
-
-#### ValueIteration 
+### Planner 
 
 ```
-class bettermdptools.algorithms.planning.ValueIteration(P) 
+class bettermdptools.algorithms.planner.Planner(P)
 ```
 
-Planning subclass that contains functions related to Value Iteration.   ValueIteration __init__ expects a reward and transitions matrix P, which is a
-a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal).    
+Class that contains functions related to planning algorithms.  Planner __init__ expects a reward and transitions matrix P, which is a
+a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal).
 
 ##### value_iteration  
 ```
-function bettermdptools.algorithms.planning.ValueIteration.value_iteration(self, 
+function bettermdptools.algorithms.planner.Planner.ValueIteration.value_iteration(self, 
 	gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
 
@@ -154,19 +144,9 @@ V_track {numpy array}, shape(n_episodes, nS):
 pi {lambda}, input state value, output action value:
 	Policy which maps state action value
 
-#### PolicyIteration
-
-```
-class algorithms.planning.PolicyIteration(P) 
-```
-
-Planning subclass that contains functions related to Policy Iteration.   ValueIteration __init__ expects a reward and transitions matrix P, which is a
-a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal). 
-
-
 ##### policy_iteration
 ```
-function bettermdptools.algorithms.planning.PolicyIteration.policy_iteration(self, 
+function bettermdptools.algorithms.planner.Planner.policy_iteration(self, 
 	gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
 
@@ -196,20 +176,16 @@ pi {lambda}, input state value, output action value:
 	
 ### RL 
 
-Parent class for reinforcement learning algorithms.  
-
-#### QLearner 
-
 ```
-class bettermdptools.algorithms.rl.QLearner(env) 
+class bettermdptools.algorithms.rl.RL(env) 
 ```
 
-RL subclass that contains functions related to Q-learning.   QLearner __init__ expects an OpenAI environment (env).   
+Class that contains functions related to reinforcement learning algorithms. RL __init__ expects an OpenAI environment (env). 
 
 ##### q_learning
 
 ```
-function bettermdptools.algorithms.rl.QLearner.q_learning(self, nS=None, nA=None, 
+function bettermdptools.algorithms.rl.RL.q_learning(self, nS=None, nA=None, 
 	convert_state_obs=lambda state, done: state, 
 	gamma=.99, init_alpha=0.5, min_alpha=0.01, alpha_decay_ratio=0.5, 
 	init_epsilon=1.0, min_epsilon=0.1, epsilon_decay_ratio=0.9, n_episodes=10000)  
@@ -271,19 +247,10 @@ Q_track {numpy array}, shape(n_episodes, nS, nA):
 pi_track {list}, len(n_episodes):
 	Log of complete policy for each episode
 
-
-#### SARSA
-
-```
-class bettermdptools.algorithms.rl.SARSA(env) 
-```
-
-RL subclass that contains functions related to SARSA.   SARSA __init__ expects an OpenAI environment (env).   
-
 ##### SARSA
 
 ```
-function bettermdptools.algorithms.rl.SARSA.sarsa(self, nS=None, nA=None, 
+function bettermdptools.algorithms.rl.RL.sarsa(self, nS=None, nA=None, 
 	convert_state_obs=lambda state, done: state, 
 	gamma=.99, init_alpha=0.5, min_alpha=0.01, alpha_decay_ratio=0.5, 
 	init_epsilon=1.0, min_epsilon=0.1, epsilon_decay_ratio=0.9, n_episodes=10000)
