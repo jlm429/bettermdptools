@@ -117,7 +117,7 @@ a nested dictionary with P[state][action] as a list of tuples (probability, next
 
 ##### value_iteration  
 ```
-function bettermdptools.algorithms.planner.Planner.ValueIteration.value_iteration(self, 
+function bettermdptools.algorithms.planner.Planner.value_iteration(self, 
 	gamma=1.0, n_iters=1000, theta=1e-10) ->  V, V_track, pi
 ```
 
