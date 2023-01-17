@@ -21,7 +21,7 @@ Starter code to get up and running on OpenAI's frozen lake environment. See bett
 import gym
 import pygame
 from algorithms.rl import RL
-from exampsssles.test_env import TestEnv
+from examples.test_env import TestEnv
 
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
