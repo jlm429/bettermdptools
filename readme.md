@@ -15,13 +15,13 @@ pip3 install bettermdptools
 git clone https://github.com/jlm429/bettermdptools
 ```
 
-Here's a quick Q-learning example using OpenAI's frozen lake environment. See bettermdptools/examples for more starter code.  
+Starter code to get up and running on OpenAI's frozen lake environment. See bettermdptools/examples for more.  
 
 ```
 import gym
 import pygame
 from algorithms.rl import RL
-from examples.test_env import TestEnv
+from exampsssles.test_env import TestEnv
 
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
@@ -31,39 +31,16 @@ Q, V, pi, Q_track, pi_track = RL(frozen_lake.env).q_learning()
 test_scores = TestEnv.test_env(env=frozen_lake.env, render=True, user_input=False, pi=pi)
 ```
 
-#### Planning Algorithms
-
-The planning algorithms, policy iteration (PI) and value iteration (VI), require an [OpenAI Gym](https://www.gymlibrary.ml/) discrete environment style transition and reward matrix (i.e., P[s][a]=[(prob, next, reward, done), ...]).  
-
-Frozen Lake VI example:
-```
-env = gym.make('FrozenLake8x8-v1')
-V, V_track, pi = Planner(env.P).value_iteration()
-```
-
-#### Reinforcement Learning (RL) Algorithms
-
-The RL algorithms (Q-learning, SARSA) work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that have single discrete valued state spaces, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
-A lambda function is required to convert state spaces not in this format.  For example, [blackjack](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
-
-Here, blackjack.convert_state_obs changes the 3-tuple into a discrete space with 280 states by concatenating player states 0-27 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
-
-```
-self.convert_state_obs = lambda state, done: ( -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(f"{state[0] - 4}{(state[1] - 2) % 10}"))
-```
- 
-Since n_states is modified by the state conversion, this new value is passed in along with n_actions, and convert_state_obs.    
-  
-```
-# Q-learning
-Q, V, pi, Q_track, pi_track = RL(blackjack.env).q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
-```
-
 #### Plotting and Grid Search
 
-Here's a plotting example for state values on frozen lake.  See bettermdptools/examples for more plots and grid search starter code.    
-
 ```
+#grid search
+epsilon_decay = [.4, .7, .9]
+iters = [500, 5000, 50000]
+GridSearch.Q_learning_grid_search(frozen_lake.env, epsilon_decay, iters)
+
+
+#plot state values
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 V, V_track, pi = Planner(frozen_lake.env.P).value_iteration()
 Plots.grid_values_heat_map(V, "State Values")
@@ -71,40 +48,21 @@ Plots.grid_values_heat_map(V, "State Values")
 
 ![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
 
-#### Callbacks 
-
-SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.   To create a callback, override one of the parent class methods in the child class MyCallbacks.  Here, on_episode prints the episode number every 1000 episodes.
-
-```
-class MyCallbacks(Callbacks):
-    def __init__(self):
-        pass
-
-    def on_episode(self, caller, episode):
-        if episode % 1000 == 0:
-            print(" episode=", episode)
-```
-
-Or, you can use the add_to decorator and define the override outside of the class definition. 
-
-```
-from decorators.decorators import add_to
-from callbacks.callbacks import MyCallbacks
-
-@add_to(MyCallbacks)
-def on_episode_end(self, caller):
-	print("toasty!")
-```
 
 ## API
 
-1. [Planner (*class*)](#planner)
-   1. [value_iteration (*function*)](#value_iteration)
-   2. [policy_iteration (*function*)](#policy_iteration)
-2. [RL (*class*)](#rl)
-   1. [q_learning (*function*)](#q_learning)
-   2. [sarsa (*function*)](#sarsa)
-		
+1. [Planner](#planner)
+   1. [value_iteration](#value_iteration)
+   2. [policy_iteration](#policy_iteration)
+2. [RL](#rl)
+   1. [q_learning](#q_learning)
+   2. [sarsa](#sarsa)
+3. [Callbacks](#callbacks)		
+	1. [MyCallbacks](#mycallbacks)	
+		1. [on_episode](#on_episode)
+		2. [on_episode_begin](#on_episode_begin)
+		3. [on_episode_end](#on_episode_end)
+		4. [on_env_step](#on_env_step)
 		
 ### Planner 
 
@@ -112,8 +70,16 @@ def on_episode_end(self, caller):
 class bettermdptools.algorithms.planner.Planner(P)
 ```
 
-Class that contains functions related to planning algorithms.  Planner __init__ expects a reward and transitions matrix P, which is a
-a nested dictionary with P[state][action] as a list of tuples (probability, next state, reward, terminal).
+Class that contains functions related to planning algorithms (Value Iteration, Policy Iteration).  Planner __init__ expects a reward and transitions matrix P, which is nested dictionary 
+[OpenAI Gym](https://www.gymlibrary.ml/) style discrete environment transition and reward matrix where 
+P[state][action] is a list of tuples (probability, next state, reward, terminal).
+
+Frozen Lake VI example:
+```
+env = gym.make('FrozenLake8x8-v1')
+V, V_track, pi = Planner(env.P).value_iteration()
+```
+
 
 ##### value_iteration  
 ```
@@ -181,6 +147,22 @@ class bettermdptools.algorithms.rl.RL(env)
 ```
 
 Class that contains functions related to reinforcement learning algorithms. RL __init__ expects an OpenAI environment (env). 
+
+The RL algorithms (Q-learning, SARSA) work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that have single discrete valued state spaces, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
+A lambda function is required to convert state spaces not in this format.  For example, [blackjack](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
+
+Here, blackjack.convert_state_obs changes the 3-tuple into a discrete space with 280 states by concatenating player states 0-27 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
+
+```
+self.convert_state_obs = lambda state, done: ( -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(f"{state[0] - 4}{(state[1] - 2) % 10}"))
+```
+ 
+Since n_states is modified by the state conversion, this new value is passed in along with n_actions, and convert_state_obs.    
+  
+```
+# Q-learning
+Q, V, pi, Q_track, pi_track = RL(blackjack.env).q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
+```
 
 ##### q_learning
 
@@ -311,6 +293,87 @@ Q_track {numpy array}, shape(n_episodes, nS, nA):
 
 pi_track {list}, len(n_episodes):
 	Log of complete policy for each episode
+	
+	
+#### Callbacks 
+
+RL algorithms SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.   
+
+##### MyCallbacks 
+
+```
+class bettermdptools.callbacks.MyCallbacks(Callbacks):
+```
+
+To create a callback, override one of the callback functions in the child class MyCallbacks.  Here, on_episode prints the episode number every 1000 episodes.
+
+```
+class MyCallbacks(Callbacks):
+    def __init__(self):
+        pass
+
+    def on_episode(self, caller, episode):
+        if episode % 1000 == 0:
+            print(" episode=", episode)
+```
+
+Or, you can use the add_to decorator and define the override outside of the class definition. 
+
+```
+from decorators.decorators import add_to
+from callbacks.callbacks import MyCallbacks
+
+@add_to(MyCallbacks)
+def on_episode_end(self, caller):
+	print("toasty!")
+```
+
+##### on_episode
+
+```
+function on_episode(self, caller, episode):
+```
+
+**PARAMETERS**:
+
+caller (RL type):
+	Calling object 
+
+episode {int}:
+	Current episode from caller 
+
+##### on_episode_begin
+
+```
+function on_episode_begin(self, caller):
+```
+
+**PARAMETERS**:
+
+caller (RL type):
+	Calling object
+
+##### on_episode_end
+
+```
+function on_episode_end(self, caller):
+```
+
+**PARAMETERS**:
+
+caller (RL type):
+	Calling object
+
+##### on_env_step
+
+```
+function on_env_step(self, caller):
+```
+
+**PARAMETERS**:
+
+caller (RL type):
+	Calling object
 
 ## Contributing
 
