@@ -131,10 +131,10 @@ class RL:
             Final action-value function Q(s,a)
 
         pi {lambda}, input state value, output action value:
-            Optimal policy which maps state action value
+            Policy mapping states to actions.
 
         V {numpy array}, shape(nS):
-            Optimal value array
+            State values array
 
         Q_track {numpy array}, shape(n_episodes, nS, nA):
             Log of Q(s,a) for each episode
@@ -259,10 +259,10 @@ class RL:
             Final action-value function Q(s,a)
 
         pi {lambda}, input state value, output action value:
-            Optimal policy which maps state action value
+            Policy mapping states to actions.
 
         V {numpy array}, shape(nS):
-            Optimal value array
+            State values array
 
         Q_track {numpy array}, shape(n_episodes, nS, nA):
             Log of Q(s,a) for each episode
