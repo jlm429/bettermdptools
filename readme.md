@@ -295,8 +295,13 @@ pi_track {list}, len(n_episodes):
 	Log of complete policy for each episode
 	
 	
-#### Callbacks 
+### Callbacks 
 
+Base class. 
+
+```
+class bettermdptools.callbacks.Callbacks():
+```
 RL algorithms SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.   
 
 ##### MyCallbacks 
