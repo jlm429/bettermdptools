@@ -55,7 +55,7 @@ class Planner:
             Log of V(s) for each iteration
 
         pi {lambda}, input state value, output action value:
-            Policy which maps state action value
+            Policy mapping states to actions.
         """
         V = np.zeros(len(self.P), dtype=np.float64)
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
@@ -109,7 +109,7 @@ class Planner:
             Log of V(s) for each iteration
 
         pi {lambda}, input state value, output action value:
-            Policy which maps state action value
+            Policy mapping states to actions.
         """
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
         # Explanation of lambda:
