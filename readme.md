@@ -71,7 +71,7 @@ class bettermdptools.algorithms.planner.Planner(P)
 ```
 
 Class that contains functions related to planning algorithms (Value Iteration, Policy Iteration).  Planner __init__ expects a reward and transitions matrix P, which is nested dictionary 
-[OpenAI Gym](https://www.gymlibrary.ml/) style discrete environment transition and reward matrix where 
+[OpenAI Gym](https://www.gymlibrary.ml/) style discrete environment where 
 P[state][action] is a list of tuples (probability, next state, reward, terminal).
 
 Frozen Lake VI example:
