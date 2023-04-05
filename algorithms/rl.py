@@ -111,7 +111,7 @@ class RL:
         alpha_decay_ratio {float}, default = 0.5:
             Decay schedule of learing rate for future iterations
         
-        init_epsilon {float}, default = 0.1:
+        init_epsilon {float}, default = 1.0:
             Initial epsilon value for epsilon greedy strategy.
             Chooses max(Q) over available actions with probability 1-epsilon.
         
