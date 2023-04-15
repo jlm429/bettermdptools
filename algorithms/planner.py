@@ -124,7 +124,7 @@ class Planner:
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
         i = 0
         converged = False
-        while i < n_iters and not converged:
+        while i < n_iters-1 and not converged:
             i += 1
             old_pi = {s: pi(s) for s in range(len(self.P))}
             V = self.policy_evaluation(pi, V, gamma, theta)
