@@ -69,14 +69,14 @@ if __name__ == "__main__":
 
     # Q-learning v_iters_plot
     # Q, V, pi, Q_track, pi_track = RL(frozen_lake.env).q_learning()
-    # max_reward_per_iter = np.amax(np.amax(Q_track, axis=2), axis=1)
-    # Plots.v_iters_plot(max_reward_per_iter, "Reward")
+    # max_q_value_per_iter = np.amax(np.amax(Q_track, axis=2), axis=1)
+    # Plots.v_iters_plot(max_q_value_per_iter, "Max Q-Values")
 
     # VI/PI v_iters_plot
     # V, V_track, pi = Planner(frozen_lake.env.P).value_iteration()
     # V, V_track, pi = Planner(frozen_lake.env.P).policy_iteration()
     # max_value_per_iter = np.amax(V_track, axis=1)
-    # Plots.v_iters_plot(max_value_per_iter, "Value")
+    # Plots.v_iters_plot(max_value_per_iter, "Max State Values")
 
     # Q-learning grid_values_heat_map
     # Q, V, pi, Q_track, pi_track = RL(frozen_lake.env).q_learning()
