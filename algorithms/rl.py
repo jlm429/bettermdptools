@@ -22,9 +22,8 @@ Given enough episodes, tries to find an estimate of the optimal policy.
 
 import numpy as np
 from tqdm import tqdm
-from callbacks.callbacks import MyCallbacks
-from decorators.decorators import print_runtime
-import gym
+from utils.callbacks import MyCallbacks
+from utils.decorators import print_runtime
 import warnings
 
 

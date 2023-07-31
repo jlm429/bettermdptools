@@ -302,14 +302,14 @@ pi_track {list}, len(n_episodes):
 Base class. 
 
 ```
-class bettermdptools.callbacks.Callbacks():
+class bettermdptools.utils.Callbacks():
 ```
 RL algorithms SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.   
 
 ##### MyCallbacks 
 
 ```
-class bettermdptools.callbacks.MyCallbacks(Callbacks):
+class bettermdptools.utils.MyCallbacks(Callbacks):
 ```
 
 To create a callback, override one of the callback functions in the child class MyCallbacks.  Here, on_episode prints the episode number every 1000 episodes.
@@ -327,8 +327,8 @@ class MyCallbacks(Callbacks):
 Or, you can use the add_to decorator and define the override outside of the class definition. 
 
 ```
-from decorators.decorators import add_to
-from callbacks.callbacks import MyCallbacks
+from utils.decorators import add_to
+from utils.callbacks import MyCallbacks
 
 @add_to(MyCallbacks)
 def on_episode_end(self, caller):

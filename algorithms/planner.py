@@ -22,7 +22,7 @@ for iterating to an optimal policy and reward value for a given MDP.
 
 import numpy as np
 import warnings
-from decorators.decorators import print_runtime
+from utils.decorators import print_runtime
 
 
 class Planner:
