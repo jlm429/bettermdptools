@@ -31,7 +31,7 @@ class Blackjack:
                 f"{state[0] - 4}{(state[1] - 2) % 10}"))
         # Transitions and rewards matrix from: https://github.com/rhalbersma/gym-blackjack-v1
         current_dir = os.path.dirname(__file__)
-        file_name = 'blackjack-envP'
+        file_name = 'blackjack-envP.pickle'
         f = os.path.join(current_dir, file_name)
         try:
             self._P = pickle.load(open(f, "rb"))

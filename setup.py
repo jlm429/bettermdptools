@@ -19,5 +19,8 @@ setup(
     author='John Mansfield',
     author_email='jlm429@gmail.com',
     packages=["algorithms", "utils", "examples"],
+    include_package_data=True,
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     install_requires=['gym>=0.26, <=0.26.2', 'pygame', 'numpy', 'tqdm', 'pandas', 'seaborn', 'matplotlib'],
 )
