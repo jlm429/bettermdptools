@@ -40,25 +40,25 @@ class RL:
         ----------------------------
         init_value {float}:
             Initial value of the quantity being decayed
-        
+
         min_value {float}:
             Minimum value init_value is allowed to decay to
-            
+
         decay_ratio {float}:
             The exponential factor exp(decay_ratio).
-            Updated decayed value is calculated as 
-        
+            Updated decayed value is calculated as
+
         max_steps {int}:
             Max iteration steps for decaying init_value
-        
+
         log_start {array-like}, default = -2:
             Starting value of the decay sequence.
             Default value starts it at 0.01
-        
+
         log_base {array-like}, default = 10:
             Base of the log space.
-        
-        
+
+
         Returns
         ----------------------------
         values {array-like}, shape(max_steps):
@@ -90,36 +90,36 @@ class RL:
         ----------------------------
         nS {int}:
             Number of states
-        
+
         nA {int}:
             Number of available actions
-            
+
         convert_state_obs {lambda}:
             The state conversion utilized in BlackJack ToyText problem.
             Returns three state tuple as one of the 280 converted states.
-        
+
         gamma {float}, default = 0.99:
             Discount factor
-        
+
         init_alpha {float}, default = 0.5:
             Learning rate
-        
+
         min_alpha {float}, default = 0.01:
             Minimum learning rate
-        
+
         alpha_decay_ratio {float}, default = 0.5:
             Decay schedule of learing rate for future iterations
-        
+
         init_epsilon {float}, default = 1.0:
             Initial epsilon value for epsilon greedy strategy.
             Chooses max(Q) over available actions with probability 1-epsilon.
-        
+
         min_epsilon {float}, default = 0.1:
             Minimum epsilon. Used to balance exploration in later stages.
-        
+
         epsilon_decay_ratio {float}, default = 0.9:
             Decay schedule of epsilon for future iterations
-            
+
         n_episodes {int}, default = 10000:
             Number of episodes for the agent
 
@@ -191,13 +191,8 @@ class RL:
             self.callbacks.on_episode_end(self)
 
         V = np.max(Q, axis=1)
-        # Explanation of lambda:
-        # def pi(s):
-        #   policy = dict()
-        #   for state, action in enumerate(np.argmax(Q, axis=1)):
-        #       policy[state] = action
-        #   return policy[s]
-        pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
+
+        pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
         return Q, V, pi, Q_track, pi_track
 
     @print_runtime
@@ -218,36 +213,36 @@ class RL:
         ----------------------------
         nS {int}:
             Number of states
-        
+
         nA {int}:
             Number of available actions
-            
+
         convert_state_obs {lambda}:
             The state conversion utilized in BlackJack ToyText problem.
             Returns three state tuple as one of the 280 converted states.
-        
+
         gamma {float}, default = 0.99:
             Discount factor
-        
+
         init_alpha {float}, default = 0.5:
             Learning rate
-        
+
         min_alpha {float}, default = 0.01:
             Minimum learning rate
-        
+
         alpha_decay_ratio {float}, default = 0.5:
             Decay schedule of learing rate for future iterations
-        
+
         init_epsilon {float}, default = 1.0:
             Initial epsilon value for epsilon greedy strategy.
             Chooses max(Q) over available actions with probability 1-epsilon.
-        
+
         min_epsilon {float}, default = 0.1:
             Minimum epsilon. Used to balance exploration in later stages.
-        
+
         epsilon_decay_ratio {float}, default = 0.9:
             Decay schedule of epsilon for future iterations
-            
+
         n_episodes {int}, default = 10000:
             Number of episodes for the agent
 
@@ -321,11 +316,6 @@ class RL:
             self.callbacks.on_episode_end(self)
 
         V = np.max(Q, axis=1)
-        # Explanation of lambda:
-        # def pi(s):
-        #   policy = dict()
-        #   for state, action in enumerate(np.argmax(Q, axis=1)):
-        #       policy[state] = action
-        #   return policy[s]
-        pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
+
+        pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
         return Q, V, pi, Q_track, pi_track

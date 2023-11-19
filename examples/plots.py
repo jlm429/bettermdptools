@@ -56,14 +56,14 @@ if __name__ == "__main__":
     # VI/PI grid_world_policy_plot
     # V, V_track, pi = Planner(frozen_lake.env.P).value_iteration()
     # n_states = frozen_lake.env.observation_space.n
-    # new_pi = list(map(lambda x: pi(x), range(n_states)))
+    # new_pi = list(map(lambda x: pi[x], range(n_states)))
     # s = int(math.sqrt(n_states))
     # Plots.grid_world_policy_plot(np.array(new_pi), "Grid World Policy")
 
     # Q-learning grid_world_policy_plot
     # Q, V, pi, Q_track, pi_track = RL(frozen_lake.env).q_learning()
     # n_states = frozen_lake.env.observation_space.n
-    # new_pi = list(map(lambda x: pi(x), range(n_states)))
+    # new_pi = list(map(lambda x: pi[x], range(n_states)))
     # s = int(math.sqrt(n_states))
     # Plots.grid_world_policy_plot(np.array(new_pi), "Grid World Policy")
 
