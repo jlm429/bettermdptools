@@ -74,13 +74,8 @@ class Planner:
             V_track[i] = V
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check theta and n_iters.  ")
-        # Explanation of lambda:
-        # def pi(s):
-        #   policy = dict()
-        #   for state, action in enumerate(np.argmax(Q, axis=1)):
-        #       policy[state] = action
-        #   return policy[s]
-        pi = lambda s: {s:a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
+
+        pi = {s:a for s, a in enumerate(np.argmax(Q, axis=1))}
         return V, V_track, pi
 
     @print_runtime
@@ -112,13 +107,8 @@ class Planner:
             Policy mapping states to actions.
         """
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
-        # Explanation of lambda:
-        # def pi(s):
-        #   policy = dict()
-        #   for state, action in enumerate(np.argmax(Q, axis=1)):
-        #       policy[state] = action
-        #   return policy[s]
-        pi = lambda s: {s: a for s, a in enumerate(random_actions)}[s]
+
+        pi = {s: a for s, a in enumerate(random_actions)}
         # initial V to give to `policy_evaluation` for the first time
         V = np.zeros(len(self.P), dtype=np.float64)
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
@@ -126,11 +116,11 @@ class Planner:
         converged = False
         while i < n_iters-1 and not converged:
             i += 1
-            old_pi = {s: pi(s) for s in range(len(self.P))}
+            old_pi = pi
             V = self.policy_evaluation(pi, V, gamma, theta)
             V_track[i] = V
             pi = self.policy_improvement(V, gamma)
-            if old_pi == {s: pi(s) for s in range(len(self.P))}:
+            if old_pi == pi:
                 converged = True
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
@@ -140,7 +130,7 @@ class Planner:
         while True:
             V = np.zeros(len(self.P), dtype=np.float64)
             for s in range(len(self.P)):
-                for prob, next_state, reward, done in self.P[s][pi(s)]:
+                for prob, next_state, reward, done in self.P[s][pi[s]]:
                     V[s] += prob * (reward + gamma * prev_V[next_state] * (not done))
             if np.max(np.abs(prev_V - V)) < theta:
                 break
@@ -153,11 +143,6 @@ class Planner:
             for a in range(len(self.P[s])):
                 for prob, next_state, reward, done in self.P[s][a]:
                     Q[s][a] += prob * (reward + gamma * V[next_state] * (not done))
-        # Explanation of lambda:
-        # def new_pi(s):
-        #   policy = dict()
-        #   for state, action in enumerate(np.argmax(Q, axis=1)):
-        #       policy[state] = action
-        #   return policy[s]
-        new_pi = lambda s: {s: a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
+
+        new_pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
         return new_pi
