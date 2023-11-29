@@ -19,12 +19,15 @@ class TestEnv:
         pass
 
     @staticmethod
-    def test_env(env, render=True, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state, done: state):
+    def test_env(env, desc=None, render=True, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state, done: state):
         """
         Parameters
         ----------------------------
         env {OpenAI Gym Environment}:
             MDP problem
+
+        desc {numpy array}
+            description of the environment (for custom environments)
 
         render {Boolean}:
             openAI human render mode
@@ -49,9 +52,12 @@ class TestEnv:
             Log of reward at the end of each iteration
         """
         if render:
-            # unwrap env and and reinit in 'human' render_mode
+            #reinit environment in 'human' render_mode
             env_name = env.unwrapped.spec.id
-            env = gym.make(env_name, render_mode='human')
+            if desc is None:
+                env = gym.make(env_name, render_mode='human')
+            else:
+                env = gym.make(env_name, desc=desc, render_mode='human')
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):

@@ -16,7 +16,7 @@ import pickle
 
 class Blackjack:
     def __init__(self):
-        self._env = gym.make('Blackjack-v1', render_mode=None)
+        self._wrapped_env = gym.make('Blackjack-v1', render_mode=None)
         # Explanation of convert_state_obs lambda:
         # def function(state, done):
         # 	if done:
@@ -37,7 +37,7 @@ class Blackjack:
             self._P = pickle.load(open(f, "rb"))
         except IOError:
             print("Pickle load failed.  Check path", f)
-        self._n_actions = self.env.action_space.n
+        self._n_actions = self._wrapped_env.action_space.n
         self._n_states = len(self._P)
 
     @property
@@ -65,12 +65,12 @@ class Blackjack:
         self._P = P
 
     @property
-    def env(self):
-        return self._env
+    def wrapped_env(self):
+        return self._wrapped_env
 
-    @env.setter
+    @wrapped_env.setter
     def env(self, env):
-        self._env = env
+        self._wrapped_env = env
 
     @property
     def convert_state_obs(self):
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     # V, V_track, pi = Planner(blackjack.P).policy_iteration()
 
     # Q-learning
-    Q, V, pi, Q_track, pi_track = RL(blackjack.env).q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
+    Q, V, pi, Q_track, pi_track = RL(blackjack.wrapped_env).q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
 
-    test_scores = TestEnv.test_env(env=blackjack.env, render=True, pi=pi, user_input=False,
+    test_scores = TestEnv.test_env(env=blackjack.wrapped_env, desc=None, render=True, pi=pi, user_input=False,
                                    convert_state_obs=blackjack.convert_state_obs)
