@@ -22,5 +22,5 @@ setup(
     include_package_data=True,
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
-    install_requires=['gym>=0.26, <=0.26.2', 'pygame', 'numpy', 'tqdm', 'pandas', 'seaborn', 'matplotlib'],
+    install_requires=['gymnasium>=0.26, <=0.26.3', 'pygame', 'numpy', 'tqdm', 'pandas', 'seaborn', 'matplotlib'],
 )

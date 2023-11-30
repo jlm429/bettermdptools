@@ -9,7 +9,7 @@ documentation added by: Gagandeep Randhawa
 Simulation of the agent's decision process after it has learned a policy.
 """
 
-import gym
+import gymnasium as gym
 import pygame
 import numpy as np
 

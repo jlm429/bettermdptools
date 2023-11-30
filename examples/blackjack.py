@@ -6,7 +6,7 @@ Author: John Mansfield
 import os
 import warnings
 
-import gym
+import gymnasium as gym
 import pygame
 from algorithms.rl import RL
 from algorithms.planner import Planner

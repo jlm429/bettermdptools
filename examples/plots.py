@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
-import gym
+import gymnasium as gym
 import pygame
 from algorithms.rl import RL
 from algorithms.planner import Planner
