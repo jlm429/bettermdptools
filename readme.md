@@ -5,17 +5,24 @@
 3. [Contributing](#contributing)
 
 ## Getting Started
+
+### About
+Bettermdptools is a package meant to help acclimate users to [gymnasium](https://gymnasium.farama.org/), which is a maintained fork of OpenAI’s Gym library.  Bettermdptools includes - a few planning and RL algorithms, 
+some useful utils and plots, a transition and rewards matrix for blackjack, and starter code to get going with gymnasium.  That's it!
+
+### Install 
+
 pip install or git clone bettermdptools.   
 
 ```
-pip3 install bettermdptools
+pip install bettermdptools
 ```
 
 ```
 git clone https://github.com/jlm429/bettermdptools
 ```
 
-Starter code to get up and running on OpenAI's frozen lake environment. See bettermdptools/examples for more.  
+Starter code to get up and running on the gymnasium frozen lake environment. See bettermdptools/examples for more.  
 
 ```
 import gym
@@ -73,7 +80,7 @@ class bettermdptools.algorithms.planner.Planner(P)
 ```
 
 Class that contains functions related to planning algorithms (Value Iteration, Policy Iteration).  Planner __init__ expects a reward and transitions matrix P, which is nested dictionary 
-[OpenAI Gym](https://www.gymlibrary.ml/) style discrete environment where 
+[gym](https://gymnasium.farama.org/) style discrete environment where 
 P[state][action] is a list of tuples (probability, next state, reward, terminal).
 
 Frozen Lake VI example:
@@ -150,8 +157,8 @@ class bettermdptools.algorithms.rl.RL(env)
 
 Class that contains functions related to reinforcement learning algorithms. RL __init__ expects an OpenAI environment (env). 
 
-The RL algorithms (Q-learning, SARSA) work out of the box with any [OpenAI Gym environment](https://www.gymlibrary.ml/)  that have single discrete valued state spaces, like [frozen lake](https://www.gymlibrary.ml/environments/toy_text/frozen_lake/#observation-space). 
-A lambda function is required to convert state spaces not in this format.  For example, [blackjack](https://www.gymlibrary.ml/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
+The RL algorithms (Q-learning, SARSA) work out of the box with any [gymnasium environments](https://gymnasium.farama.org/)  that have single discrete valued state spaces, like [frozen lake](https://gymnasium.farama.org/environments/toy_text/frozen_lake/#observation-space). 
+A lambda function is required to convert state spaces not in this format.  For example, [blackjack](https://gymnasium.farama.org/environments/toy_text/blackjack/#observation-space) is "a 3-tuple containing: the player’s current sum, the value of the dealer’s one showing card (1-10 where 1 is ace), and whether the player holds a usable ace (0 or 1)." 
 
 Here, blackjack.convert_state_obs changes the 3-tuple into a discrete space with 280 states by concatenating player states 0-27 (hard 4-21 & soft 12-21) with dealer states 0-9 (2-9, ten, ace).   
 
