@@ -50,7 +50,6 @@ GridSearch.Q_learning_grid_search(frozen_lake, epsilon_decay, iters)
 
 #plot state values
 from examples.plots import Plots
-frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 V, V_track, pi = Planner(frozen_lake.P).value_iteration()
 Plots.grid_values_heat_map(V, "State Values")
 ```
