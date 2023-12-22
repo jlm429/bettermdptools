@@ -45,13 +45,13 @@ test_scores = TestEnv.test_env(env=frozen_lake, render=True, user_input=False, p
 from examples.grid_search import GridSearch
 epsilon_decay = [.4, .7, .9]
 iters = [500, 5000, 50000]
-GridSearch.Q_learning_grid_search(frozen_lake.env, epsilon_decay, iters)
+GridSearch.Q_learning_grid_search(frozen_lake, epsilon_decay, iters)
 
 
 #plot state values
 from examples.plots import Plots
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
-V, V_track, pi = Planner(frozen_lake.env.P).value_iteration()
+V, V_track, pi = Planner(frozen_lake.P).value_iteration()
 Plots.grid_values_heat_map(V, "State Values")
 ```
 
