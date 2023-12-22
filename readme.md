@@ -33,9 +33,9 @@ from examples.test_env import TestEnv
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
 # Q-learning
-Q, V, pi, Q_track, pi_track = RL(frozen_lake.env).q_learning()
+Q, V, pi, Q_track, pi_track = RL(frozen_lake).q_learning()
 
-test_scores = TestEnv.test_env(env=frozen_lake.env, render=True, user_input=False, pi=pi)
+test_scores = TestEnv.test_env(env=frozen_lake, render=True, user_input=False, pi=pi)
 ```
 
 #### Plotting and Grid Search
