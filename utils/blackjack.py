@@ -4,13 +4,7 @@ Author: John Mansfield
 """
 
 import os
-import warnings
-
 import gymnasium as gym
-import pygame
-from algorithms.rl import RL
-from algorithms.planner import Planner
-from examples.test_env import TestEnv
 import pickle
 
 
@@ -119,17 +113,3 @@ class Blackjack:
     @convert_state_obs.setter
     def convert_state_obs(self, convert_state_obs):
         self._convert_state_obs = convert_state_obs
-
-if __name__ == "__main__":
-
-    blackjack = Blackjack()
-
-    # VI/PI
-    # V, V_track, pi = Planner(blackjack.P).value_iteration()
-    # V, V_track, pi = Planner(blackjack.P).policy_iteration()
-
-    # Q-learning
-    Q, V, pi, Q_track, pi_track = RL(blackjack.wrapped_env).q_learning(blackjack.n_states, blackjack.n_actions, blackjack.convert_state_obs)
-
-    test_scores = TestEnv.test_env(env=blackjack.wrapped_env, desc=None, render=True, pi=pi, user_input=False,
-                                   convert_state_obs=blackjack.convert_state_obs)
