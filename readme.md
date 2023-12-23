@@ -22,12 +22,12 @@ pip install bettermdptools
 git clone https://github.com/jlm429/bettermdptools
 ```
 
-Starter code to get up and running on the gymnasium frozen lake environment. See bettermdptools/examples for more.  
+Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](notebooks/) for more.  
 
 ```
 import gymnasium as gym
 from algorithms.planner import Planner
-from examples.plots import Plots
+from utils.plots import Plots
 
 # make gym environment 
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
