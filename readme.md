@@ -27,7 +27,6 @@ Starter code to get up and running on the gymnasium frozen lake environment. See
 ```
 import gymnasium as gym
 from algorithms.planner import Planner
-from examples.test_env import TestEnv
 from examples.plots import Plots
 
 # make gym environment 
