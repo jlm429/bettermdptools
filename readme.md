@@ -25,20 +25,18 @@ git clone https://github.com/jlm429/bettermdptools
 Starter code to get up and running on the gymnasium frozen lake environment. See bettermdptools/examples for more.  
 
 ```
-import gym
-import pygame
-from algorithms.rl import RL
+import gymnasium as gym
+from algorithms.planner import Planner
 from examples.test_env import TestEnv
+from examples.plots import Plots
 
+# make gym environment 
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
-# Q-learning
-Q, V, pi, Q_track, pi_track = RL(frozen_lake).q_learning()
+# run VI
+V, V_track, pi = Planner(frozen_lake.P).value_iteration()
 
 #plot state values
-from examples.plots import Plots
-from algorithms.planner import Planner
-V, V_track, pi = Planner(frozen_lake.P).value_iteration()
 Plots.grid_values_heat_map(V, "State Values")
 ```
 

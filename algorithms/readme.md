@@ -1,3 +1,12 @@
+## API
+
+1. [Planner](#planner)
+   1. [value_iteration](#value_iteration)
+   2. [policy_iteration](#policy_iteration)
+2. [RL](#rl)
+   1. [q_learning](#q_learning)
+   2. [sarsa](#sarsa)
+
 ### Planner 
 
 ```
