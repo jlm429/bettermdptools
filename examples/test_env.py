@@ -19,7 +19,7 @@ class TestEnv:
         pass
 
     @staticmethod
-    def test_env(env, desc=None, render=True, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state, done: state):
+    def test_env(env, desc=None, render=True, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state):
         """
         Parameters
         ----------------------------
@@ -63,7 +63,7 @@ class TestEnv:
         for i in range(0, n_iters):
             state, info = env.reset()
             done = False
-            state = convert_state_obs(state, done)
+            state = convert_state_obs(state)
             total_reward = 0
             while not done:
                 if user_input:
@@ -85,7 +85,7 @@ class TestEnv:
                     action = pi[state]
                 next_state, reward, terminated, truncated, info = env.step(action)
                 done = terminated or truncated
-                next_state = convert_state_obs(next_state, done)
+                next_state = convert_state_obs(next_state)
                 state = next_state
                 total_reward = reward + total_reward
             test_scores[i] = total_reward

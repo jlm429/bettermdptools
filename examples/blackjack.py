@@ -18,18 +18,58 @@ class Blackjack:
     def __init__(self):
         self._wrapped_env = gym.make('Blackjack-v1', render_mode=None)
         # Explanation of convert_state_obs lambda:
-        # def function(state, done):
-        # 	if done:
-		#         return -1
-        #     else:
-        #         if state[2]:
-        #             int(f"{state[0]+6}{(state[1]-2)%10}")
-        #         else:
-        #             int(f"{state[0]-4}{(state[1]-2)%10}")
-        self._convert_state_obs = lambda state, done: (
-            -1 if done else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2] else int(
-                f"{state[0] - 4}{(state[1] - 2) % 10}"))
+        # Lambda function assigned to the variable `self._convert_state_obs` takes parameter, `state` and
+        # converts the input into a compact single integer value by concatenating player hand with dealer card.
+        # See comments below for further information.
+        self._convert_state_obs = lambda state: (
+        int(f"{28}{(state[1] - 2) % 10}") if (state[0]==21 and state[2])
+            else int(f"{27}{(state[1] - 2) % 10}") if (state[0]==21 and not state[2])
+            else int(f"{state[0] + 6}{(state[1] - 2) % 10}") if state[2]
+            else int(f"{state[0] - 4}{(state[1] - 2) % 10}"))
         # Transitions and rewards matrix from: https://github.com/rhalbersma/gym-blackjack-v1
+        #    Observations:
+        #   There are 29 * 10 = 290 discrete observable states:
+        #    29 player hands: H4-H21, S12-S21, BJ (0-28)
+        #     H4   =  0
+        #     H5   =  1
+        #     H6   =  2
+        #     H7   =  3
+        #     H8   =  4
+        #     H9   =  5
+        #     H10  =  6
+        #     H11  =  7
+        #     H12  =  8
+        #     H13  =  9
+        #     H14  = 10
+        #     H15  = 11
+        #     H16  = 12
+        #     H17  = 13
+        #     H18  = 14
+        #     H19  = 15
+        #     H20  = 16
+        #     H21  = 17
+        #     S12  = 18
+        #     S13  = 19
+        #     S14  = 20
+        #     S15  = 21
+        #     S16  = 22
+        #     S17  = 23
+        #     S18  = 24
+        #     S19  = 25
+        #     S20  = 26
+        #     S21  = 27
+        #     BJ   = 28
+        #    Concatenated with 10 dealer cards: 2-9, T, A (0-9)
+        #     _2 = 0
+        #     _3 = 1
+        #     _4 = 2
+        #     _5 = 3
+        #     _6 = 4
+        #     _7 = 5
+        #     _8 = 6
+        #     _9 = 7
+        #     _T = 8 # 10, J, Q, K are all denoted as T
+        #     _A = 9
         current_dir = os.path.dirname(__file__)
         file_name = 'blackjack-envP.pickle'
         f = os.path.join(current_dir, file_name)
@@ -80,8 +120,8 @@ class Blackjack:
     def convert_state_obs(self, convert_state_obs):
         self._convert_state_obs = convert_state_obs
 
-
 if __name__ == "__main__":
+
     blackjack = Blackjack()
 
     # VI/PI
