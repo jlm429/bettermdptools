@@ -95,8 +95,7 @@ class RL:
             Number of available actions
 
         convert_state_obs {lambda}:
-            The state conversion utilized in BlackJack ToyText problem.
-            Returns three state tuple as one of the 280 converted states.
+            Converts state into an integer
 
         gamma {float}, default = 0.99:
             Discount factor
@@ -218,8 +217,7 @@ class RL:
             Number of available actions
 
         convert_state_obs {lambda}:
-            The state conversion utilized in BlackJack ToyText problem.
-            Returns three state tuple as one of the 280 converted states.
+            Converts state into an integer
 
         gamma {float}, default = 0.99:
             Discount factor
