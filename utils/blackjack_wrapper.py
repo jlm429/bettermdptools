@@ -77,11 +77,11 @@ class CustomTransformObservation(gym.ObservationWrapper):
         Parameters
         ----------------------------
         observation {Tuple}:
-            Blackjack base environment tuple
+            Blackjack base environment observation tuple
 
         Returns
         ----------------------------
-        self.func(observation) {int}
+        func(observation) {int}
         """
         return self.func(observation)
 
