@@ -15,6 +15,7 @@ class GridSearch:
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
             print("Avg. episode reward: ", np.mean(episode_rewards))
             print("###################")
+
     @staticmethod
     def sarsa_grid_search(env, gamma, epsilon_decay, iters):
         for i in itertools.product(gamma, epsilon_decay, iters):
@@ -23,6 +24,7 @@ class GridSearch:
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
             print("Avg. episode reward: ", np.mean(episode_rewards))
             print("###################")
+
     @staticmethod
     def pi_grid_search(env, gamma, n_iters, theta):
         for i in itertools.product(gamma, n_iters, theta):
@@ -31,6 +33,7 @@ class GridSearch:
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
             print("Avg. episode reward: ", np.mean(episode_rewards))
             print("###################")
+            
     @staticmethod
     def vi_grid_search(env, gamma, n_iters, theta):
         for i in itertools.product(gamma, n_iters, theta):
