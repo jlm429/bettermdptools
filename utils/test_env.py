@@ -19,7 +19,7 @@ class TestEnv:
         pass
 
     @staticmethod
-    def test_env(env, desc=None, render=True, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state):
+    def test_env(env, desc=None, render=False, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state):
         """
         Parameters
         ----------------------------
