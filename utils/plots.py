@@ -11,32 +11,11 @@ from matplotlib.colors import LinearSegmentedColormap
 
 class Plots:
     @staticmethod
-    def grid_world_policy_plot(data, label):
-        sqrt = int(math.sqrt(len(data)))
-        if not math.modf(sqrt)[0] == 0:
-            warnings.warn("Grid map expected.  Check data length")
-        else:
-            data = np.around(np.array(data).reshape((sqrt, sqrt)), 2)
-            df = pd.DataFrame(data=data)
-            my_colors = ((0.0, 0.0, 0.0, 1.0), (0.8, 0.0, 0.0, 1.0), (0.0, 0.8, 0.0, 1.0), (0.0, 0.0, 0.8, 1.0))
-            cmap = LinearSegmentedColormap.from_list('Custom', my_colors, len(my_colors))
-            ax = sns.heatmap(df, cmap=cmap, linewidths=1.0)
-            colorbar = ax.collections[0].colorbar
-            colorbar.set_ticks([.4, 1.1, 1.9, 2.6])
-            colorbar.set_ticklabels(['Left', 'Down', 'Right', 'Up'])
-            plt.title(label)
-            plt.show()
-
-    @staticmethod
-    def grid_values_heat_map(data, label):
-        sqrt = int(math.sqrt(len(data)))
-        if not math.modf(sqrt)[0] == 0:
-            warnings.warn("Grid map expected.  Check data length")
-        else:
-            data = np.around(np.array(data).reshape((sqrt, sqrt)), 2)
-            df = pd.DataFrame(data=data)
-            sns.heatmap(df, annot=True).set_title(label)
-            plt.show()
+    def values_heat_map(data, label, size):
+        data = np.around(np.array(data).reshape(size), 2)
+        df = pd.DataFrame(data=data)
+        sns.heatmap(df, annot=True).set_title(label)
+        plt.show()
 
     @staticmethod
     def v_iters_plot(data, label):
@@ -45,4 +24,37 @@ class Plots:
         sns.set_theme(style="whitegrid")
         title = label + " v Iterations"
         sns.lineplot(x=df.index, y=label, data=df).set_title(title)
+        plt.show()
+
+    #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
+    @staticmethod
+    def get_policy_map(pi, val_max, actions, map_size):
+        """Map the best learned action to arrows."""
+        #convert pi to numpy array
+        best_action = np.zeros(val_max.shape[0], dtype=np.int32)
+        for idx, val in enumerate(val_max):
+            best_action[idx] = pi[idx]
+        policy_map = np.empty(best_action.flatten().shape, dtype=str)
+        for idx, val in enumerate(best_action.flatten()):
+            policy_map[idx] = actions[val]
+        policy_map = policy_map.reshape(map_size[0], map_size[1])
+        val_max = val_max.reshape(map_size[0], map_size[1])
+        return val_max, policy_map
+
+    #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
+    @staticmethod
+    def plot_policy(val_max, directions, map_size):
+        """Plot the policy learned."""
+        sns.heatmap(
+            val_max,
+            annot=directions,
+            fmt="",
+            cmap=sns.color_palette("Blues", as_cmap=True),
+            linewidths=0.7,
+            linecolor="black",
+            xticklabels=[],
+            yticklabels=[],
+            annot_kws={"fontsize": "xx-large"},
+        ).set(title="Mapped Policy\nArrows represent best action")
+        img_title = f"Policy_{map_size[0]}x{map_size[1]}.png"
         plt.show()
