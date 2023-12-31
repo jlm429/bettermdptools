@@ -11,19 +11,17 @@ from matplotlib.colors import LinearSegmentedColormap
 
 class Plots:
     @staticmethod
-    def values_heat_map(data, label, size):
+    def values_heat_map(data, title, size):
         data = np.around(np.array(data).reshape(size), 2)
         df = pd.DataFrame(data=data)
-        sns.heatmap(df, annot=True).set_title(label)
+        sns.heatmap(df, annot=True).set_title(title)
         plt.show()
 
     @staticmethod
-    def v_iters_plot(data, label):
+    def v_iters_plot(data, title):
         df = pd.DataFrame(data=data)
-        df.columns = [label]
         sns.set_theme(style="whitegrid")
-        title = label + " v Iterations"
-        sns.lineplot(x=df.index, y=label, data=df).set_title(title)
+        sns.lineplot(data=df, legend=None).set_title(title)
         plt.show()
 
     #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
@@ -43,7 +41,7 @@ class Plots:
 
     #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
     @staticmethod
-    def plot_policy(val_max, directions, map_size):
+    def plot_policy(val_max, directions, map_size, title):
         """Plot the policy learned."""
         sns.heatmap(
             val_max,
@@ -55,6 +53,6 @@ class Plots:
             xticklabels=[],
             yticklabels=[],
             annot_kws={"fontsize": "xx-large"},
-        ).set(title="Mapped Policy\nArrows represent best action")
+        ).set(title=title)
         img_title = f"Policy_{map_size[0]}x{map_size[1]}.png"
         plt.show()
