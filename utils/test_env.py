@@ -23,33 +23,25 @@ class TestEnv:
         """
         Parameters
         ----------------------------
-        env {OpenAI Gym Environment}:
-            MDP problem
+        env {OpenAI Gym Environment}: MDP problem
 
-        desc {numpy array}
-            description of the environment (for custom environments)
+        desc {numpy array}: description of the environment (for custom environments)
 
-        render {Boolean}:
-            openAI human render mode
+        render {Boolean}, default = False: openAI human render mode
 
-        n_iters {int}, default = 10:
-            Number of iterations to simulate the agent for
+        n_iters {int}, default = 10: Number of iterations to simulate the agent for
 
-        pi {lambda}:
-            Policy used to calculate action value at a given state
+        pi {lambda}: Policy used to calculate action value at a given state
 
-        user_input {Boolean}:
-            Prompt for letting user decide which action to take at a given state
+        user_input {Boolean}, default = False: Prompt for letting user decide which action to take at a given state
 
-        convert_state_obs {lambda}:
-            The state conversion utilized in BlackJack ToyText problem.
-            Returns three state tuple as one of the 280 converted states.
+        convert_state_obs {lambda}: Optionally used in environments where state observation is transformed.
 
 
         Returns
         ----------------------------
-        test_scores {list}:
-            Log of reward at the end of each iteration
+        test_scores {numpy array}:
+            Log of rewards from each episode.
         """
         if render:
             #reinit environment in 'human' render_mode
