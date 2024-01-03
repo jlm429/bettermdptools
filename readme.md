@@ -45,6 +45,7 @@ Plots.grid_values_heat_map(V, "State Values")
 ## API
 
 1. [Algorithms](algorithms/readme.md)
+2. [Utils](utils/readme.md)
 
 ## Contributing
 
