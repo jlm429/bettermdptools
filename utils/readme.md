@@ -5,14 +5,15 @@
 2. [BlackjackWrapper](#BlackjackWrapper)
    1. [P](#P)
    2. [transform_obs](#transform_obs)
-3. [TestEnv](#TestEnv)
-   1. [test_env](#test_env)
-4. [Callbacks](#callbacks)		
+3. [Callbacks](#callbacks)		
 	1. [MyCallbacks](#mycallbacks)	
 		1. [on_episode](#on_episode)
 		2. [on_episode_begin](#on_episode_begin)
 		3. [on_episode_end](#on_episode_end)
 		4. [on_env_step](#on_env_step)
+4. [TestEnv](#TestEnv)
+   1. [test_env](#test_env)
+
 
 ### CustomTransformObservation 
 
@@ -80,51 +81,6 @@ function bettermdptools.utils.blackjack_wrapper.BlackjackWrapper.transform_obs(s
 transform_obs {lambda}, input tuple, output int:
 	Lambda function assigned to the variable `self._convert_state_obs` takes parameter, `state` and
 	converts the input into a compact single integer value by concatenating player hand with dealer card.
-
-### TestEnv 
-
-```
-class bettermdptools.utils.TestEnv() 
-```
-
-Simulation of the agent's decision process after it has learned a policy.
-
-##### test_env
-
-```
-function bettermdptools.utils.TestEnv.test_env(env, desc=None, render=False, 
-n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state)
-	->  test_scores
-```
-
-**PARAMETERS**: 
-
-env {OpenAI Gym Environment}:
-	MDP problem
-
-desc {numpy array}:
-	description of the environment (for custom environments)
-
-render {Boolean}, default = False:
-	openAI human render mode
-
-n_iters {int}, default = 10:
-	Number of iterations to simulate the agent for
-
-pi {lambda}:
-	Policy used to calculate action value at a given state
-
-user_input {Boolean}, default = False:
-	Prompt for letting user decide which action to take at a given state
-
-convert_state_obs {lambda}:
-	Optionally used in environments where state observation is transformed.
-
-**RETURNS**: 
-
-test_scores {numpy array}:
-	Log of rewards from each episode.  
-	
 
 ### Callbacks 
 
@@ -210,3 +166,47 @@ function on_env_step(self, caller):
 
 caller (RL type):
 	Calling object	
+
+### TestEnv 
+
+```
+class bettermdptools.utils.TestEnv() 
+```
+
+Simulation of the agent's decision process after it has learned a policy.
+
+##### test_env
+
+```
+function bettermdptools.utils.TestEnv.test_env(env, desc=None, render=False, 
+n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state)
+	->  test_scores
+```
+
+**PARAMETERS**: 
+
+env {OpenAI Gym Environment}:
+	MDP problem
+
+desc {numpy array}:
+	description of the environment (for custom environments)
+
+render {Boolean}, default = False:
+	openAI human render mode
+
+n_iters {int}, default = 10:
+	Number of iterations to simulate the agent for
+
+pi {lambda}:
+	Policy used to calculate action value at a given state
+
+user_input {Boolean}, default = False:
+	Prompt for letting user decide which action to take at a given state
+
+convert_state_obs {lambda}:
+	Optionally used in environments where state observation is transformed.
+
+**RETURNS**: 
+
+test_scores {numpy array}:
+	Log of rewards from each episode.  
