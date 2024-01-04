@@ -36,7 +36,8 @@ frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 V, V_track, pi = Planner(frozen_lake.P).value_iteration()
 
 #plot state values
-Plots.grid_values_heat_map(V, "State Values")
+size=(8,8)
+Plots.values_heat_map(V, "Frozen Lake\nValue Iteration State Values", size)
 ```
 
 ![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
