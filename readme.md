@@ -45,8 +45,8 @@ Plots.values_heat_map(V, "Frozen Lake\nValue Iteration State Values", size)
 
 ## API
 
-1. [Algorithms](algorithms/readme.md)
-2. [Utils](utils/readme.md)
+1. [Algorithms](bettermdptools/algorithms/readme.md)
+2. [Utils](bettermdptools/utils/readme.md)
 
 ## Contributing
 

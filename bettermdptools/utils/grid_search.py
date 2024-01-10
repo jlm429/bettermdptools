@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from algorithms.rl import RL
-from algorithms.planner import Planner
-from utils.test_env import TestEnv
+from bettermdptools.algorithms.rl import RL
+from bettermdptools.algorithms.planner import Planner
+from bettermdptools.utils.test_env import TestEnv
 import numpy as np
 import itertools
 

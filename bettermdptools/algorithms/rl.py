@@ -22,8 +22,8 @@ Given enough episodes, tries to find an estimate of the optimal policy.
 
 import numpy as np
 from tqdm import tqdm
-from utils.callbacks import MyCallbacks
-from utils.decorators import print_runtime
+from bettermdptools.utils.callbacks import MyCallbacks
+from bettermdptools.utils.decorators import print_runtime
 import warnings
 
 
