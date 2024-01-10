@@ -174,7 +174,7 @@ Simulation of the agent's decision process after it has learned a policy.
 ##### test_env
 
 ```
-function bettermdptools.utils.test_env.TestEnv(env, desc=None, render=False, 
+function bettermdptools.utils.test_env.TestEnv.test_env(env, desc=None, render=False, 
 n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state)
 	->  test_scores
 ```
