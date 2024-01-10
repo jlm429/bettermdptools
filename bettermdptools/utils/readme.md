@@ -24,10 +24,6 @@ class bettermdptools.utils.blackjack_wrapper.CustomTransformObservation(gym.Obse
 Helper class that modifies the observation space.  The v26 gymnasium TransformObservation wrapper does not accept an observation_space 
 parameter, which is needed in order to match the lambda conversion (tuple->int).  Instead, we subclass gym.ObservationWrapper (parent class of gym.TransformObservation) to set both the conversion function and new observation space.
 
-```
-base_env = gym.make('Blackjack-v1', render_mode=None)
-blackjack = BlackjackWrapper(base_env)
-```
 ##### observation
 
 Applies a function to the observation received from the environment's step function, which is passed back to the user.
@@ -112,8 +108,8 @@ class MyCallbacks(Callbacks):
 Or, you can use the add_to decorator and define the override outside of the class definition. 
 
 ```
-from utils.decorators import add_to
-from utils.callbacks import MyCallbacks
+from bettermdptools.utils.decorators import add_to
+from bettermdptools.utils.callbacks import MyCallbacks
 
 @add_to(MyCallbacks)
 def on_episode_end(self, caller):
@@ -123,7 +119,7 @@ def on_episode_end(self, caller):
 ##### on_episode
 
 ```
-function on_episode(self, caller, episode):
+function bettermdptools.utils.callbacks.Callbacks.on_episode(self, caller, episode):
 ```
 
 **PARAMETERS**:
@@ -137,7 +133,7 @@ episode {int}:
 ##### on_episode_begin
 
 ```
-function on_episode_begin(self, caller):
+function bettermdptools.utils.callbacks.Callbacks.on_episode_begin(self, caller):
 ```
 
 **PARAMETERS**:
@@ -148,7 +144,7 @@ caller (RL type):
 ##### on_episode_end
 
 ```
-function on_episode_end(self, caller):
+function bettermdptools.utils.callbacks.Callbacks.on_episode_end(self, caller):
 ```
 
 **PARAMETERS**:
@@ -159,7 +155,7 @@ caller (RL type):
 ##### on_env_step
 
 ```
-function on_env_step(self, caller):
+function bettermdptools.utils.callbacks.Callbacks.on_env_step(self, caller):
 ```
 
 **PARAMETERS**:
@@ -170,7 +166,7 @@ caller (RL type):
 ### TestEnv 
 
 ```
-class bettermdptools.utils.TestEnv() 
+class bettermdptools.utils.callbacks.Callbacks.bettermdptools.utils.TestEnv() 
 ```
 
 Simulation of the agent's decision process after it has learned a policy.
