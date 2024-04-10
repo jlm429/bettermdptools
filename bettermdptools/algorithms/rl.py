@@ -32,6 +32,19 @@ class RL:
         self.env = env
         self.callbacks = MyCallbacks()
         self.render = False
+        # Explanation of lambda:
+        # def select_action(state, Q, epsilon):
+        #   if np.random.random() > epsilon:
+        #       max_val = np.max(Q[state])
+        #       indxs_selector = np.isclose(Q[state], max_val)
+        #       indxs = np.arange(len(Q[state]))[indxs_selector]
+        #       return np.random.choice(indxs)
+        #   else:
+        #       return np.random.randint(len(Q[state]))
+        self.select_action = lambda state, Q, epsilon: \
+            np.random.choice(np.arange(len(Q[state]))[np.isclose(Q[state], np.max(Q[state]))]) \
+            if np.random.random() > epsilon \
+            else np.random.randint(len(Q[state]))
 
     @staticmethod
     def decay_schedule(init_value, min_value, decay_ratio, max_steps, log_start=-2, log_base=10):
@@ -147,15 +160,6 @@ class RL:
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
-        # Explanation of lambda:
-        # def select_action(state, Q, epsilon):
-        #   if np.random.random() > epsilon:
-        #       return np.argmax(Q[state])
-        #   else:
-        #       return np.random.randint(len(Q[state]))
-        select_action = lambda state, Q, epsilon: np.argmax(Q[state]) \
-            if np.random.random() > epsilon \
-            else np.random.randint(len(Q[state]))
         alphas = RL.decay_schedule(init_alpha,
                                 min_alpha,
                                 alpha_decay_ratio,
@@ -173,7 +177,7 @@ class RL:
             while not done:
                 if self.render:
                     warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
-                action = select_action(state, Q, epsilons[e])
+                action = self.select_action(state, Q, epsilons[e])
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
                 if truncated:
                     warnings.warn("Episode was truncated.  Bootstrapping 0 reward.")
@@ -269,15 +273,6 @@ class RL:
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
         Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
-        # Explanation of lambda:
-        # def select_action(state, Q, epsilon):
-        #   if np.random.random() > epsilon:
-        #       return np.argmax(Q[state])
-        #   else:
-        #       return np.random.randint(len(Q[state]))
-        select_action = lambda state, Q, epsilon: np.argmax(Q[state]) \
-            if np.random.random() > epsilon \
-            else np.random.randint(len(Q[state]))
         alphas = RL.decay_schedule(init_alpha,
                                 min_alpha,
                                 alpha_decay_ratio,
@@ -293,7 +288,7 @@ class RL:
             state, info = self.env.reset()
             done = False
             state = convert_state_obs(state)
-            action = select_action(state, Q, epsilons[e])
+            action = self.select_action(state, Q, epsilons[e])
             while not done:
                 if self.render:
                     warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
@@ -303,7 +298,7 @@ class RL:
                 done = terminated or truncated
                 self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)
-                next_action = select_action(next_state, Q, epsilons[e])
+                next_action = self.select_action(next_state, Q, epsilons[e])
                 td_target = reward + gamma * Q[next_state][next_action] * (not done)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
