@@ -56,6 +56,8 @@ class Planner:
 
         pi {lambda}, input state value, output action value:
             Policy mapping states to actions.
+
+        n_iters {int}, number of iterations needed to converge
         """
         V = np.zeros(len(self.P), dtype=np.float64)
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
@@ -76,7 +78,7 @@ class Planner:
             warnings.warn("Max iterations reached before convergence.  Check theta and n_iters.  ")
 
         pi = {s:a for s, a in enumerate(np.argmax(Q, axis=1))}
-        return V, V_track, pi
+        return V, V_track, pi, i
 
     @print_runtime
     def policy_iteration(self, gamma=1.0, n_iters=50, theta=1e-10):
@@ -105,6 +107,8 @@ class Planner:
 
         pi {lambda}, input state value, output action value:
             Policy mapping states to actions.
+
+        n_iters {int}, number of iterations needed to converge
         """
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
 
@@ -124,7 +128,7 @@ class Planner:
                 converged = True
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
-        return V, V_track, pi
+        return V, V_track, pi, i
 
     def policy_evaluation(self, pi, prev_V, gamma=1.0, theta=1e-10):
         while True:

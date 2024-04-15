@@ -53,6 +53,9 @@ V_track {numpy array}, shape(n_episodes, nS):
 pi {lambda}, input state value, output action value:
 	Policy mapping states to actions.  
 
+n_iters {int}
+	Number of iterations needed to converge
+
 ##### policy_iteration
 ```
 function bettermdptools.algorithms.planner.Planner.policy_iteration(self, 
@@ -81,6 +84,9 @@ V_track {numpy array}, shape(n_episodes, nS):
 	
 pi {lambda}, input state value, output action value:
 	Policy mapping states to actions.  
+
+n_iters {int}
+	Number of iterations needed to converge
 	
 ### RL 
 
