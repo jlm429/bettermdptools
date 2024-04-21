@@ -11,18 +11,22 @@ from matplotlib.colors import LinearSegmentedColormap
 
 class Plots:
     @staticmethod
-    def values_heat_map(data, title, size):
+    def values_heat_map(data, title, size, show=True):
         data = np.around(np.array(data).reshape(size), 2)
         df = pd.DataFrame(data=data)
         sns.heatmap(df, annot=True).set_title(title)
-        plt.show()
+
+        if show:
+            plt.show()
 
     @staticmethod
-    def v_iters_plot(data, title):
+    def v_iters_plot(data, title, show=True):
         df = pd.DataFrame(data=data)
         sns.set_theme(style="whitegrid")
         sns.lineplot(data=df, legend=None).set_title(title)
-        plt.show()
+
+        if show:
+            plt.show()
 
     #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
     @staticmethod
@@ -41,7 +45,7 @@ class Plots:
 
     #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
     @staticmethod
-    def plot_policy(val_max, directions, map_size, title):
+    def plot_policy(val_max, directions, map_size, title, show=True):
         """Plot the policy learned."""
         sns.heatmap(
             val_max,
@@ -55,4 +59,6 @@ class Plots:
             annot_kws={"fontsize": "xx-large"},
         ).set(title=title)
         img_title = f"Policy_{map_size[0]}x{map_size[1]}.png"
-        plt.show()
+
+        if show:
+            plt.show()
