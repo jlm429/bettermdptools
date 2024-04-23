@@ -109,10 +109,8 @@ class BlackjackWrapper(gym.Wrapper):
         current_dir = os.path.dirname(__file__)
         file_name = 'blackjack-envP.pickle'
         f = os.path.join(current_dir, file_name)
-        try:
-            self._P = pickle.load(open(f, "rb"))
-        except IOError:
-            print("Pickle load failed.  Check path", f)
+        with open(f, "rb") as f:
+            self._P = pickle.load(f)
 
     @property
     def P(self):
