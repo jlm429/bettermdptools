@@ -4,4 +4,4 @@ numpy
 tqdm
 pandas
 seaborn
-matplotlib
+matplotlib>=3.7.0, <=3.8.0
