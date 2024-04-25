@@ -1,8 +1,8 @@
 # bettermdptools
 
-1. [Getting Started](#getting-started)
-2. [API](#api)
-3. [Contributing](#contributing)
+[Getting Started](#getting-started)
+
+[Contributing](#contributing)
 
 ## Getting Started
 
@@ -41,12 +41,6 @@ Plots.values_heat_map(V, "Frozen Lake\nValue Iteration State Values", size)
 ```
 
 ![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
-
-
-## API
-
-1. [Algorithms](bettermdptools/algorithms/readme.md)
-2. [Utils](bettermdptools/utils/readme.md)
 
 ## Contributing
 
