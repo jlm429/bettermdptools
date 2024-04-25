@@ -27,6 +27,7 @@ class Callbacks:
 class MyCallbacks(Callbacks):
     """
     To create a callback, override one of the callback functions in the child class MyCallbacks.
+    RL algorithms SARSA and Q-learning have callback hooks for episode number, begin, end, and env. step.
     """
     def __init__(self):
         pass

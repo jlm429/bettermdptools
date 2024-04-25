@@ -1,8 +1,6 @@
 """
 Author: John Mansfield
 
-Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.
-
 # Transitions and rewards matrix from: https://github.com/rhalbersma/gym-blackjack-v1
 #    Observations:
 #   There are 29 * 10 = 290 discrete observable states:
@@ -56,6 +54,11 @@ import pickle
 class CustomTransformObservation(gym.ObservationWrapper):
     def __init__(self, env, func, observation_space):
         """
+        Helper class that modifies the observation space. The v26 gymnasium TransformObservation wrapper does not
+        accept an observation_space parameter, which is needed in order to match the lambda conversion (tuple->int).
+        Instead, we subclass gym.ObservationWrapper (parent class of gym.TransformObservation)
+        to set both the conversion function and new observation space.
+
         Parameters
         ----------------------------
         env {gymnasium.Env}:
@@ -74,6 +77,9 @@ class CustomTransformObservation(gym.ObservationWrapper):
 
     def observation(self, observation):
         """
+        Applies a function to the observation received from the environment's step function,
+        which is passed back to the user.
+
         Parameters
         ----------------------------
         observation {Tuple}:
@@ -81,19 +87,22 @@ class CustomTransformObservation(gym.ObservationWrapper):
 
         Returns
         ----------------------------
-        func(observation) {int}
+        func(observation) {int}:
+            The converted observation (290 discrete observable states)
         """
         return self.func(observation)
 
 class BlackjackWrapper(gym.Wrapper):
     def __init__(self, env):
         """
+        Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.
+
         Parameters
         ----------------------------
         env {gymnasium.Env}:
             Blackjack base environment
 
-        Explanation of convert_state_obs lambda:
+        Explanation of _transform_obs lambda:
         Lambda function assigned to the variable `self._convert_state_obs` takes parameter, `state` and
         converts the input into a compact single integer value by concatenating player hand with dealer card.
         See comments above for further information.
