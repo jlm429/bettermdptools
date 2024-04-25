@@ -14,10 +14,11 @@ documentation added by: Gagandeep Randhawa
 """
 
 """
-Model-based learning algorithms: Value Iteration and Policy Iteration
+Class that contains functions related to planning algorithms (Value Iteration, Policy Iteration). 
+Planner init expects a reward and transitions matrix P, which is nested dictionary gym style discrete environment 
+where P[state][action] is a list of tuples (probability, next state, reward, terminal).
 
-Assumes prior knowledge of the type of reward available to the agent
-for iterating to an optimal policy and reward value for a given MDP.
+Model-based learning algorithms: Value Iteration and Policy Iteration
 """
 
 import numpy as np

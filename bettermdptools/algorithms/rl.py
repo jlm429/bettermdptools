@@ -14,10 +14,12 @@ documentation added by: Gagandeep Randhawa
 """
 
 """
-Model-free learning algorithms: Q-Learning and SARSA
+Class that contains functions related to reinforcement learning algorithms. RL init expects an OpenAI environment (env).
 
-Assumes no prior knowledge of the type of reward available to the agent.
-Given enough episodes, tries to find an estimate of the optimal policy.
+Model-free learning algorithms: Q-Learning and SARSA
+work out of the box with any gymnasium environments that 
+have single discrete valued state spaces, like frozen lake. A lambda function 
+is required to convert state spaces not in this format.
 """
 
 import numpy as np
