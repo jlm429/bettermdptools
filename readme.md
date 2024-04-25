@@ -1,9 +1,5 @@
 # bettermdptools
 
-[Getting Started](#getting-started)
-
-[Contributing](#contributing)
-
 ## Getting Started
 
 ### About
