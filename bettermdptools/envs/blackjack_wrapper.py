@@ -1,5 +1,6 @@
 """
 Author: John Mansfield
+BSD 3-Clause License
 
 # Transitions and rewards matrix from: https://github.com/rhalbersma/gym-blackjack-v1
 #    Observations:
