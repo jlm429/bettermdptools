@@ -31,6 +31,7 @@ class DiscretizedCartPole:
         self.state_space = np.prod([self.position_bins, self.velocity_bins, len(self.angle_bins), self.angular_velocity_bins])
         self.P = {state: {action: [] for action in range(self.action_space)} for state in range(self.state_space)}
         self.setup_transition_probabilities()
+        self.n_states = len(self.angle_bins)*self.velocity_bins*self.position_bins*self.angular_velocity_bins
         self.convert_state_lambda = lambda obs: (
             np.ravel_multi_index((
                 np.clip(np.digitize(obs[0], np.linspace(*self.position_range, self.position_bins)) - 1, 0,

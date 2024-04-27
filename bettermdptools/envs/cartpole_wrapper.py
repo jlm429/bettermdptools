@@ -4,6 +4,8 @@ BSD 3-Clause License
 """
 
 import gymnasium as gym
+import numpy as np
+from bettermdptools.envs.cartpole_model import DiscretizedCartPole
 
 
 class CustomTransformObservation(gym.ObservationWrapper):
@@ -49,7 +51,7 @@ class CustomTransformObservation(gym.ObservationWrapper):
 
 
 class CartpoleWrapper(gym.Wrapper):
-    def __init__(self, env):
+    def __init__(self, env, position_bins, velocity_bins, angular_velocity_bins, angular_center_resolution, angular_outer_resolution):
         """
         Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
 
@@ -62,9 +64,22 @@ class CartpoleWrapper(gym.Wrapper):
         ...
 
         """
-        self._transform_obs = "something here"
-        self._P = "something here"
-        env = CustomTransformObservation(env, self._transform_obs, "state space size here")
+        dpole = DiscretizedCartPole(position_bins=position_bins, velocity_bins=velocity_bins, angular_velocity_bins=angular_velocity_bins,
+                                    angular_center_resolution=angular_center_resolution, angular_outer_resolution=angular_outer_resolution)
+        self._P = dpole.P
+        self._transform_obs = lambda obs: (
+            np.ravel_multi_index((
+                np.clip(np.digitize(obs[0], np.linspace(*dpole.position_range, dpole.position_bins)) - 1, 0,
+                        dpole.position_bins - 1),
+                np.clip(np.digitize(obs[1], np.linspace(*dpole.velocity_range, dpole.velocity_bins)) - 1, 0,
+                        dpole.velocity_bins - 1),
+                np.clip(np.digitize(obs[2], dpole.angle_bins) - 1, 0, len(dpole.angle_bins) - 1),
+                # Use adaptive angle bins
+                np.clip(np.digitize(obs[3], np.linspace(*dpole.angular_velocity_range, dpole.angular_velocity_bins)) - 1,
+                        0, dpole.angular_velocity_bins - 1)
+            ), (dpole.position_bins, dpole.velocity_bins, len(dpole.angle_bins), dpole.angular_velocity_bins))
+        )
+        env = CustomTransformObservation(env, self._transform_obs, gym.spaces.Discrete(dpole.n_states))
         super().__init__(env)
 
     @property
