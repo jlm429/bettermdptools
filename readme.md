@@ -4,7 +4,7 @@
 
 ### About
 Bettermdptools is a package meant to help acclimate users to [gymnasium](https://gymnasium.farama.org/), which is a maintained fork of OpenAI’s Gym library.  Bettermdptools includes - a few planning and RL algorithms, 
-some useful utils and plots, a transition and reward matrix for blackjack, and starter code to get going with gymnasium.  That's it!
+some useful utils and plots, environment models for blackjack and cartpole, and starter code to get going with gymnasium.  That's it!
 
 ### Install 
 
