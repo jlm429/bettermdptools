@@ -22,7 +22,7 @@ https://stackoverflow.com/questions/43485569/installed-a-package-with-anaconda-c
 setup(
     name='bettermdptools',
     url='https://github.com/jlm429/bettermdptools',
-    version='0.6.0',
+    version='0.7.0',
     platforms=['Any'],
     license='New BSD',
     author='John Mansfield',
@@ -31,5 +31,11 @@ setup(
     include_package_data=True,
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
-    install_requires=['gymnasium>=0.26, <=0.26.3', 'pygame', 'numpy', 'tqdm', 'pandas', 'seaborn', 'matplotlib'],
+    install_requires=['gymnasium>=0.26, <=0.26.3',
+                      'pygame',
+                      'numpy',
+                      'tqdm',
+                      'pandas',
+                      'seaborn',
+                      'matplotlib>=3.7.0, <=3.8.0'],
 )
