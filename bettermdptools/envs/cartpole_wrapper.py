@@ -51,7 +51,13 @@ class CustomTransformObservation(gym.ObservationWrapper):
 
 
 class CartpoleWrapper(gym.Wrapper):
-    def __init__(self, env, position_bins, velocity_bins, angular_velocity_bins, angular_center_resolution, angular_outer_resolution):
+    def __init__(self,
+                 env,
+                 position_bins=10,
+                 velocity_bins=10,
+                 angular_velocity_bins=10,
+                 angular_center_resolution=.1,
+                 angular_outer_resolution=.5):
         """
         Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
 
@@ -59,26 +65,14 @@ class CartpoleWrapper(gym.Wrapper):
         ----------------------------
         env {gymnasium.Env}:
             Base environment
-
-        Explanation of _transform_obs lambda:
-        ...
-
         """
-        dpole = DiscretizedCartPole(position_bins=position_bins, velocity_bins=velocity_bins, angular_velocity_bins=angular_velocity_bins,
-                                    angular_center_resolution=angular_center_resolution, angular_outer_resolution=angular_outer_resolution)
+        dpole = DiscretizedCartPole(position_bins=position_bins,
+                                    velocity_bins=velocity_bins,
+                                    angular_velocity_bins=angular_velocity_bins,
+                                    angular_center_resolution=angular_center_resolution,
+                                    angular_outer_resolution=angular_outer_resolution)
         self._P = dpole.P
-        self._transform_obs = lambda obs: (
-            np.ravel_multi_index((
-                np.clip(np.digitize(obs[0], np.linspace(*dpole.position_range, dpole.position_bins)) - 1, 0,
-                        dpole.position_bins - 1),
-                np.clip(np.digitize(obs[1], np.linspace(*dpole.velocity_range, dpole.velocity_bins)) - 1, 0,
-                        dpole.velocity_bins - 1),
-                np.clip(np.digitize(obs[2], dpole.angle_bins) - 1, 0, len(dpole.angle_bins) - 1),
-                # Use adaptive angle bins
-                np.clip(np.digitize(obs[3], np.linspace(*dpole.angular_velocity_range, dpole.angular_velocity_bins)) - 1,
-                        0, dpole.angular_velocity_bins - 1)
-            ), (dpole.position_bins, dpole.velocity_bins, len(dpole.angle_bins), dpole.angular_velocity_bins))
-        )
+        self._transform_obs = dpole.transform_obs
         env = CustomTransformObservation(env, self._transform_obs, gym.spaces.Discrete(dpole.n_states))
         super().__init__(env)
 
