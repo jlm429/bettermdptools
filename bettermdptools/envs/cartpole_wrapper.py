@@ -63,8 +63,12 @@ class CartpoleWrapper(gym.Wrapper):
 
         Parameters
         ----------------------------
-        env {gymnasium.Env}:
-            Base environment
+        env {gymnasium.Env}: Base environment
+        position_bins (int): Number of discrete bins for the cart's position.
+        velocity_bins (int): Number of discrete bins for the cart's velocity.
+        angular_velocity_bins (int): Number of discrete bins for the pole's angular velocity.
+        angular_center_resolution (float): The resolution of angle bins near the center (around zero).
+        angular_outer_resolution (float): The resolution of angle bins away from the center.
         """
         dpole = DiscretizedCartPole(position_bins=position_bins,
                                     velocity_bins=velocity_bins,
