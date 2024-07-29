@@ -1,0 +1,29 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.11-node # Specify the Python version
+    steps:
+      - checkout
+      - run:
+          name: Set up Python environment
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+      - run:
+          name: Install dependencies
+          command: |
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            python -m unittest discover -s tests
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
