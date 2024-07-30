@@ -1,4 +1,4 @@
-gymnasium>=0.26, <=0.26.3
+gymnasium>=0.26, <=0.27.1
 pygame
 numpy
 tqdm
