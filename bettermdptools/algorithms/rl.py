@@ -25,7 +25,6 @@ is required to convert state spaces not in this format.
 import numpy as np
 from tqdm import tqdm
 from bettermdptools.utils.callbacks import MyCallbacks
-from bettermdptools.utils.decorators import print_runtime
 import warnings
 
 
@@ -87,7 +86,6 @@ class RL:
         values = np.pad(values, (0, rem_steps), 'edge')
         return values
 
-    @print_runtime
     def q_learning(self,
                    nS=None,
                    nA=None,
@@ -182,7 +180,7 @@ class RL:
                 action = self.select_action(state, Q, epsilons[e])
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
                 if truncated:
-                    warnings.warn("Episode was truncated.  Bootstrapping 0 reward.")
+                    warnings.warn("Episode was truncated.  TD target value may be incorrect.")
                 done = terminated or truncated
                 self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)
@@ -200,7 +198,6 @@ class RL:
         pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
         return Q, V, pi, Q_track, pi_track
 
-    @print_runtime
     def sarsa(self,
               nS=None,
               nA=None,
@@ -296,7 +293,7 @@ class RL:
                     warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
                 if truncated:
-                    warnings.warn("Episode was truncated.  Bootstrapping 0 reward.")
+                    warnings.warn("Episode was truncated.  TD target value may be incorrect.")
                 done = terminated or truncated
                 self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)

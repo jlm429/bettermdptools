@@ -23,14 +23,12 @@ Model-based learning algorithms: Value Iteration and Policy Iteration
 
 import numpy as np
 import warnings
-from bettermdptools.utils.decorators import print_runtime
 
 
 class Planner:
     def __init__(self, P):
         self.P = P
 
-    @print_runtime
     def value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10):
         """
         PARAMETERS:
@@ -74,12 +72,11 @@ class Planner:
             V = np.max(Q, axis=1)
             V_track[i] = V
         if not converged:
-            warnings.warn("Max iterations reached before convergence.  Check theta and n_iters.  ")
+            warnings.warn("Max iterations reached before convergence.  Check n_iters.")
 
         pi = {s:a for s, a in enumerate(np.argmax(Q, axis=1))}
         return V, V_track, pi
 
-    @print_runtime
     def policy_iteration(self, gamma=1.0, n_iters=50, theta=1e-10):
         """
         PARAMETERS:
