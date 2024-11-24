@@ -10,7 +10,7 @@ class DiscretizedAcrobot:
   LINK_COM_POS_1 = 0.5  #: [m] position of the center of mass of link 1
   LINK_COM_POS_2 = 0.5  #: [m] position of the center of mass of link 2
   LINK_MOI = 1.0  #: moments of inertia for both links
-
+  AVAIL_TORQUE = [-1, 0, 1]
   MAX_VEL_1 = 4 * np.pi
   MAX_VEL_2 = 9 * np.pi
 
@@ -56,11 +56,18 @@ class DiscretizedAcrobot:
       states and actions, simulates the next state, and records the transition probability
       (deterministic in this setup), reward, and termination status.
       """
+      percent = 0
+
       for state in range(self.n_states):
           angle_1, angle_2, vel_1, vel_2 = self.index_to_state(state)
           for action in range(self.action_space):
               next_state, reward, done = self.compute_next_state(angle_1, angle_2, vel_1, vel_2, action)
               self.P[state][action].append((1, next_state, reward, done))
+
+          if state % int(self.n_states / 10) == 0 and state > 0:
+            percent += 10
+            print(f'{percent}% of probabilities calculated!')
+
 
   def index_to_state(self, index):
         """
@@ -173,7 +180,7 @@ class DiscretizedAcrobot:
     angle_2 = angle_space[angle_2_idx]
 
     velocity_1 = velocity_1_space[vel_1_idx]
-    velocity_2 = velocity_1_space[vel_2_idx]
+    velocity_2 = velocity_2_space[vel_2_idx]
 
     torque = self.AVAIL_TORQUE[action]
 
