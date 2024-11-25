@@ -17,19 +17,30 @@ class DiscretizedAcrobot:
   def __init__(self,
                angular_resolution_rad = 0.01,
                angular_vel_resolution_rad_per_sec = 0.05,
+               angle_bins = None,
+               velocity_bins = None,
                timestep_sec = 0.1):
 
-    self.angle_1_bins = int(np.pi // angular_resolution_rad) + 1
-    self.angle_2_bins = int(np.pi // angular_resolution_rad) + 1
-    self.angular_vel_1_bins = int((8 * np.pi) // angular_vel_resolution_rad_per_sec) + 1
-    self.angular_vel_2_bins = int((9 * np.pi) // angular_vel_resolution_rad_per_sec) + 1
+    if angle_bins is None:
+      self.angle_1_bins = int(np.pi // angular_resolution_rad) + 1
+      self.angle_2_bins = int(np.pi // angular_resolution_rad) + 1
+    else:
+       self.angle_1_bins = angle_bins
+       self.angle_2_bins = angle_bins
+    
+    if velocity_bins is None:
+      self.angular_vel_1_bins = int((2 * self.MAX_VEL_1) // angular_vel_resolution_rad_per_sec) + 1
+      self.angular_vel_2_bins = int((2 * self.MAX_VEL_2) // angular_vel_resolution_rad_per_sec) + 1
+    else:
+      self.angular_vel_1_bins = velocity_bins
+      self.angular_vel_2_bins = velocity_bins
 
     self.n_states = self.angle_1_bins * self.angle_2_bins * self.angular_vel_1_bins * self.angular_vel_2_bins
 
     self.angle_range = (-np.pi, np.pi)
-    self.velocity_1_range = (-4 * np.pi, 4 * np.pi)
-    self.velocity_2_range = (-9 * np.pi, 9 * np.pi)
-    self.action_space = 3 # -1, 0, 1
+    self.velocity_1_range = (-self.MAX_VEL_1, self.MAX_VEL_1)
+    self.velocity_2_range = (-self.MAX_VEL_2, self.MAX_VEL_2)
+    self.action_space = len(self.AVAIL_TORQUE) # -1, 0, 1
     self.dt = timestep_sec
 
     self.P = {state: {action: [] for action in range(self.action_space)} for state in range(self.n_states)}
