@@ -19,6 +19,7 @@ class DiscretizedAcrobot:
                angular_vel_resolution_rad_per_sec = 0.05,
                angle_bins = None,
                velocity_bins = None,
+               precomputed_P = None,
                timestep_sec = 0.1):
 
     if angle_bins is None:
@@ -43,9 +44,12 @@ class DiscretizedAcrobot:
     self.action_space = len(self.AVAIL_TORQUE) # -1, 0, 1
     self.dt = timestep_sec
 
-    self.P = {state: {action: [] for action in range(self.action_space)} for state in range(self.n_states)}
- 
-    self.setup_transition_probabilities()
+    if precomputed_P is None:
+      self.P = {state: {action: [] for action in range(self.action_space)} for state in range(self.n_states)}
+      self.setup_transition_probabilities()
+
+    else:
+      self.P = precomputed_P
 
     # add transform_obs
     self.transform_obs = lambda obs: (
