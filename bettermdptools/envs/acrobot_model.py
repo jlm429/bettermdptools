@@ -20,7 +20,9 @@ class DiscretizedAcrobot:
                angle_bins = None,
                velocity_bins = None,
                precomputed_P = None,
-               timestep_sec = 0.1):
+               verbose=False):
+
+    self.verbose = verbose
 
     if angle_bins is None:
       self.angle_1_bins = int(np.pi // angular_resolution_rad) + 1
@@ -42,7 +44,7 @@ class DiscretizedAcrobot:
     self.velocity_1_range = (-self.MAX_VEL_1, self.MAX_VEL_1)
     self.velocity_2_range = (-self.MAX_VEL_2, self.MAX_VEL_2)
     self.action_space = len(self.AVAIL_TORQUE) # -1, 0, 1
-    self.dt = timestep_sec
+    self.dt = 0.2
 
     if precomputed_P is None:
       self.P = {state: {action: [] for action in range(self.action_space)} for state in range(self.n_states)}
@@ -79,10 +81,9 @@ class DiscretizedAcrobot:
               next_state, reward, done = self.compute_next_state(angle_1, angle_2, vel_1, vel_2, action)
               self.P[state][action].append((1, next_state, reward, done))
 
-          if state % int(self.n_states / 10) == 0 and state > 0:
+          if state % int(self.n_states / 10) == 0 and state > 0 and self.verbose:
             percent += 10
             print(f'{percent}% of probabilities calculated!')
-
 
   def index_to_state(self, index):
         """
