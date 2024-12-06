@@ -2,6 +2,7 @@ import unittest
 import gymnasium as gym
 from bettermdptools.envs.blackjack_wrapper import BlackjackWrapper
 from bettermdptools.envs.cartpole_wrapper import CartpoleWrapper
+from bettermdptools.envs.pendulum_wrapper import PendulumWrapper
 from bettermdptools.utils.test_env import TestEnv
 from bettermdptools.algorithms.planner import Planner
 from bettermdptools.algorithms.rl import RL
@@ -19,6 +20,9 @@ class TestEnvs(unittest.TestCase):
         cls.cartpole = CartpoleWrapper(base_env)
         cls.frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
         cls.taxi = gym.make('Taxi-v3', render_mode=None)
+
+        base_env = gym.make('Pendulum-v1', render_mode=None)
+        cls.pendulum = PendulumWrapper(base_env)
 
         warnings.filterwarnings('ignore')
 
@@ -58,6 +62,15 @@ class TestEnvs(unittest.TestCase):
         mean_score = np.mean(test_scores)
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
+    def test_pendulum_value_iteration(self):
+        V, _, pi = Planner(self.pendulum.P).value_iteration(n_iters=2)
+        self.assertIsNotNone(V, "Value function should not be None")
+        self.assertIsNotNone(pi, "Policy should not be None")
+
+        test_scores = TestEnv.test_env(env=self.pendulum, n_iters=1, pi=pi)
+        mean_score = np.mean(test_scores)
+        self.assertIsNotNone(mean_score, "Mean test score should not be None")
+
     def test_blackjack_policy_iteration(self):
         V, V_track, pi = Planner(self.blackjack.P).policy_iteration(n_iters=1)
         self.assertIsNotNone(V, "Value function should not be None")
@@ -93,6 +106,16 @@ class TestEnvs(unittest.TestCase):
         test_scores = TestEnv.test_env(env=self.taxi, n_iters=1, pi=pi)
         mean_score = np.mean(test_scores)
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
+
+    # probably runs too long for CI
+    # def test_pendulum_policy_iteration(self):
+    #     V, _, pi = Planner(self.pendulum.P).policy_iteration(n_iters=2)
+    #     self.assertIsNotNone(V, "Value function should not be None")
+    #     self.assertIsNotNone(pi, "Policy should not be None")
+
+    #     test_scores = TestEnv.test_env(env=self.pendulum, n_iters=1, pi=pi)
+    #     mean_score = np.mean(test_scores)
+    #     self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_blackjack_q_learning(self):
         Q, V, pi, Q_track, pi_track = RL(self.blackjack).q_learning(n_episodes=2)
@@ -133,6 +156,19 @@ class TestEnvs(unittest.TestCase):
         test_scores = TestEnv.test_env(env=self.taxi, n_iters=1, pi=pi)
         mean_score = np.mean(test_scores)
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
+
+    def test_pendulum_q_learning(self):
+        Q, V, pi, Q_track, pi_track = RL(self.pendulum).q_learning(n_episodes=2)
+        self.assertIsNotNone(Q, "Q-table should not be None")
+        self.assertIsNotNone(V, "Value function should not be None")
+        self.assertIsNotNone(pi, "Policy should not be None")
+
+        test_scores = TestEnv.test_env(env=self.pendulum, n_iters=1, pi=pi)
+        mean_score = np.mean(test_scores)
+        self.assertIsNotNone(mean_score, "Mean test score should not be None")
+
+    # def test_fail_on_purpose(self):
+    #     self.assertTrue(False, "This test should fail")
 
 if __name__ == '__main__':
     unittest.main()

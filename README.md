@@ -48,3 +48,16 @@ Pull requests are welcome.
 * Commit changes (`git commit -m "Comments"`)
 * Push to branch (`git push origin branch_name`)
 * Open a pull request
+
+Setting up an environment (assuming you have conda):
+
+```
+conda create -n bettermdptools_dev python=3.10 -y
+conda activate bettermdptools_dev
+pip install -r requirements.txt
+```
+
+Running unit tests:
+```
+python -m unittest discover -s tests
+```
