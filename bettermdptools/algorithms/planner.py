@@ -81,7 +81,7 @@ class Planner:
                 converged = True
             V = V_new
             if output_V_track:
-                V_track.append(V)
+                V_track[i] = V
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
 
