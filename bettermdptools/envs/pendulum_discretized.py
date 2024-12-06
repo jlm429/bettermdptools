@@ -115,7 +115,7 @@ def compute_next_probable_states(
     return results
 
 def setup_transition_probabilities_for_state(args):
-    state, angle_bin_edges, angular_velocity_bin_edges, torque_bin_edges = args
+    state, angle_bin_edges, angular_velocity_bin_edges, torque_bin_edges, dim_samples = args
     angle_bins = len(angle_bin_edges) - 1
     angular_velocity_bins = len(angular_velocity_bin_edges) - 1
     action_bins = len(torque_bin_edges) - 1
@@ -131,7 +131,8 @@ def setup_transition_probabilities_for_state(args):
             action,
             angle_bin_edges,
             angular_velocity_bin_edges,
-            torque_bin_edges
+            torque_bin_edges,
+            num_samples=dim_samples
         )
 
     try:
@@ -141,16 +142,57 @@ def setup_transition_probabilities_for_state(args):
         return None
 
 class DiscretizedPendulum:
+    """
+    Initialize the DiscretizedPendulum environment.
+    Parameters:
+    -----------
+    angle_bins : int
+        Number of bins to discretize the angle.
+    angular_velocity_bins : int
+        Number of bins to discretize the angular velocity.
+    torque_bins : int, optional (default=11)
+        Number of bins to discretize the torque.
+    n_workers : int, optional (default=4)
+        Number of worker processes to use for setting up transition probabilities.
+    cache_dir : str, optional (default='./cached')
+        Directory to cache the transition probabilities.
+    dim_samples : int, optional (default=11)
+        Number of samples to use for each dimension when setting up transition probabilities.
+    Attributes:
+    -----------
+    angle_bins : int
+        Number of bins to discretize the angle.
+    angular_velocity_bins : int
+        Number of bins to discretize the angular velocity.
+    dim_samples : int
+        Number of samples to use for each dimension when setting up transition probabilities.
+    angle_bin_edges : numpy.ndarray
+        Edges of the bins for discretizing the angle.
+    angular_velocity_bin_edges : numpy.ndarray
+        Edges of the bins for discretizing the angular velocity.
+    torque_bin_edges : numpy.ndarray
+        Edges of the bins for discretizing the torque.
+    state_space : int
+        Total number of discrete states.
+    action_space : int
+        Total number of discrete actions.
+    P : dict
+        Transition probability matrix.
+    n_workers : int
+        Number of worker processes to use for setting up transition probabilities.
+    """
     def __init__(
             self,
             angle_bins,
             angular_velocity_bins,
             torque_bins=11,
             n_workers=4,
-            cache_dir='./cached'
+            cache_dir='./cached',
+            dim_samples=11
     ):
         self.angle_bins = angle_bins
         self.angular_velocity_bins = angular_velocity_bins
+        self.dim_samples = dim_samples
         self.angle_bin_edges = generate_bin_edges(np.pi, angle_bins, 3, center=True)
         self.angular_velocity_bin_edges = generate_bin_edges(8, angular_velocity_bins, 3, center=False)
         self.torque_bin_edges = generate_bin_edges(2, torque_bins, 3, center=False)
@@ -216,7 +258,8 @@ class DiscretizedPendulum:
                 state,
                 self.angle_bin_edges,
                 self.angular_velocity_bin_edges,
-                self.torque_bin_edges
+                self.torque_bin_edges,
+                self.dim_samples
             )
             for state in state_space_values
         ]
