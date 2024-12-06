@@ -26,6 +26,8 @@ import numpy as np
 from tqdm import tqdm
 from bettermdptools.utils.callbacks import MyCallbacks
 import warnings
+import time
+from collections import deque
 
 
 class RL:
@@ -90,6 +92,7 @@ class RL:
                    nS=None,
                    nA=None,
                    convert_state_obs=lambda state: state,
+                   convert_action=lambda action: action,
                    gamma=.99,
                    init_alpha=0.5,
                    min_alpha=0.01,
@@ -97,7 +100,11 @@ class RL:
                    init_epsilon=1.0,
                    min_epsilon=0.1,
                    epsilon_decay_ratio=0.9,
-                   n_episodes=10000):
+                   n_episodes=10000,
+                   patience=2000,
+                   output_pi_Q_track=True,
+                   use_tqdm=True
+                   ):
         """
         Parameters
         ----------------------------
@@ -109,6 +116,9 @@ class RL:
 
         convert_state_obs {lambda}:
             Converts state into an integer
+
+        convert_action {lambda}:
+            Converts action (int) into a format that the environment can understand
 
         gamma {float}, default = 0.99:
             Discount factor
@@ -135,6 +145,15 @@ class RL:
         n_episodes {int}, default = 10000:
             Number of episodes for the agent
 
+        patience {int}, default = 2000:
+            Number of episodes to wait before stopping if no improvement is seen
+
+        output_pi_Q_track {bool}, default = True:
+            Whether to output pi_track and Q_track values for each episode, can be a lot of memory for large domain problems
+
+        use_tqdm {bool}, default = True:
+            Whether to use tqdm for progress bar (disable if running in parallel)
+
 
         Returns
         ----------------------------
@@ -159,7 +178,12 @@ class RL:
             nA=self.env.action_space.n
         pi_track = []
         Q = np.zeros((nS, nA), dtype=np.float64)
-        Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
+        visits = np.zeros(nS, dtype=np.int64)
+        Q_track = None
+        if output_pi_Q_track:
+            Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
+        V_diff_max = []
+        V_old = np.zeros(nS)
         alphas = RL.decay_schedule(init_alpha,
                                 min_alpha,
                                 alpha_decay_ratio,
@@ -168,35 +192,75 @@ class RL:
                                   min_epsilon,
                                   epsilon_decay_ratio,
                                   n_episodes)
-        for e in tqdm(range(n_episodes), leave=False):
-            self.callbacks.on_episode_begin(self)
-            self.callbacks.on_episode(self, episode=e)
-            state, info = self.env.reset()
+        rewards = []
+        best_reward = None
+        e_best_reward = None
+        best_average_reward = None
+        e_best_average_reward = None
+        t_start = time.time()
+        moving_average = None
+        ma_alpha = 0.01
+
+        iterations = range(n_episodes)
+        if use_tqdm:
+            iterations = tqdm(range(n_episodes), leave=False)
+
+        for e in iterations:
+            if use_tqdm:
+                self.callbacks.on_episode_begin(self)
+                self.callbacks.on_episode(self, episode=e)
+            else:
+                if e % 100 == 0:
+                    print(f"Episode {e}/{n_episodes}")
+            state, info = self.env.reset(seed=e)
             done = False
             state = convert_state_obs(state)
+            reward_sum = 0
             while not done:
+                visits[state] += 1
                 if self.render:
                     warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
                 action = self.select_action(state, Q, epsilons[e])
-                next_state, reward, terminated, truncated, _ = self.env.step(action)
+                next_state, reward, terminated, truncated, _ = self.env.step(convert_action(action))
+                reward_sum += reward
                 if truncated:
                     warnings.warn("Episode was truncated.  TD target value may be incorrect.")
                 done = terminated or truncated
-                self.callbacks.on_env_step(self)
+                if use_tqdm:
+                    self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)
                 td_target = reward + gamma * Q[next_state].max() * (not done)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state = next_state
-            Q_track[e] = Q
-            pi_track.append(np.argmax(Q, axis=1))
+            rewards.append(reward_sum)
+            if moving_average is None:
+                moving_average = reward_sum
+            else:
+                moving_average = ma_alpha * reward_sum + (1 - ma_alpha) * moving_average
+            if best_reward is None or reward_sum > best_reward:
+                best_reward = reward_sum
+                e_best_reward = e
+            if best_average_reward is None or moving_average > best_average_reward:
+                best_average_reward = moving_average
+                e_best_average_reward = e
+            if output_pi_Q_track:
+                Q_track[e] = Q
+                pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            self.callbacks.on_episode_end(self)
+            if use_tqdm:
+                self.callbacks.on_episode_end(self)
 
-        V = np.max(Q, axis=1)
+            V = np.max(Q, axis=1)
+            V_diff_max.append(np.abs(V - V_old).max())
+            V_old = V
+            if e - e_best_reward > patience and e - e_best_average_reward > patience:
+                break
+
+        t_elapsed = time.time() - t_start
 
         pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
-        return Q, V, pi, Q_track, pi_track
+        return Q, V, pi, Q_track, pi_track, rewards, epsilons, visits, V_diff_max, t_elapsed
 
     def sarsa(self,
               nS=None,

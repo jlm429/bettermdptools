@@ -17,7 +17,7 @@ class GridSearch:
             if verbose:
                 print("running q_learning with gamma:", i[0],  "epsilon decay:", i[1],  " iterations:", i[2])
 
-            Q, V, pi, Q_track, pi_track = RL(env).q_learning(gamma=i[0], epsilon_decay_ratio=i[1], n_episodes=i[2])
+            Q, V, pi, Q_track, pi_track, _, _, _, _, _ = RL(env).q_learning(gamma=i[0], epsilon_decay_ratio=i[1], n_episodes=i[2])
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
             avg_reward = np.mean(episode_rewards)
             rewards_and_params_results.append({
