@@ -21,15 +21,16 @@ where P[state][action] is a list of tuples (probability, next state, reward, ter
 Model-based learning algorithms: Value Iteration and Policy Iteration
 """
 
-import numpy as np
 import warnings
+import time
+import numpy as np
 
 
 class Planner:
     def __init__(self, P):
         self.P = P
 
-    def value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10):
+    def value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10, output_V_track=True):
         """
         PARAMETERS:
 
@@ -55,9 +56,16 @@ class Planner:
 
         pi {lambda}, input state value, output action value:
             Policy mapping states to actions.
+
+        output_V_track {bool}:
+            If True, V_track is returned.  If False, V_track is not returned.
         """
+        t_start = time.time()
         V = np.zeros(len(self.P), dtype=np.float64)
-        V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
+        V_track = None
+        V_diff_max_abs = []
+        if output_V_track:
+            V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
         i = 0
         converged = False
         while i < n_iters-1 and not converged:
@@ -67,17 +75,22 @@ class Planner:
                 for a in range(len(self.P[s])):
                     for prob, next_state, reward, done in self.P[s][a]:
                         Q[s][a] += prob * (reward + gamma * V[next_state] * (not done))
-            if np.max(np.abs(V - np.max(Q, axis=1))) < theta:
+            V_new = np.max(Q, axis=1)
+            V_diff_max_abs.append(np.max(np.abs(V - V_new)))
+            if V_diff_max_abs[-1] < theta:
                 converged = True
-            V = np.max(Q, axis=1)
-            V_track[i] = V
+            V = V_new
+            if output_V_track:
+                V_track.append(V)
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
 
-        pi = {s:a for s, a in enumerate(np.argmax(Q, axis=1))}
-        return V, V_track, pi
+        t_elapsed = time.time() - t_start
 
-    def policy_iteration(self, gamma=1.0, n_iters=50, theta=1e-10):
+        pi = {s:a for s, a in enumerate(np.argmax(Q, axis=1))}
+        return V, V_track, pi, V_diff_max_abs, t_elapsed
+
+    def policy_iteration(self, gamma=1.0, n_iters=50, theta=1e-10, output_V_track=True, random_seed=42):
         """
         PARAMETERS:
 
@@ -103,26 +116,47 @@ class Planner:
 
         pi {lambda}, input state value, output action value:
             Policy mapping states to actions.
+
+        output_V_track {bool}:
+            If True, V_track is returned.  If False, V_track is not returned.
+
+        random_seed {int}:
+            Random seed for policy initialization.
         """
-        random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
+
+        t_start = time.time()
+        rng = np.random.RandomState(random_seed)
+
+        random_actions = rng.choice(tuple(self.P[0].keys()), len(self.P))
 
         pi = {s: a for s, a in enumerate(random_actions)}
         # initial V to give to `policy_evaluation` for the first time
         V = np.zeros(len(self.P), dtype=np.float64)
-        V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
+        V_track = None
+        if output_V_track:
+            V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
+        V_diff_max = []
+        V_old = np.zeros(len(self.P), dtype=np.float64)
         i = 0
         converged = False
         while i < n_iters-1 and not converged:
             i += 1
             old_pi = pi
             V = self.policy_evaluation(pi, V, gamma, theta)
-            V_track[i] = V
+            if output_V_track:
+                V_track[i] = V
+            V_diff_max.append(np.abs(V - V_old).max())
+            V_old = V.copy()
             pi = self.policy_improvement(V, gamma)
             if old_pi == pi:
                 converged = True
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
-        return V, V_track, pi
+
+        V_diff_max = np.array(V_diff_max)
+
+        t_elapsed = time.time() - t_start
+        return V, V_track, pi, V_diff_max, t_elapsed
 
     def policy_evaluation(self, pi, prev_V, gamma=1.0, theta=1e-10):
         while True:

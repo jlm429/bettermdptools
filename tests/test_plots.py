@@ -16,7 +16,7 @@ class TestPlots(unittest.TestCase):
         cls.frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
     def test_value_iteration_heatmap(self):
-        V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
+        V, V_track, pi, _, _ = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
         size = (8, 8)
 
         # Check if the values heat map function runs without errors
@@ -26,7 +26,7 @@ class TestPlots(unittest.TestCase):
             self.fail(f"values_heat_map raised an exception: {e}")
 
     def test_value_iteration_v_iters_plot(self):
-        V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
+        V, V_track, pi, _, _ = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
 
         # Clip trailing zeros in case convergence is reached before max iterations
         max_value_per_iter = np.trim_zeros(np.mean(V_track, axis=1), 'b')
@@ -38,7 +38,7 @@ class TestPlots(unittest.TestCase):
             self.fail(f"v_iters_plot raised an exception: {e}")
 
     def test_policy_map_plot(self):
-        V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
+        V, V_track, pi, _, _ = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
 
         fl_actions = {0: "←", 1: "↓", 2: "→", 3: "↑"}
         fl_map_size = (8, 8)
