@@ -19,7 +19,7 @@ class TestEnv:
         pass
 
     @staticmethod
-    def test_env(env, desc=None, render=False, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state):
+    def test_env(env, desc=None, render=False, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state, n_actions=None, convert_action=lambda action: action):
         """
         Parameters
         ----------------------------
@@ -37,6 +37,11 @@ class TestEnv:
 
         convert_state_obs {lambda}: Optionally used in environments where state observation is transformed.
 
+        n_actions {int}: Number of actions in the environment (used with envs that might not have a discrete action space)
+
+        convert_action {lambda}: Optionally used in environments where action is transformed.
+
+        
 
         Returns
         ----------------------------
@@ -50,10 +55,11 @@ class TestEnv:
                 env = gym.make(env_name, render_mode='human')
             else:
                 env = gym.make(env_name, desc=desc, render_mode='human')
-        n_actions = env.action_space.n
+        if n_actions is None:
+            n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
-            state, info = env.reset()
+            state, info = env.reset(seed=i)
             done = False
             state = convert_state_obs(state)
             total_reward = 0
@@ -75,7 +81,7 @@ class TestEnv:
                             print("please enter a valid action, 0 - %i \n" % int(n_actions - 1))
                 else:
                     action = pi[state]
-                next_state, reward, terminated, truncated, info = env.step(action)
+                next_state, reward, terminated, truncated, info = env.step(convert_action(action))
                 done = terminated or truncated
                 next_state = convert_state_obs(next_state)
                 state = next_state
