@@ -161,9 +161,9 @@ class DiscretizedPendulum:
     Attributes:
     -----------
     angle_bins : int
-        Number of bins to discretize the angle.
+        Number of bins to discretize the angle. Must be odd.
     angular_velocity_bins : int
-        Number of bins to discretize the angular velocity.
+        Number of bins to discretize the angular velocity. Must be odd.
     dim_samples : int
         Number of samples to use for each dimension when setting up transition probabilities.
     angle_bin_edges : numpy.ndarray
