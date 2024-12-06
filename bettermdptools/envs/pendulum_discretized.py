@@ -1,5 +1,6 @@
 """
-This file is based on the discretized cartpole problem from bettermdptools
+Author: Aleksandr Spiridonov
+BSD 3-Clause License
 """
 import numpy as np
 from bettermdptools.envs.binning import generate_bin_edges

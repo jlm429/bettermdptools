@@ -1,3 +1,8 @@
+"""
+Author: Aleksandr Spiridonov
+BSD 3-Clause License
+"""
+
 import gymnasium as gym
 from bettermdptools.envs.pendulum_discretized import DiscretizedPendulum  # Ensure this path is correct
 

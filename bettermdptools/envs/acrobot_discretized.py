@@ -1,5 +1,6 @@
 """
-This file is based on the discretized cartpole problem from bettermdptools
+Author: Aleksandr Spiridonov
+BSD 3-Clause License
 """
 import numpy as np
 from gymnasium.envs.classic_control.acrobot import AcrobotEnv, rk4, wrap, bound

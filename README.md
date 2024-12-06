@@ -39,6 +39,43 @@ Plots.values_heat_map(V, "Frozen Lake\nValue Iteration State Values", size)
 
 ![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
 
+A custom version of grid search was created to run pendulum and acrobot problems that caches the results and runs iterations of the grid search in parallel. Note: Acrobot has very large state space sizes (4D continuous problem). Once you get to n_bins of around 30, the RAM requirements might get to be around 10GB per process, so n_jobs = 1 may be adviseable for large problems unless you have lots of RAM.
+
+```
+from bettermdptools.utils.grid_search_large_domain import GridSearch
+
+gammas = [0.7, 0.9]
+epsilon_decays = [0.8, 0.9]
+n_bins_list = [11]
+
+wrapper_params_list = [{'angle_bins': n_bins, 'angular_velocity_bins': n_bins, 'torque_bins': 11} for n_bins in n_bins_list]
+
+n_jobs = 10
+n_jobs_pi = 8
+
+vi_grid_search_results = GridSearch.vi_grid_search(
+    env_name='pendulum',
+    gammas=gammas,
+    wrapper_params_list=wrapper_params_list,
+    n_jobs=n_jobs
+)
+
+pi_grid_search_results = GridSearch.pi_grid_search(
+    env_name='pendulum',
+    gammas=gammas,
+    wrapper_params_list=wrapper_params_list,
+    n_jobs=n_jobs_pi
+)
+
+ql_grid_search_results = GridSearch.ql_grid_search(
+    env_name='pendulum',
+    gammas=gammas,
+    epsilon_decays=epsilon_decays,
+    wrapper_params_list=wrapper_params_list,
+    n_jobs=n_jobs
+)
+```
+
 ## Contributing
 
 Pull requests are welcome.  

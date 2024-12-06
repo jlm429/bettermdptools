@@ -1,7 +1,7 @@
 """
-This file is based on the cartpole problem wrapper from bettermdptools
+Author: Aleksandr Spiridonov
+BSD 3-Clause License
 """
-
 
 import gymnasium as gym
 from bettermdptools.envs.acrobot_discretized import DiscretizedAcrobot
