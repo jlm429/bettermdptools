@@ -23,7 +23,7 @@ is required to convert state spaces not in this format.
 """
 
 import numpy as np
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from bettermdptools.utils.callbacks import MyCallbacks
 import warnings
 
@@ -158,8 +158,8 @@ class RL:
         if nA is None:
             nA=self.env.action_space.n
         pi_track = []
-        Q = np.zeros((nS, nA), dtype=np.float64)
-        Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
+        Q = np.zeros((nS, nA), dtype=np.float32)
+        Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float32)
         alphas = RL.decay_schedule(init_alpha,
                                 min_alpha,
                                 alpha_decay_ratio,
@@ -168,12 +168,14 @@ class RL:
                                   min_epsilon,
                                   epsilon_decay_ratio,
                                   n_episodes)
+        rewards = np.zeros(n_episodes, dtype=np.float32)
         for e in tqdm(range(n_episodes), leave=False):
             self.callbacks.on_episode_begin(self)
             self.callbacks.on_episode(self, episode=e)
             state, info = self.env.reset()
             done = False
             state = convert_state_obs(state)
+            total_reward = 0
             while not done:
                 if self.render:
                     warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
@@ -188,6 +190,8 @@ class RL:
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state = next_state
+                total_reward += reward
+            rewards[e] = total_reward
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
@@ -196,7 +200,7 @@ class RL:
         V = np.max(Q, axis=1)
 
         pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
-        return Q, V, pi, Q_track, pi_track
+        return Q, V, pi, Q_track, pi_track, rewards
 
     def sarsa(self,
               nS=None,
@@ -270,8 +274,9 @@ class RL:
         if nA is None:
             nA = self.env.action_space.n
         pi_track = []
-        Q = np.zeros((nS, nA), dtype=np.float64)
-        Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float64)
+        Q = np.zeros((nS, nA), dtype=np.float32)
+        Q_track = np.zeros((n_episodes, nS, nA), dtype=np.float32)
+        rewards = np.zeros(n_episodes, dtype=np.float32)
         alphas = RL.decay_schedule(init_alpha,
                                 min_alpha,
                                 alpha_decay_ratio,
@@ -288,6 +293,7 @@ class RL:
             done = False
             state = convert_state_obs(state)
             action = self.select_action(state, Q, epsilons[e])
+            total_reward = 0
             while not done:
                 if self.render:
                     warnings.warn("Occasional render has been deprecated by openAI.  Use test_env.py to render.")
@@ -302,6 +308,8 @@ class RL:
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state, action = next_state, next_action
+                total_reward += reward
+            rewards[e] = total_reward
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
@@ -310,4 +318,4 @@ class RL:
         V = np.max(Q, axis=1)
 
         pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
-        return Q, V, pi, Q_track, pi_track
+        return Q, V, pi, Q_track, pi_track, rewards
