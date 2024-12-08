@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import math
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-import warnings
-from matplotlib.colors import LinearSegmentedColormap
 
 
 class Plots:
@@ -28,11 +25,11 @@ class Plots:
         if show:
             plt.show()
 
-    #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
+    # modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
     @staticmethod
     def get_policy_map(pi, val_max, actions, map_size):
         """Map the best learned action to arrows."""
-        #convert pi to numpy array
+        # convert pi to numpy array
         best_action = np.zeros(val_max.shape[0], dtype=np.int32)
         for idx, val in enumerate(val_max):
             best_action[idx] = pi[idx]
@@ -43,7 +40,7 @@ class Plots:
         val_max = val_max.reshape(map_size[0], map_size[1])
         return val_max, policy_map
 
-    #modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
+    # modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
     @staticmethod
     def plot_policy(val_max, directions, map_size, title, show=True):
         """Plot the policy learned."""

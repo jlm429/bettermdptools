@@ -10,7 +10,6 @@ Simulation of the agent's decision process after it has learned a policy.
 """
 
 import gymnasium as gym
-import pygame
 import numpy as np
 
 
@@ -19,7 +18,15 @@ class TestEnv:
         pass
 
     @staticmethod
-    def test_env(env, desc=None, render=False, n_iters=10, pi=None, user_input=False, convert_state_obs=lambda state: state):
+    def test_env(
+        env,
+        desc=None,
+        render=False,
+        n_iters=10,
+        pi=None,
+        user_input=False,
+        convert_state_obs=lambda state: state,
+    ):
         """
         Parameters
         ----------------------------
@@ -44,12 +51,12 @@ class TestEnv:
             Log of rewards from each episode.
         """
         if render:
-            #reinit environment in 'human' render_mode
+            # reinit environment in 'human' render_mode
             env_name = env.unwrapped.spec.id
             if desc is None:
-                env = gym.make(env_name, render_mode='human')
+                env = gym.make(env_name, render_mode="human")
             else:
-                env = gym.make(env_name, desc=desc, render_mode='human')
+                env = gym.make(env_name, desc=desc, render_mode="human")
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
         for i in range(0, n_iters):
@@ -63,7 +70,10 @@ class TestEnv:
                     print("state is %i" % state)
                     print("policy output is %i" % pi[state])
                     while True:
-                        action = input("Please select 0 - %i then hit enter:\n" % int(n_actions-1))
+                        action = input(
+                            "Please select 0 - %i then hit enter:\n"
+                            % int(n_actions - 1)
+                        )
                         try:
                             action = int(action)
                         except ValueError:
@@ -72,7 +82,10 @@ class TestEnv:
                         if 0 <= action < n_actions:
                             break
                         else:
-                            print("please enter a valid action, 0 - %i \n" % int(n_actions - 1))
+                            print(
+                                "please enter a valid action, 0 - %i \n"
+                                % int(n_actions - 1)
+                            )
                 else:
                     action = pi[state]
                 next_state, reward, terminated, truncated, info = env.step(action)

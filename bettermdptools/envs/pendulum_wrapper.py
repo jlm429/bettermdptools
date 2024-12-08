@@ -4,7 +4,10 @@ BSD 3-Clause License
 """
 
 import gymnasium as gym
-from bettermdptools.envs.pendulum_discretized import DiscretizedPendulum  # Ensure this path is correct
+
+from bettermdptools.envs.pendulum_discretized import (
+    DiscretizedPendulum,
+)  # Ensure this path is correct
 
 
 class CustomTransformObservation(gym.ObservationWrapper):
@@ -50,11 +53,7 @@ class CustomTransformObservation(gym.ObservationWrapper):
 
 
 class PendulumWrapper(gym.Wrapper):
-    def __init__(self,
-                 env,
-                 angle_bins=11,
-                 angular_velocity_bins=11,
-                 torque_bins=11):
+    def __init__(self, env, angle_bins=11, angular_velocity_bins=11, torque_bins=11):
         """
         Pendulum wrapper that modifies the observation and action spaces and creates a transition/reward matrix P.
 
@@ -85,8 +84,12 @@ class PendulumWrapper(gym.Wrapper):
         self._get_action_value = self.discretized_pendulum.get_action_value
 
         # Wrap the environment's observation space
-        self.observation_space = gym.spaces.Discrete(self.discretized_pendulum.state_space)
-        self.env = CustomTransformObservation(env, self._transform_obs, self.observation_space)
+        self.observation_space = gym.spaces.Discrete(
+            self.discretized_pendulum.state_space
+        )
+        self.env = CustomTransformObservation(
+            env, self._transform_obs, self.observation_space
+        )
         self.gym_env = env
 
         # Override the action space to be discrete
@@ -113,7 +116,7 @@ class PendulumWrapper(gym.Wrapper):
         _transform_obs {lambda}
         """
         return self._transform_obs
-    
+
     @property
     def get_action_value(self):
         f = lambda action: [self._get_action_value(action)]
@@ -144,6 +147,7 @@ class PendulumWrapper(gym.Wrapper):
 
         return self.env.step([torque])
 
+
 def get_env_str(angle_bins, angular_velocity_bins, torque_bins):
     """
     Returns the environment string based on the discretization parameters.
@@ -158,7 +162,8 @@ def get_env_str(angle_bins, angular_velocity_bins, torque_bins):
     ----------------------------
     env_str {str}: The environment string.
     """
-    return f'pendulum_{angle_bins}_{angular_velocity_bins}_{torque_bins}'
+    return f"pendulum_{angle_bins}_{angular_velocity_bins}_{torque_bins}"
+
 
 def init_wrapper_env(angle_bins=11, angular_velocity_bins=11, torque_bins=11):
     """
@@ -174,13 +179,13 @@ def init_wrapper_env(angle_bins=11, angular_velocity_bins=11, torque_bins=11):
     ----------------------------
     pendulum_env {PendulumWrapper}: The Pendulum wrapper environment.
     """
-    pendulum_genv_train = gym.make('Pendulum-v1')
+    pendulum_genv_train = gym.make("Pendulum-v1")
 
     pendulum_train = PendulumWrapper(
         angle_bins=angle_bins,
         angular_velocity_bins=angular_velocity_bins,
         torque_bins=torque_bins,
-        env=pendulum_genv_train
+        env=pendulum_genv_train,
     )
 
     return pendulum_train
