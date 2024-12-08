@@ -158,7 +158,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_pendulum_q_learning(self):
-        Q, V, pi, Q_track, pi_track = RL(self.pendulum).q_learning(n_episodes=2)
+        Q, V, pi, Q_track, pi_track, rewards = RL(self.pendulum).q_learning(n_episodes=2)
         self.assertIsNotNone(Q, "Q-table should not be None")
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
