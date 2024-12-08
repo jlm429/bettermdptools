@@ -48,9 +48,11 @@ BSD 3-Clause License
 #     _A = 9
 """
 
-import gymnasium as gym
 import os
 import pickle
+
+import gymnasium as gym
+
 
 class CustomTransformObservation(gym.ObservationWrapper):
     def __init__(self, env, func, observation_space):
@@ -93,6 +95,7 @@ class CustomTransformObservation(gym.ObservationWrapper):
         """
         return self.func(observation)
 
+
 class BlackjackWrapper(gym.Wrapper):
     def __init__(self, env):
         """
@@ -110,14 +113,20 @@ class BlackjackWrapper(gym.Wrapper):
 
         """
         self._transform_obs = lambda obs: (
-            int(f"{28}{(obs[1] - 2) % 10}") if (obs[0] == 21 and obs[2])
-            else int(f"{27}{(obs[1] - 2) % 10}") if (obs[0] == 21 and not obs[2])
-            else int(f"{obs[0] + 6}{(obs[1] - 2) % 10}") if obs[2]
-            else int(f"{obs[0] - 4}{(obs[1] - 2) % 10}"))
-        env = CustomTransformObservation(env, self._transform_obs, gym.spaces.Discrete(290))
+            int(f"{28}{(obs[1] - 2) % 10}")
+            if (obs[0] == 21 and obs[2])
+            else int(f"{27}{(obs[1] - 2) % 10}")
+            if (obs[0] == 21 and not obs[2])
+            else int(f"{obs[0] + 6}{(obs[1] - 2) % 10}")
+            if obs[2]
+            else int(f"{obs[0] - 4}{(obs[1] - 2) % 10}")
+        )
+        env = CustomTransformObservation(
+            env, self._transform_obs, gym.spaces.Discrete(290)
+        )
         super().__init__(env)
         current_dir = os.path.dirname(__file__)
-        file_name = 'blackjack-envP.pickle'
+        file_name = "blackjack-envP.pickle"
         f = os.path.join(current_dir, file_name)
         with open(f, "rb") as f:
             self._P = pickle.load(f)
