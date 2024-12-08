@@ -6,16 +6,25 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     """
     Generates bin edges for a symmetric range with exponentially increasing/decreasing bin widths.
 
-    Parameters:
-    - range_limit (float): The extreme value of the range [-range_limit, range_limit].
-    - n_bins (int): Number of bins (must be odd).
-    - width_ratio (float): Ratio of the outermost bin widths to the central bin width.
-    - center (bool, default=True): 
-        - True: Outer bins are wider than the center bin.
-        - False: Center bin is wider than the outer bins.
+    PARAMETERS:
 
-    Returns:
-    - bin_edges (list of floats): The edges of the bins.
+    range_limit {float}: 
+        The extreme value of the range [-range_limit, range_limit].
+
+    n_bins {int}:
+        Number of bins (must be odd).
+    
+    width_ratio {float}: 
+        Ratio of the outermost bin widths to the central bin width.
+
+    center {bool, default=True}: 
+        True: Outer bins are wider than the center bin.
+        False: Center bin is wider than the outer bins.
+
+    RETURNS:
+
+    bin_edges {List[float]}, shape (n_bins + 1): 
+        The edges of the bins.
     """
 
     # Parameter validation
