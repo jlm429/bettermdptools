@@ -1,6 +1,7 @@
 """Enable changes to be compared to previous versions of the code."""
 
 import argparse
+import time
 
 import gymnasium as gym
 import numpy as np
@@ -121,17 +122,25 @@ def main():
         wrapper_class, gym_env_name = environments[env_name]
         env = wrapper_class(gym.make(gym_env_name, render_mode=None))
 
-        # Run and compare value iteration
+        # Run and time value iteration (original)
         print("Running value iteration (original)...")
+        start_time = time.time()
         V1, V_track1, pi1 = run_value_iteration(
             env, n_iters=args.n_iters, vectorized=False, dtype=dtype
         )
+        original_time = time.time() - start_time
+        print(f"Original value iteration time: {original_time:.4f} seconds")
 
+        # Run and time value iteration (vectorized)
         print("Running value iteration (vectorized)...")
+        start_time = time.time()
         V2, V_track2, pi2 = run_value_iteration(
             env, n_iters=args.n_iters, vectorized=True, dtype=dtype
         )
+        vectorized_time = time.time() - start_time
+        print(f"Vectorized value iteration time: {vectorized_time:.4f} seconds")
 
+        # Compare outputs
         print("Comparing value iteration outputs...")
         try:
             compare_outputs(V1, V_track1, pi1, V2, V_track2, pi2)
