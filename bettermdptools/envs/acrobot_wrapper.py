@@ -50,8 +50,7 @@ class AcrobotWrapper(gym.Wrapper):
                 angular_vel_resolution_rad_per_sec = 0.05,
                 angle_bins = None,
                 velocity_bins = None,
-                precomputed_P = None,
-                timestep_sec = 0.1):
+                precomputed_P = None):
       """
       Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
 
@@ -68,8 +67,7 @@ class AcrobotWrapper(gym.Wrapper):
                                 angular_vel_resolution_rad_per_sec = angular_vel_resolution_rad_per_sec,
                                 angle_bins=angle_bins,
                                 velocity_bins=velocity_bins,
-                                precomputed_P = precomputed_P,
-                                timestep_sec=timestep_sec)
+                                precomputed_P = precomputed_P)
       self._P = acro.P
       self._transform_obs = acro.transform_obs
       env = CustomTransformObservation(env, self._transform_obs, gym.spaces.Discrete(acro.n_states))
