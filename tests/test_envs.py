@@ -33,7 +33,7 @@ class TestEnvs(unittest.TestCase):
         # instantiate here so setup isn't slow every test
         base_env = gym.make("Acrobot-v1", render_mode=None)
         acrobot = AcrobotWrapper(base_env, angle_bins=2, velocity_bins=2)
-        V, V_track, pi = Planner(acrobot.P).value_iteration(n_iters=1)
+        V, V_track, pi = Planner(acrobot.P).value_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -42,7 +42,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_blackjack_value_iteration(self):
-        V, V_track, pi = Planner(self.blackjack.P).value_iteration(n_iters=1)
+        V, V_track, pi = Planner(self.blackjack.P).value_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -51,7 +51,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_cartpole_value_iteration(self):
-        V, V_track, pi = Planner(self.cartpole.P).value_iteration(n_iters=1)
+        V, V_track, pi = Planner(self.cartpole.P).value_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -60,7 +60,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_fl_value_iteration(self):
-        V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=1)
+        V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -69,7 +69,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_taxi_value_iteration(self):
-        V, V_track, pi = Planner(self.taxi.P).value_iteration(n_iters=1)
+        V, V_track, pi = Planner(self.taxi.P).value_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -97,7 +97,7 @@ class TestEnvs(unittest.TestCase):
     #     self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_blackjack_policy_iteration(self):
-        V, V_track, pi = Planner(self.blackjack.P).policy_iteration(n_iters=1)
+        V, V_track, pi = Planner(self.blackjack.P).policy_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -116,7 +116,7 @@ class TestEnvs(unittest.TestCase):
     #     self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_fl_policy_iteration(self):
-        V, V_track, pi = Planner(self.frozen_lake.P).policy_iteration(n_iters=1)
+        V, V_track, pi = Planner(self.frozen_lake.P).policy_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
