@@ -46,6 +46,7 @@ class CustomTransformObservation(gym.ObservationWrapper):
 
 
 class AcrobotWrapper(gym.Wrapper):
+<<<<<<< HEAD
     def __init__(
         self,
         env,
@@ -82,6 +83,36 @@ class AcrobotWrapper(gym.Wrapper):
             env, self._transform_obs, gym.spaces.Discrete(acro.n_states)
         )
         super().__init__(env)
+=======
+  def __init__(self,
+                env,
+                angular_resolution_rad = 0.01,
+                angular_vel_resolution_rad_per_sec = 0.05,
+                angle_bins = None,
+                velocity_bins = None,
+                precomputed_P = None):
+      """
+      Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
+
+      Parameters
+      ----------------------------
+      env {gymnasium.Env}: Base environment
+      position_bins (int): Number of discrete bins for the cart's position.
+      velocity_bins (int): Number of discrete bins for the cart's velocity.
+      angular_velocity_bins (int): Number of discrete bins for the pole's angular velocity.
+      angular_center_resolution (float): The resolution of angle bins near the center (around zero).
+      angular_outer_resolution (float): The resolution of angle bins away from the center.
+      """
+      acro = DiscretizedAcrobot(angular_resolution_rad=angular_resolution_rad,
+                                angular_vel_resolution_rad_per_sec = angular_vel_resolution_rad_per_sec,
+                                angle_bins=angle_bins,
+                                velocity_bins=velocity_bins,
+                                precomputed_P = precomputed_P)
+      self._P = acro.P
+      self._transform_obs = acro.transform_obs
+      env = CustomTransformObservation(env, self._transform_obs, gym.spaces.Discrete(acro.n_states))
+      super().__init__(env)
+>>>>>>> 98af5708370d26092f8aea084f2fb65eb39317d4
 
     @property
     def P(self):
