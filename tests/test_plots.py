@@ -1,9 +1,11 @@
 import unittest
+import warnings
+
 import gymnasium as gym
+import numpy as np
+
 from bettermdptools.algorithms.planner import Planner
 from bettermdptools.utils.plots import Plots
-import numpy as np
-import warnings
 
 
 class TestPlots(unittest.TestCase):
@@ -20,7 +22,9 @@ class TestPlots(unittest.TestCase):
 
         # Check if the values heat map function runs without errors
         try:
-            Plots.values_heat_map(V, "Frozen Lake\nValue Iteration State Values", size)
+            Plots.values_heat_map(
+                V, "Frozen Lake\nValue Iteration State Values", size, show=False
+            )
         except Exception as e:
             self.fail(f"values_heat_map raised an exception: {e}")
 
@@ -33,7 +37,9 @@ class TestPlots(unittest.TestCase):
         # Check if the v_iters_plot function runs without errors
         try:
             Plots.v_iters_plot(
-                max_value_per_iter, "Frozen Lake\nMean Value v Iterations"
+                max_value_per_iter,
+                "Frozen Lake\nMean Value v Iterations",
+                show=False,
             )
         except Exception as e:
             self.fail(f"v_iters_plot raised an exception: {e}")
@@ -48,7 +54,7 @@ class TestPlots(unittest.TestCase):
 
         # Check if the v_iters_plot function runs without errors
         try:
-            Plots.plot_policy(val_max, policy_map, fl_map_size, title)
+            Plots.plot_policy(val_max, policy_map, fl_map_size, title, show=False)
         except Exception as e:
             self.fail(f"v_iters_plot raised an exception: {e}")
 

@@ -24,6 +24,7 @@ Model-based learning algorithms: Value Iteration and Policy Iteration
 import warnings
 
 import numpy as np
+from tqdm.auto import tqdm
 
 
 class Planner:
@@ -64,10 +65,8 @@ class Planner:
         """
         V = np.zeros(len(self.P), dtype=dtype)
         V_track = np.zeros((n_iters, len(self.P)), dtype=dtype)
-        i = 0
         converged = False
-        while i < n_iters - 1 and not converged:
-            i += 1
+        for i in tqdm(range(n_iters), leave=False):
             Q = np.zeros((len(self.P), len(self.P[0])), dtype=dtype)
             for s in range(len(self.P)):
                 for a in range(len(self.P[s])):
@@ -77,6 +76,8 @@ class Planner:
                 converged = True
             V = np.max(Q, axis=1)
             V_track[i] = V
+            if converged:
+                break
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
 
@@ -136,14 +137,10 @@ class Planner:
         V = np.zeros(S, dtype=dtype)
         V_track = np.zeros((n_iters, S), dtype=dtype)
         converged = False
-        i = 0
-
         # Simpler way to handle done states
         not_done_array = 1 - done_array
 
-        while i < n_iters - 1 and not converged:
-            i += 1
-
+        for i in tqdm(range(n_iters), leave=False):
             Q = np.sum(
                 prob_array
                 * (reward_array + gamma * V[next_state_array] * not_done_array)
@@ -157,6 +154,9 @@ class Planner:
 
             V = V_new
             V_track[i] = V
+
+            if converged:
+                break
 
         if not converged:
             warnings.warn("Max iterations reached before convergence. Check n_iters.")
@@ -192,16 +192,15 @@ class Planner:
         # initial V to give to `policy_evaluation` for the first time
         V = np.zeros(len(self.P), dtype=dtype)
         V_track = np.zeros((n_iters, len(self.P)), dtype=dtype)
-        i = 0
         converged = False
-        while i < n_iters - 1 and not converged:
-            i += 1
+        for i in tqdm(range(n_iters), leave=False):
             old_pi = pi
             V = self.policy_evaluation(pi, V, gamma=gamma, theta=theta, dtype=dtype)
             V_track[i] = V
             pi = self.policy_improvement(V, gamma=gamma, dtype=dtype)
             if old_pi == pi:
                 converged = True
+                break
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
         return V, V_track, pi
@@ -225,7 +224,8 @@ class Planner:
         -------
         np.ndarray
             State values array.
-        """while True:
+        """
+        while True:
             V = np.zeros(len(self.P), dtype=dtype)
             for s in range(len(self.P)):
                 for prob, next_state, reward, done in self.P[s][pi[s]]:
