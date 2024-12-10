@@ -57,33 +57,27 @@ class RL:
         init_value, min_value, decay_ratio, max_steps, log_start=-2, log_base=10
     ):
         """
+        Generates a decay schedule for a given initial value.
+
         Parameters
-        ----------------------------
-        init_value {float}:
-            Initial value of the quantity being decayed
-
-        min_value {float}:
-            Minimum value init_value is allowed to decay to
-
-        decay_ratio {float}:
+        ----------
+        init_value : float
+            Initial value of the quantity being decayed.
+        min_value : float
+            Minimum value init_value is allowed to decay to.
+        decay_ratio : float
             The exponential factor exp(decay_ratio).
-            Updated decayed value is calculated as
-
-        max_steps {int}:
-            Max iteration steps for decaying init_value
-
-        log_start {array-like}, default = -2:
-            Starting value of the decay sequence.
-            Default value starts it at 0.01
-
-        log_base {array-like}, default = 10:
-            Base of the log space.
-
+        max_steps : int
+            Max iteration steps for decaying init_value.
+        log_start : float, optional
+            Starting value of the decay sequence, by default -2.
+        log_base : float, optional
+            Base of the log space, by default 10.
 
         Returns
-        ----------------------------
-        values {array-like}, shape(max_steps):
-            Decay values where values[i] is the value used at i-th step
+        -------
+        np.ndarray
+            Decay values where values[i] is the value used at i-th step.
         """
         decay_steps = int(max_steps * decay_ratio)
         rem_steps = max_steps - decay_steps
@@ -110,59 +104,48 @@ class RL:
         n_episodes=10000,
     ):
         """
+        Q-Learning algorithm.
+
         Parameters
-        ----------------------------
-        nS {int}:
-            Number of states
-
-        nA {int}:
-            Number of available actions
-
-        convert_state_obs {lambda}:
-            Converts state into an integer
-
-        gamma {float}, default = 0.99:
-            Discount factor
-
-        init_alpha {float}, default = 0.5:
-            Learning rate
-
-        min_alpha {float}, default = 0.01:
-            Minimum learning rate
-
-        alpha_decay_ratio {float}, default = 0.5:
-            Decay schedule of learing rate for future iterations
-
-        init_epsilon {float}, default = 1.0:
-            Initial epsilon value for epsilon greedy strategy.
-            Chooses max(Q) over available actions with probability 1-epsilon.
-
-        min_epsilon {float}, default = 0.1:
-            Minimum epsilon. Used to balance exploration in later stages.
-
-        epsilon_decay_ratio {float}, default = 0.9:
-            Decay schedule of epsilon for future iterations
-
-        n_episodes {int}, default = 10000:
-            Number of episodes for the agent
-
+        ----------
+        nS : int, optional
+            Number of states, by default None.
+        nA : int, optional
+            Number of available actions, by default None.
+        convert_state_obs : function, optional
+            Converts state into an integer, by default lambda state: state.
+        gamma : float, optional
+            Discount factor, by default 0.99.
+        init_alpha : float, optional
+            Initial learning rate, by default 0.5.
+        min_alpha : float, optional
+            Minimum learning rate, by default 0.01.
+        alpha_decay_ratio : float, optional
+            Decay schedule of learning rate for future iterations, by default 0.5.
+        init_epsilon : float, optional
+            Initial epsilon value for epsilon greedy strategy, by default 1.0.
+        min_epsilon : float, optional
+            Minimum epsilon, by default 0.1.
+        epsilon_decay_ratio : float, optional
+            Decay schedule of epsilon for future iterations, by default 0.9.
+        n_episodes : int, optional
+            Number of episodes for the agent, by default 10000.
 
         Returns
-        ----------------------------
-        Q {numpy array}, shape(nS, nA):
-            Final action-value function Q(s,a)
-
-        pi {lambda}, input state value, output action value:
-            Policy mapping states to actions.
-
-        V {numpy array}, shape(nS):
-            State values array
-
-        Q_track {numpy array}, shape(n_episodes, nS, nA):
-            Log of Q(s,a) for each episode
-
-        pi_track {list}, len(n_episodes):
-            Log of complete policy for each episode
+        -------
+        tuple
+            Q : np.ndarray
+                Final action-value function Q(s,a).
+            V : np.ndarray
+                State values array.
+            pi : dict
+                Policy mapping states to actions.
+            Q_track : np.ndarray
+                Log of Q(s,a) for each episode.
+            pi_track : list
+                Log of complete policy for each episode.
+            rewards : np.ndarray
+                Rewards obtained in each episode.
         """
         if nS is None:
             nS = self.env.observation_space.n
@@ -228,59 +211,48 @@ class RL:
         n_episodes=10000,
     ):
         """
+        SARSA algorithm.
+
         Parameters
-        ----------------------------
-        nS {int}:
-            Number of states
-
-        nA {int}:
-            Number of available actions
-
-        convert_state_obs {lambda}:
-            Converts state into an integer
-
-        gamma {float}, default = 0.99:
-            Discount factor
-
-        init_alpha {float}, default = 0.5:
-            Learning rate
-
-        min_alpha {float}, default = 0.01:
-            Minimum learning rate
-
-        alpha_decay_ratio {float}, default = 0.5:
-            Decay schedule of learing rate for future iterations
-
-        init_epsilon {float}, default = 1.0:
-            Initial epsilon value for epsilon greedy strategy.
-            Chooses max(Q) over available actions with probability 1-epsilon.
-
-        min_epsilon {float}, default = 0.1:
-            Minimum epsilon. Used to balance exploration in later stages.
-
-        epsilon_decay_ratio {float}, default = 0.9:
-            Decay schedule of epsilon for future iterations
-
-        n_episodes {int}, default = 10000:
-            Number of episodes for the agent
-
+        ----------
+        nS : int, optional
+            Number of states, by default None.
+        nA : int, optional
+            Number of available actions, by default None.
+        convert_state_obs : function, optional
+            Converts state into an integer, by default lambda state: state.
+        gamma : float, optional
+            Discount factor, by default 0.99.
+        init_alpha : float, optional
+            Initial learning rate, by default 0.5.
+        min_alpha : float, optional
+            Minimum learning rate, by default 0.01.
+        alpha_decay_ratio : float, optional
+            Decay schedule of learning rate for future iterations, by default 0.5.
+        init_epsilon : float, optional
+            Initial epsilon value for epsilon greedy strategy, by default 1.0.
+        min_epsilon : float, optional
+            Minimum epsilon, by default 0.1.
+        epsilon_decay_ratio : float, optional
+            Decay schedule of epsilon for future iterations, by default 0.9.
+        n_episodes : int, optional
+            Number of episodes for the agent, by default 10000.
 
         Returns
-        ----------------------------
-        Q {numpy array}, shape(nS, nA):
-            Final action-value function Q(s,a)
-
-        pi {lambda}, input state value, output action value:
-            Policy mapping states to actions.
-
-        V {numpy array}, shape(nS):
-            State values array
-
-        Q_track {numpy array}, shape(n_episodes, nS, nA):
-            Log of Q(s,a) for each episode
-
-        pi_track {list}, len(n_episodes):
-            Log of complete policy for each episode
+        -------
+        tuple
+            Q : np.ndarray
+                Final action-value function Q(s,a).
+            V : np.ndarray
+                State values array.
+            pi : dict
+                Policy mapping states to actions.
+            Q_track : np.ndarray
+                Log of Q(s,a) for each episode.
+            pi_track : list
+                Log of complete policy for each episode.
+            rewards : np.ndarray
+                Rewards obtained in each episode.
         """
         if nS is None:
             nS = self.env.observation_space.n

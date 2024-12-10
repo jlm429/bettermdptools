@@ -4,7 +4,6 @@ BSD 3-Clause License
 """
 
 import gymnasium as gym
-
 from bettermdptools.envs.pendulum_discretized import (
     DiscretizedPendulum,
 )  # Ensure this path is correct
@@ -19,14 +18,12 @@ class CustomTransformObservation(gym.ObservationWrapper):
         to set both the conversion function and new observation space.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}:
+        ----------
+        env : gymnasium.Env
             Base environment to be wrapped
-
-        func {lambda}:
+        func : lambda
             Function that converts the observation
-
-        observation_space {gymnasium.spaces.Space}:
+        observation_space : gymnasium.spaces.Space
             New observation space
         """
         super().__init__(env)
@@ -40,13 +37,13 @@ class CustomTransformObservation(gym.ObservationWrapper):
         which is passed back to the user.
 
         Parameters
-        ----------------------------
-        observation {Tuple}:
+        ----------
+        observation : Tuple
             Base environment observation tuple
 
         Returns
-        ----------------------------
-        func(observation) {int}:
+        -------
+        int
             The converted observation (int).
         """
         return self.func(observation)
@@ -58,14 +55,15 @@ class PendulumWrapper(gym.Wrapper):
         Pendulum wrapper that modifies the observation and action spaces and creates a transition/reward matrix P.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}: Base environment
-        angle_bins (int): Number of discrete bins for the pendulum's angle.
-        angular_velocity_bins (int): Number of discrete bins for the pendulum's angular velocity.
-        action_bins (int): Number of discrete bins for the torque action.
-        angular_center_resolution (float): The resolution of angle bins near the center (around zero).
-        angular_outer_resolution (float): The resolution of angle bins away from the center.
-        torque_range (tuple): The minimum and maximum torque values.
+        ----------
+        env : gymnasium.Env
+            Base environment
+        angle_bins : int
+            Number of discrete bins for the pendulum's angle.
+        angular_velocity_bins : int
+            Number of discrete bins for the pendulum's angular velocity.
+        torque_bins : int
+            Number of discrete bins for the torque action.
         """
         super().__init__(env)
 
@@ -101,8 +99,8 @@ class PendulumWrapper(gym.Wrapper):
         Returns the transition probability matrix.
 
         Returns
-        ----------------------------
-        _P {dict}
+        -------
+        dict
         """
         return self._P
 
@@ -112,8 +110,8 @@ class PendulumWrapper(gym.Wrapper):
         Returns the observation transformation function.
 
         Returns
-        ----------------------------
-        _transform_obs {lambda}
+        -------
+        lambda
         """
         return self._transform_obs
 
@@ -127,19 +125,19 @@ class PendulumWrapper(gym.Wrapper):
         Takes a discrete action, maps it to a continuous torque, and interacts with the environment.
 
         Parameters
-        ----------------------------
-        action {int}:
+        ----------
+        action : int
             The discrete action index.
 
         Returns
-        ----------------------------
-        state {int}:
+        -------
+        int
             The discretized next state index.
-        reward {float}:
+        float
             The reward obtained from the environment.
-        done {bool}:
+        bool
             Whether the episode has terminated.
-        info {dict}:
+        dict
             Additional information from the environment.
         """
         # Map discrete action to continuous torque
@@ -153,14 +151,18 @@ def get_env_str(angle_bins, angular_velocity_bins, torque_bins):
     Returns the environment string based on the discretization parameters.
 
     Parameters
-    ----------------------------
-    angle_bins (int): Number of discrete bins for the pendulum's angle.
-    angular_velocity_bins (int): Number of discrete bins for the pendulum's angular velocity.
-    action_bins (int): Number of discrete bins for the torque action.
+    ----------
+    angle_bins : int
+        Number of discrete bins for the pendulum's angle.
+    angular_velocity_bins : int
+        Number of discrete bins for the pendulum's angular velocity.
+    torque_bins : int
+        Number of discrete bins for the torque action.
 
     Returns
-    ----------------------------
-    env_str {str}: The environment string.
+    -------
+    str
+        The environment string.
     """
     return f"pendulum_{angle_bins}_{angular_velocity_bins}_{torque_bins}"
 
@@ -170,14 +172,18 @@ def init_wrapper_env(angle_bins=11, angular_velocity_bins=11, torque_bins=11):
     Initializes the Pendulum wrapper environment.
 
     Parameters
-    ----------------------------
-    angle_bins (int): Number of discrete bins for the pendulum's angle.
-    angular_velocity_bins (int): Number of discrete bins for the pendulum's angular velocity.
-    torque_bins (int): Number of discrete bins for the torque action.
+    ----------
+    angle_bins : int
+        Number of discrete bins for the pendulum's angle.
+    angular_velocity_bins : int
+        Number of discrete bins for the pendulum's angular velocity.
+    torque_bins : int
+        Number of discrete bins for the torque action.
 
     Returns
-    ----------------------------
-    pendulum_env {PendulumWrapper}: The Pendulum wrapper environment.
+    -------
+    PendulumWrapper
+        The Pendulum wrapper environment.
     """
     pendulum_genv_train = gym.make("Pendulum-v1")
 

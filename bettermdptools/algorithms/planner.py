@@ -34,7 +34,8 @@ class Planner:
         Parameters
         ----------
         P : dict
-            Transition probability matrix.
+            Transition probability matrix where P[state][action] is a list of tuples
+            (probability, next state, reward, terminal).
         """
         self.P = P
 
@@ -54,7 +55,12 @@ class Planner:
         Returns
         -------
         tuple
-            State values array, log of V(s) for each iteration, and policy mapping states to actions.
+            V : np.ndarray
+                State values array.
+            V_track : np.ndarray
+                Log of V(s) for each iteration.
+            pi : dict
+                Policy mapping states to actions.
         """
         V = np.zeros(len(self.P), dtype=np.float64)
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
@@ -93,7 +99,12 @@ class Planner:
         Returns
         -------
         tuple
-            State values array, log of V(s) for each iteration, and policy mapping states to actions.
+            V : np.ndarray
+                State values array.
+            V_track : np.ndarray
+                Log of V(s) for each iteration.
+            pi : dict
+                Policy mapping states to actions.
         """
         random_actions = np.random.choice(tuple(self.P[0].keys()), len(self.P))
 

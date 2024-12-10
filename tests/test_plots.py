@@ -7,13 +7,12 @@ import warnings
 
 
 class TestPlots(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         # Suppress warnings during test setup
-        warnings.filterwarnings('ignore')
+        warnings.filterwarnings("ignore")
 
-        cls.frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
+        cls.frozen_lake = gym.make("FrozenLake8x8-v1", render_mode=None)
 
     def test_value_iteration_heatmap(self):
         V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
@@ -29,11 +28,13 @@ class TestPlots(unittest.TestCase):
         V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=100)
 
         # Clip trailing zeros in case convergence is reached before max iterations
-        max_value_per_iter = np.trim_zeros(np.mean(V_track, axis=1), 'b')
+        max_value_per_iter = np.trim_zeros(np.mean(V_track, axis=1), "b")
 
         # Check if the v_iters_plot function runs without errors
         try:
-            Plots.v_iters_plot(max_value_per_iter, "Frozen Lake\nMean Value v Iterations")
+            Plots.v_iters_plot(
+                max_value_per_iter, "Frozen Lake\nMean Value v Iterations"
+            )
         except Exception as e:
             self.fail(f"v_iters_plot raised an exception: {e}")
 
@@ -52,5 +53,5 @@ class TestPlots(unittest.TestCase):
             self.fail(f"v_iters_plot raised an exception: {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

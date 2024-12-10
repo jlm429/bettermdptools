@@ -11,17 +11,17 @@ Bettermdptools includes planning and reinforcement learning algorithms, useful u
 
 pip install or git clone bettermdptools.   
 
-```
+```bash
 pip install bettermdptools
 ```
 
-```
+```bash
 git clone https://github.com/jlm429/bettermdptools
 ```
 
 Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](notebooks/) for more.  
 
-```
+```python
 import gymnasium as gym
 from bettermdptools.algorithms.planner import Planner
 from bettermdptools.utils.plots import Plots
@@ -45,13 +45,12 @@ In order to document our code, we use [pdoc](https://pdoc.dev/) (NOT `pdoc3`). T
 
 To generate new docs, run:
 ```bash
-pdoc --include-undocumented -d numpy --output-dir docs bettermdptools
+pdoc --include-undocumented -d numpy -t docs-templates --output-dir docs bettermdptools
 ```
-
 
 ## Contributing
 
-Pull requests are welcome.  
+Pull requests are welcome. All docstrings should be numpy-style so they are parse-able by our autodocumentation tool.
 
 * Fork bettermdptools.
 * Create a branch (`git checkout -b branch_name`)

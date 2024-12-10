@@ -17,15 +17,13 @@ class CustomTransformObservation(gym.ObservationWrapper):
         to set both the conversion function and new observation space.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}:
-            Base environment to be wrapped
-
-        func {lambda}:
-            Function that converts the observation
-
-        observation_space {gymnasium.spaces.Space}:
-            New observation space
+        ----------
+        env : gymnasium.Env
+            Base environment to be wrapped.
+        func : lambda
+            Function that converts the observation.
+        observation_space : gymnasium.spaces.Space
+            New observation space.
         """
         super().__init__(env)
         if observation_space is not None:
@@ -38,14 +36,14 @@ class CustomTransformObservation(gym.ObservationWrapper):
         which is passed back to the user.
 
         Parameters
-        ----------------------------
-        observation {Tuple}:
-            Base environment observation tuple
+        ----------
+        observation : Tuple
+            Base environment observation tuple.
 
         Returns
-        ----------------------------
-        func(observation) {int}:
-            The converted observation (int).
+        -------
+        int
+            The converted observation.
         """
         return self.func(observation)
 
@@ -64,13 +62,19 @@ class CartpoleWrapper(gym.Wrapper):
         Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}: Base environment
-        position_bins (int): Number of discrete bins for the cart's position.
-        velocity_bins (int): Number of discrete bins for the cart's velocity.
-        angular_velocity_bins (int): Number of discrete bins for the pole's angular velocity.
-        angular_center_resolution (float): The resolution of angle bins near the center (around zero).
-        angular_outer_resolution (float): The resolution of angle bins away from the center.
+        ----------
+        env : gymnasium.Env
+            Base environment.
+        position_bins : int, optional
+            Number of discrete bins for the cart's position.
+        velocity_bins : int, optional
+            Number of discrete bins for the cart's velocity.
+        angular_velocity_bins : int, optional
+            Number of discrete bins for the pole's angular velocity.
+        angular_center_resolution : float, optional
+            The resolution of angle bins near the center (around zero).
+        angular_outer_resolution : float, optional
+            The resolution of angle bins away from the center.
         """
         dpole = DiscretizedCartPole(
             position_bins=position_bins,
@@ -90,8 +94,9 @@ class CartpoleWrapper(gym.Wrapper):
     def P(self):
         """
         Returns
-        ----------------------------
-        _P {dict}
+        -------
+        dict
+            Transition/reward matrix.
         """
         return self._P
 
@@ -99,7 +104,8 @@ class CartpoleWrapper(gym.Wrapper):
     def transform_obs(self):
         """
         Returns
-        ----------------------------
-        _transform_obs {lambda}
+        -------
+        lambda
+            Function that converts the observation.
         """
         return self._transform_obs

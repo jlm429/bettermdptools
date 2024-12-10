@@ -63,15 +63,13 @@ class CustomTransformObservation(gym.ObservationWrapper):
         to set both the conversion function and new observation space.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}:
-            Blackjack base environment to be wrapped
-
-        func {lambda}:
-            Function that converts the observation
-
-        observation_space {gymnasium.spaces.Space}:
-            New observation space
+        ----------
+        env : gymnasium.Env
+            Blackjack base environment to be wrapped.
+        func : lambda
+            Function that converts the observation.
+        observation_space : gymnasium.spaces.Space
+            New observation space.
         """
         super().__init__(env)
         if observation_space is not None:
@@ -84,14 +82,14 @@ class CustomTransformObservation(gym.ObservationWrapper):
         which is passed back to the user.
 
         Parameters
-        ----------------------------
-        observation {Tuple}:
-            Blackjack base environment observation tuple
+        ----------
+        observation : Tuple
+            Blackjack base environment observation tuple.
 
         Returns
-        ----------------------------
-        func(observation) {int}:
-            The converted observation (290 discrete observable states)
+        -------
+        int
+            The converted observation (290 discrete observable states).
         """
         return self.func(observation)
 
@@ -102,15 +100,14 @@ class BlackjackWrapper(gym.Wrapper):
         Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}:
-            Blackjack base environment
+        ----------
+        env : gymnasium.Env
+            Blackjack base environment.
 
         Explanation of _transform_obs lambda:
         Lambda function assigned to the variable `self._convert_state_obs` takes parameter, `state` and
         converts the input into a compact single integer value by concatenating player hand with dealer card.
         See comments above for further information.
-
         """
         self._transform_obs = lambda obs: (
             int(f"{28}{(obs[1] - 2) % 10}")
@@ -135,8 +132,9 @@ class BlackjackWrapper(gym.Wrapper):
     def P(self):
         """
         Returns
-        ----------------------------
-        _P {dict}
+        -------
+        dict
+            Transition/reward matrix.
         """
         return self._P
 
@@ -144,7 +142,8 @@ class BlackjackWrapper(gym.Wrapper):
     def transform_obs(self):
         """
         Returns
-        ----------------------------
-        _transform_obs {lambda}
+        -------
+        lambda
+            Function that converts the observation.
         """
         return self._transform_obs

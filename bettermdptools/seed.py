@@ -8,6 +8,18 @@ SEED = None
 
 
 def set_seed(seed: int) -> None:
+    """
+    Set the seed for reproducibility.
+
+    Parameters
+    ----------
+    seed : int
+        The seed value to set.
+
+    Returns
+    -------
+    None
+    """
     global SEED
     SEED = seed
     os.environ["PYTHONHASHSEED"] = str(SEED)
