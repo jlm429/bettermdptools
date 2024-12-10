@@ -24,7 +24,6 @@ Model-based learning algorithms: Value Iteration and Policy Iteration
 import warnings
 
 import numpy as np
-from tqdm.auto import tqdm
 
 
 class Planner:
@@ -65,8 +64,10 @@ class Planner:
         """
         V = np.zeros(len(self.P), dtype=dtype)
         V_track = np.zeros((n_iters, len(self.P)), dtype=dtype)
+        i = 0
         converged = False
-        for i in tqdm(range(n_iters), leave=False):
+        while i < n_iters - 1 and not converged:
+            i += 1
             Q = np.zeros((len(self.P), len(self.P[0])), dtype=dtype)
             for s in range(len(self.P)):
                 for a in range(len(self.P[s])):
@@ -139,8 +140,10 @@ class Planner:
         converged = False
         # Simpler way to handle done states
         not_done_array = 1 - done_array
-
-        for i in tqdm(range(n_iters), leave=False):
+        i = 0
+        converged = False
+        while i < n_iters - 1 and not converged:
+            i += 1
             Q = np.sum(
                 prob_array
                 * (reward_array + gamma * V[next_state_array] * not_done_array)
@@ -192,8 +195,10 @@ class Planner:
         # initial V to give to `policy_evaluation` for the first time
         V = np.zeros(len(self.P), dtype=dtype)
         V_track = np.zeros((n_iters, len(self.P)), dtype=dtype)
+        i = 0
         converged = False
-        for i in tqdm(range(n_iters), leave=False):
+        while i < n_iters - 1 and not converged:
+            i += 1
             old_pi = pi
             V = self.policy_evaluation(pi, V, gamma=gamma, theta=theta, dtype=dtype)
             V_track[i] = V
