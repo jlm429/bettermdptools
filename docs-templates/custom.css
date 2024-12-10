@@ -1,0 +1,15 @@
+/* 
+You can provide additional CSS rules by adding a `custom.css` file in your template directory.
+*/
+
+
+.modulename {
+    /* slightly darker blue */
+    color: #669df6;
+}
+
+.google {
+    font-family: 'Product Sans', sans-serif;
+    color: #8ab4f8; /* Light blue */
+    background-color: #2e2e2e; /* Mostly dark background */
+}
