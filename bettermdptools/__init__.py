@@ -29,5 +29,5 @@ https://github.com/jlm429/bettermdptools
 
 - [Utils](./bettermdptools/utils.html): Utility functions and classes used across the library.
 - [Envs](./bettermdptools/envs.html): Environment wrappers and models for various reinforcement learning environments.
-- [Algorithms](/bettermdptools/algorithms.html): Implementations of various reinforcement learning and planning algorithms.
+- [Algorithms](./bettermdptools/algorithms.html): Implementations of various reinforcement learning and planning algorithms.
 """
