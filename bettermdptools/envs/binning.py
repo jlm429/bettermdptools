@@ -1,30 +1,30 @@
 """
-Generated using ChatGPT.
+Utility functions for generating bin edges for discretizing continuous variables.
 """
 
 def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
-    """
-    Generates bin edges for a symmetric range with exponentially increasing/decreasing bin widths.
+    """Generates bin edges for a symmetric range with exponentially increasing/decreasing bin widths.
 
-    PARAMETERS:
-
-    range_limit {float}: 
+    Parameters
+    ----------
+    range_limit : float
         The extreme value of the range [-range_limit, range_limit].
 
-    n_bins {int}:
+    n_bins : int
         Number of bins (must be odd).
     
-    width_ratio {float}: 
+    width_ratio : float
         Ratio of the outermost bin widths to the central bin width.
 
-    center {bool, default=True}: 
+    center : bool, default=True
         True: Outer bins are wider than the center bin.
         False: Center bin is wider than the outer bins.
 
-    RETURNS:
+    Returns
+    -------
 
-    bin_edges {List[float]}, shape (n_bins + 1): 
-        The edges of the bins.
+    bin_edges : list of float
+        The edges of the bins. Shape (n_bins + 1)
     """
 
     # Parameter validation

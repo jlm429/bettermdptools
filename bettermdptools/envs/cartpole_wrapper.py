@@ -4,7 +4,7 @@ BSD 3-Clause License
 """
 
 import gymnasium as gym
-import numpy as np
+
 from bettermdptools.envs.cartpole_model import DiscretizedCartPole
 
 
@@ -17,15 +17,13 @@ class CustomTransformObservation(gym.ObservationWrapper):
         to set both the conversion function and new observation space.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}:
-            Base environment to be wrapped
-
-        func {lambda}:
-            Function that converts the observation
-
-        observation_space {gymnasium.spaces.Space}:
-            New observation space
+        ----------
+        env : gymnasium.Env
+            Base environment to be wrapped.
+        func : lambda
+            Function that converts the observation.
+        observation_space : gymnasium.spaces.Space
+            New observation space.
         """
         super().__init__(env)
         if observation_space is not None:
@@ -38,54 +36,67 @@ class CustomTransformObservation(gym.ObservationWrapper):
         which is passed back to the user.
 
         Parameters
-        ----------------------------
-        observation {Tuple}:
-            Base environment observation tuple
+        ----------
+        observation : Tuple
+            Base environment observation tuple.
 
         Returns
-        ----------------------------
-        func(observation) {int}:
-            The converted observation (int).
+        -------
+        int
+            The converted observation.
         """
         return self.func(observation)
 
 
 class CartpoleWrapper(gym.Wrapper):
-    def __init__(self,
-                 env,
-                 position_bins=10,
-                 velocity_bins=10,
-                 angular_velocity_bins=10,
-                 angular_center_resolution=.1,
-                 angular_outer_resolution=.5):
+    def __init__(
+        self,
+        env,
+        position_bins=10,
+        velocity_bins=10,
+        angular_velocity_bins=10,
+        angular_center_resolution=0.1,
+        angular_outer_resolution=0.5,
+    ):
         """
         Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
 
         Parameters
-        ----------------------------
-        env {gymnasium.Env}: Base environment
-        position_bins (int): Number of discrete bins for the cart's position.
-        velocity_bins (int): Number of discrete bins for the cart's velocity.
-        angular_velocity_bins (int): Number of discrete bins for the pole's angular velocity.
-        angular_center_resolution (float): The resolution of angle bins near the center (around zero).
-        angular_outer_resolution (float): The resolution of angle bins away from the center.
+        ----------
+        env : gymnasium.Env
+            Base environment.
+        position_bins : int, optional
+            Number of discrete bins for the cart's position.
+        velocity_bins : int, optional
+            Number of discrete bins for the cart's velocity.
+        angular_velocity_bins : int, optional
+            Number of discrete bins for the pole's angular velocity.
+        angular_center_resolution : float, optional
+            The resolution of angle bins near the center (around zero).
+        angular_outer_resolution : float, optional
+            The resolution of angle bins away from the center.
         """
-        dpole = DiscretizedCartPole(position_bins=position_bins,
-                                    velocity_bins=velocity_bins,
-                                    angular_velocity_bins=angular_velocity_bins,
-                                    angular_center_resolution=angular_center_resolution,
-                                    angular_outer_resolution=angular_outer_resolution)
+        dpole = DiscretizedCartPole(
+            position_bins=position_bins,
+            velocity_bins=velocity_bins,
+            angular_velocity_bins=angular_velocity_bins,
+            angular_center_resolution=angular_center_resolution,
+            angular_outer_resolution=angular_outer_resolution,
+        )
         self._P = dpole.P
         self._transform_obs = dpole.transform_obs
-        env = CustomTransformObservation(env, self._transform_obs, gym.spaces.Discrete(dpole.n_states))
+        env = CustomTransformObservation(
+            env, self._transform_obs, gym.spaces.Discrete(dpole.n_states)
+        )
         super().__init__(env)
 
     @property
     def P(self):
         """
         Returns
-        ----------------------------
-        _P {dict}
+        -------
+        dict
+            Transition/reward matrix.
         """
         return self._P
 
@@ -93,7 +104,8 @@ class CartpoleWrapper(gym.Wrapper):
     def transform_obs(self):
         """
         Returns
-        ----------------------------
-        _transform_obs {lambda}
+        -------
+        lambda
+            Function that converts the observation.
         """
         return self._transform_obs

@@ -1,0 +1,20 @@
+:root {
+    --pdoc-background: #2e2e2e; /* Mostly dark background */
+}
+
+.pdoc {
+    --text: #e0e0e0; /* Light text */
+    --muted: #a8a8a8; /* Muted text */
+    --link: #8ab4f8; /* Light link color */
+    --link-hover: #669df6; /* Light link hover color */
+    --code: #3c3c3c; /* Dark code background */
+    --active: #4a90e2; /* Light active color */
+
+    --accent: #3a3a3a; /* Dark accent */
+    --accent2: #5a5a5a; /* Dark accent2 */
+
+    --nav-hover: rgba(255, 255, 255, 0.1); /* Light nav hover */
+    --name: #8ab4f8; /* Light name color */
+    --def: #34a853; /* Light def color */
+    --annotation: #ea4335; /* Light annotation color */
+}
