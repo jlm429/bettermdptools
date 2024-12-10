@@ -21,8 +21,9 @@ where P[state][action] is a list of tuples (probability, next state, reward, ter
 Model-based learning algorithms: Value Iteration and Policy Iteration
 """
 
-import numpy as np
 import warnings
+
+import numpy as np
 
 
 class Planner:
@@ -60,7 +61,7 @@ class Planner:
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
         i = 0
         converged = False
-        while i < n_iters-1 and not converged:
+        while i < n_iters - 1 and not converged:
             i += 1
             Q = np.zeros((len(self.P), len(self.P[0])), dtype=np.float64)
             for s in range(len(self.P)):
@@ -74,8 +75,83 @@ class Planner:
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
 
-        pi = {s:a for s, a in enumerate(np.argmax(Q, axis=1))}
+        pi = {s: a for s, a in enumerate(np.argmax(Q, axis=1))}
         return V, V_track, pi
+
+    def value_iteration_vectorized(self, gamma=1.0, n_iters=1000, theta=1e-10):
+        """
+        PARAMETERS:
+
+        gamma {float}:
+            Discount factor
+
+        n_iters {int}:
+            Number of iterations
+
+        theta {float}:
+            Convergence criterion for value iteration.
+            State values are considered to be converged when the maximum difference between new and previous state values is less than theta.
+            Stops at n_iters or theta convergence - whichever comes first.
+
+
+        RETURNS:
+
+        V {numpy array}, shape(possible states):
+            State values array
+
+        V_track {numpy array}, shape(n_episodes, nS):
+            Log of V(s) for each iteration
+
+        pi {lambda}, input state value, output action value:
+            Policy mapping states to actions.
+        """
+        S = len(self.P)
+        A = len(self.P[0])
+
+        max_K = max(len(self.P[s][a]) for s in range(S) for a in range(A))
+
+        prob_array = np.zeros((S, A, max_K), dtype=np.float64)
+        next_state_array = np.zeros((S, A, max_K), dtype=np.int32)
+        reward_array = np.zeros((S, A, max_K), dtype=np.float64)
+        done_array = np.zeros((S, A, max_K), dtype=bool)
+        mask_array = np.zeros((S, A, max_K), dtype=bool)
+
+        for s in range(S):
+            for a in range(A):
+                transitions = self.P[s][a]
+                for k, (prob, next_state, reward, done) in enumerate(transitions):
+                    prob_array[s, a, k] = prob
+                    next_state_array[s, a, k] = next_state
+                    reward_array[s, a, k] = reward
+                    done_array[s, a, k] = done
+                    mask_array[s, a, k] = True
+
+        V = np.zeros(S, dtype=np.float64)
+        V_track = np.zeros((n_iters, S), dtype=np.float64)
+        converged = False
+        i = 0
+
+        while i < n_iters - 1 and not converged:
+            i += 1
+
+            Q = np.sum(
+                prob_array
+                * (reward_array + gamma * V[next_state_array] * (1 - done_array))
+                * mask_array,
+                axis=2,
+            )
+            V_new = np.max(Q, axis=1)
+
+            if np.max(np.abs(V - V_new)) < theta:
+                converged = True
+
+            V = V_new
+            V_track[i] = V
+
+        if not converged:
+            warnings.warn("Max iterations reached before convergence. Check n_iters.")
+
+        return V, V_track, dict(enumerate(np.argmax(Q, axis=1)))
 
     def policy_iteration(self, gamma=1.0, n_iters=50, theta=1e-10):
         """
@@ -112,7 +188,7 @@ class Planner:
         V_track = np.zeros((n_iters, len(self.P)), dtype=np.float64)
         i = 0
         converged = False
-        while i < n_iters-1 and not converged:
+        while i < n_iters - 1 and not converged:
             i += 1
             old_pi = pi
             V = self.policy_evaluation(pi, V, gamma, theta)

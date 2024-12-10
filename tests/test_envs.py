@@ -129,7 +129,7 @@ class TestEnvs(unittest.TestCase):
 
 
     def test_blackjack_q_learning(self):
-        Q, V, pi, Q_track, pi_track = RL(self.blackjack).q_learning(n_episodes=2)
+        Q, V, pi, Q_track, pi_track, rewards = RL(self.blackjack).q_learning(n_episodes=2)
         self.assertIsNotNone(Q, "Q-table should not be None")
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
@@ -139,7 +139,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_cartpole_q_learning(self):
-        Q, V, pi, Q_track, pi_track = RL(self.cartpole).q_learning(n_episodes=2)
+        Q, V, pi, Q_track, pi_track, rewards = RL(self.cartpole).q_learning(n_episodes=2)
         self.assertIsNotNone(Q, "Q-table should not be None")
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
@@ -149,7 +149,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_fl_q_learning(self):
-        Q, V, pi, Q_track, pi_track = RL(self.frozen_lake).q_learning(n_episodes=2)
+        Q, V, pi, Q_track, pi_track, rewards = RL(self.frozen_lake).q_learning(n_episodes=2)
         self.assertIsNotNone(Q, "Q-table should not be None")
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
@@ -159,7 +159,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_taxi_q_learning(self):
-        Q, V, pi, Q_track, pi_track = RL(self.taxi).q_learning(n_episodes=2)
+        Q, V, pi, Q_track, pi_track, rewards = RL(self.taxi).q_learning(n_episodes=2)
         self.assertIsNotNone(Q, "Q-table should not be None")
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
