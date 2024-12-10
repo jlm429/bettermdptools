@@ -77,8 +77,7 @@ class Planner:
                 converged = True
             V = np.max(Q, axis=1)
             V_track[i] = V
-            if converged:
-                break
+
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
 
@@ -158,9 +157,6 @@ class Planner:
             V = V_new
             V_track[i] = V
 
-            if converged:
-                break
-
         if not converged:
             warnings.warn("Max iterations reached before convergence. Check n_iters.")
 
@@ -205,7 +201,7 @@ class Planner:
             pi = self.policy_improvement(V, gamma=gamma, dtype=dtype)
             if old_pi == pi:
                 converged = True
-                break
+
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
         return V, V_track, pi
