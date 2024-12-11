@@ -1,5 +1,7 @@
 # bettermdptools
 
+[Check out our docs here!](https://jlm429.github.io/bettermdptools/bettermdptools.html)
+
 ## Getting Started
 
 ### About
