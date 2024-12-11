@@ -23,7 +23,7 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     Returns
     -------
 
-    bin_edges : list of float
+    list[float]
         The edges of the bins. Shape (n_bins + 1)
     """
 
