@@ -141,17 +141,20 @@ class RL:
         Q {numpy array}, shape(nS, nA):
             Final action-value function Q(s,a)
 
-        pi {lambda}, input state value, output action value:
-            Policy mapping states to actions.
-
         V {numpy array}, shape(nS):
             State values array
+
+        pi {lambda}, input state value, output action value:
+            Policy mapping states to actions.
 
         Q_track {numpy array}, shape(n_episodes, nS, nA):
             Log of Q(s,a) for each episode
 
         pi_track {list}, len(n_episodes):
             Log of complete policy for each episode
+        
+        rewards {numpy array}, shape(n_episodes):
+            Total reward obtained in each episode.
         """
         if nS is None:
             nS=self.env.observation_space.n
