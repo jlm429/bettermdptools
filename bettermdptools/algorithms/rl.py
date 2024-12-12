@@ -31,8 +31,9 @@ from bettermdptools.utils.callbacks import MyCallbacks
 
 
 class RL:
-    def __init__(self, env):
+    def __init__(self, env, seed=None):
         self.env = env
+        self.seed = seed
         self.callbacks = MyCallbacks()
         self.render = False
         # Explanation of lambda:
@@ -44,6 +45,9 @@ class RL:
         #       return np.random.choice(indxs)
         #   else:
         #       return np.random.randint(len(Q[state]))
+        if seed is not None:
+            np.random.seed(seed)
+            env.reset(seed=seed)
         self.select_action = (
             lambda state, Q, epsilon: np.random.choice(
                 np.arange(len(Q[state]))[np.isclose(Q[state], np.max(Q[state]))]
