@@ -26,3 +26,6 @@ def set_seed(seed: int) -> None:
     random.seed(SEED)
     np.random.seed(SEED)
     seeding.np_random(SEED)
+
+def get_seed() -> int:
+    return SEED

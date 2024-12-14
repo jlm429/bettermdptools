@@ -28,6 +28,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 from bettermdptools.utils.callbacks import MyCallbacks
+from bettermdptools.seed import get_seed
 
 
 class RL:
@@ -45,6 +46,7 @@ class RL:
         #       return np.random.choice(indxs)
         #   else:
         #       return np.random.randint(len(Q[state]))
+        seed = get_seed()
         if seed is not None:
             np.random.seed(seed)
             env.reset(seed=seed)
