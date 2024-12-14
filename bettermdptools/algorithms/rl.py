@@ -32,9 +32,8 @@ from bettermdptools.seed import get_seed
 
 
 class RL:
-    def __init__(self, env, seed=None):
+    def __init__(self, env):
         self.env = env
-        self.seed = seed
         self.callbacks = MyCallbacks()
         self.render = False
         # Explanation of lambda:
