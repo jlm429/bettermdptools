@@ -11,6 +11,7 @@ Simulation of the agent's decision process after it has learned a policy.
 
 import gymnasium as gym
 import numpy as np
+from bettermdptools.seed import get_seed
 
 
 class TestEnv:
@@ -44,6 +45,7 @@ class TestEnv:
 
         convert_state_obs {lambda}: Optionally used in environments where state observation is transformed.
 
+        seed {int}, default = None: Controls the randomness of the environment to ensure deterministic behavior and reproducibility across runs.
 
         Returns
         ----------------------------
@@ -59,6 +61,12 @@ class TestEnv:
                 env = gym.make(env_name, desc=desc, render_mode="human")
         n_actions = env.action_space.n
         test_scores = np.full([n_iters], np.nan)
+
+        seed = get_seed()
+        if seed is not None:
+            np.random.seed(seed)
+            env.reset(seed=seed)
+
         for i in range(0, n_iters):
             state, info = env.reset()
             done = False

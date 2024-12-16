@@ -26,3 +26,15 @@ def set_seed(seed: int) -> None:
     random.seed(SEED)
     np.random.seed(SEED)
     seeding.np_random(SEED)
+    print('seed')
+
+def get_seed() -> int:
+    """
+    Retrieve the current global seed.
+
+    Returns
+    -------
+    int
+        The current seed value set by `set_seed`, or `None` if no seed has been set.
+    """
+    return SEED
