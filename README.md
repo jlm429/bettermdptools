@@ -25,7 +25,7 @@ git clone https://github.com/jlm429/bettermdptools
 
 `bettermdptools` provides wrappers for both **grid-world** and **non-grid-world** environments. These wrappers enhance the functionality of the original environments, such as discretizing continuous state spaces. Some of these wrappers also allow adjustment of the state space size, such as in Cartpole.
 
-See the [`bettermdptools/envs`](https://jlm429.github.io/bettermdptools/bettermdptools/envs.html) directory for more details.
+See the [`bettermdptools/envs`](https://jlm429.github.io/bettermdptools/bettermdptools/envs.html) doc for more details.
 
 
 **Grid World Environments**:
@@ -38,7 +38,7 @@ See the [`bettermdptools/envs`](https://jlm429.github.io/bettermdptools/bettermd
 - Pendulum
 - Acrobat
 
-Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](notebooks/) for more.  
+Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](notebooks/) for more. The blackjack notebook shows how to use seed.py to set seed for the algorithms.
 
 ```python
 import gymnasium as gym
