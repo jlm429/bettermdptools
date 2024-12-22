@@ -25,6 +25,14 @@ class Plots:
         if show:
             plt.show()
 
+    @staticmethod
+    def get_values_agg_axis_means(pi, val_max, map_size, agg_axes):
+        """Aggregate by taking means over axes of multi-dimension maps. Used to pre-process for visuals."""
+        val_max, policy_map = Plots.get_policy_map(pi, val_max, None, map_size)
+        for ax in agg_axes:
+            policy_map = np.mean(policy_map, axis=ax)
+        return policy_map
+
     # modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
     @staticmethod
     def get_policy_map(pi, val_max, actions, map_size):
@@ -35,9 +43,9 @@ class Plots:
             best_action[idx] = pi[idx]
         policy_map = np.empty(best_action.flatten().shape, dtype=str)
         for idx, val in enumerate(best_action.flatten()):
-            policy_map[idx] = actions[val]
-        policy_map = policy_map.reshape(map_size[0], map_size[1])
-        val_max = val_max.reshape(map_size[0], map_size[1])
+            policy_map[idx] = actions[val] if actions is not None else val
+        policy_map = policy_map.reshape(*map_size)
+        val_max = val_max.reshape(*map_size)
         return val_max, policy_map
 
     # modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
@@ -55,7 +63,6 @@ class Plots:
             yticklabels=[],
             annot_kws={"fontsize": "xx-large"},
         ).set(title=title)
-        img_title = f"Policy_{map_size[0]}x{map_size[1]}.png"
 
         if show:
             plt.show()
