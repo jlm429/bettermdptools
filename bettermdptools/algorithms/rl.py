@@ -28,6 +28,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 from bettermdptools.utils.callbacks import MyCallbacks
+from bettermdptools.seed import get_seed
 
 
 class RL:
@@ -44,6 +45,10 @@ class RL:
         #       return np.random.choice(indxs)
         #   else:
         #       return np.random.randint(len(Q[state]))
+        seed = get_seed()
+        if seed is not None:
+            np.random.seed(seed)
+            env.reset(seed=seed)
         self.select_action = (
             lambda state, Q, epsilon: np.random.choice(
                 np.arange(len(Q[state]))[np.isclose(Q[state], np.max(Q[state]))]
