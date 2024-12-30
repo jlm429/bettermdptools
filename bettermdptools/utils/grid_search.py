@@ -27,7 +27,7 @@ class GridSearch:
                     i[2],
                 )
 
-            Q, V, pi, Q_track, pi_track = RL(env).q_learning(
+            Q, V, pi, Q_track, pi_track, rewards = RL(env).q_learning(
                 gamma=i[0], epsilon_decay_ratio=i[1], n_episodes=i[2]
             )
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
@@ -60,7 +60,7 @@ class GridSearch:
                     i[2],
                 )
 
-            Q, V, pi, Q_track, pi_track = RL(env).sarsa(
+            Q, V, pi, Q_track, pi_track, rewards = RL(env).sarsa(
                 gamma=i[0], epsilon_decay_ratio=i[1], n_episodes=i[2]
             )
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
