@@ -22,7 +22,7 @@ https://stackoverflow.com/questions/43485569/installed-a-package-with-anaconda-c
 setup(
     name="bettermdptools",
     url="https://github.com/jlm429/bettermdptools",
-    version="0.7.2",
+    version="0.8.0",
     platforms=["Any"],
     license="New BSD",
     author="John Mansfield",
