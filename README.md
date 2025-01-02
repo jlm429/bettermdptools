@@ -6,12 +6,12 @@
 
 ### About
 
-Bettermdptools is a package designed to help users get started with [gymnasium](https://gymnasium.farama.org/), a maintained fork of OpenAI’s Gym library. 
+Bettermdptools is a package designed to help users get started with [gymnasium](https://gymnasium.farama.org/), a maintained fork of OpenAI’s Gym library.
 Bettermdptools includes planning and reinforcement learning algorithms, useful utilities and plots, environment models for blackjack and cartpole, and starter code for working with gymnasium.
 
-### Install 
+### Install
 
-pip install or git clone bettermdptools.   
+pip install or git clone bettermdptools.
 
 ```bash
 pip install bettermdptools
@@ -21,20 +21,20 @@ pip install bettermdptools
 git clone https://github.com/jlm429/bettermdptools
 ```
 
-Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](notebooks/) for more.  
+Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](notebooks/) for more.
 
 ```python
 import gymnasium as gym
 from bettermdptools.algorithms.planner import Planner
 from bettermdptools.utils.plots import Plots
 
-# make gym environment 
+# make gym environment
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
 # run VI
-V, V_track, pi = Planner(frozen_lake.P).value_iteration()
+V, V_track, pi = Planner(frozen_lake.unwrapped.P).value_iteration()
 
-#plot state values
+# plot state values
 size=(8,8)
 Plots.values_heat_map(V, "Frozen Lake\nValue Iteration State Values", size)
 ```
