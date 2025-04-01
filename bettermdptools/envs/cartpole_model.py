@@ -157,7 +157,7 @@ class DiscretizedCartPole:
         left_bins = np.linspace(
             min_angle,
             -center_resolution,
-            num=int((center_resolution - min_angle) / outer_resolution) + 1,
+            num=int((-center_resolution - min_angle) / outer_resolution) + 1,
             endpoint=False,
         )
         right_bins = np.linspace(
