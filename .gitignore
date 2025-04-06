@@ -6,7 +6,9 @@
 /bettermdptoolbox_v2.egg-info/
 /bettermdptools.egg-info/
 /build/
+cached/
 /dist/
 __pycache__
 notebooks/.ipynb_checkpoints/
 .eggs/
+.vscode/

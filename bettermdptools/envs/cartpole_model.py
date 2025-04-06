@@ -8,6 +8,7 @@ dpole = DiscretizedCartPole(10, 10, 10, .1, .5)  # Example bin sizes for each va
 """
 
 import numpy as np
+import warnings
 
 
 class DiscretizedCartPole:
@@ -18,6 +19,7 @@ class DiscretizedCartPole:
         angular_velocity_bins,
         angular_center_resolution,
         angular_outer_resolution,
+        num_angular_center_bins=10,
     ):
         """
         Initializes the DiscretizedCartPole model.
@@ -26,8 +28,9 @@ class DiscretizedCartPole:
         - position_bins (int): Number of discrete bins for the cart's position.
         - velocity_bins (int): Number of discrete bins for the cart's velocity.
         - angular_velocity_bins (int): Number of discrete bins for the pole's angular velocity.
-        - angular_center_resolution (float): The resolution of angle bins near the center (around zero).
+        - angular_center_resolution (float): The region of interest around zero for higher resolution.
         - angular_outer_resolution (float): The resolution of angle bins away from the center.
+        - num_angular_center_bins (int): Number of bins around the center for higher resolution.
 
         Attributes:
         - state_space (int): Total number of discrete states in the environment.
@@ -47,12 +50,14 @@ class DiscretizedCartPole:
         self.angular_velocity_range = (-1.5, 1.5)
         self.angular_center_resolution = angular_center_resolution
         self.angular_outer_resolution = angular_outer_resolution
+        self.num_angular_center_bins = num_angular_center_bins
 
         # Use adaptive binning for the pole angle
         self.angle_bins = self.adaptive_angle_bins(
             self.angle_range,
             self.angular_center_resolution,
             self.angular_outer_resolution,
+            num_angular_center_bins=self.num_angular_center_bins,
         )  # Adjust these values as needed
 
         self.state_space = np.prod(
@@ -135,35 +140,47 @@ class DiscretizedCartPole:
             )
         )
 
-    def adaptive_angle_bins(self, angle_range, center_resolution, outer_resolution):
+    def adaptive_angle_bins(self, angle_range, center_resolution, outer_resolution, num_angular_center_bins=10):
         """
         Generates adaptive bins for the pole's angle to allow for finer resolution near the center and coarser
         resolution farther away.
 
         Parameters:
         - angle_range (tuple): The minimum and maximum angles in radians.
-        - center_resolution (float): Bin width near zero angle for higher resolution.
+        - center_resolution (float): Region of interest around zero for higher resolution.
         - outer_resolution (float): Bin width away from zero for lower resolution.
 
         Returns:
         - np.array: An array of bin edges with adaptive spacing.
         """
         min_angle, max_angle = angle_range
+
         # Generate finer bins around zero
+        center_bin_size = center_resolution / num_angular_center_bins
+        if center_bin_size >= outer_resolution:
+            warnings.warn(
+                f"Center bin size will be {center_bin_size} vs outer bin size of {outer_resolution}."
+            )
+
         center_bins = np.arange(
-            -center_resolution, center_resolution + 1e-6, center_resolution / 10
+            -center_resolution, center_resolution + 1e-6, center_bin_size
         )
-        # Generate sparser bins outside the center region
+
+        # Generate sparser bins outside the center region by dividing the remaining range
+        # into bins of size `outer_resolution`
+        left_distance = np.abs(np.abs(min_angle) - np.abs(center_resolution))
         left_bins = np.linspace(
             min_angle,
             -center_resolution,
-            num=int((center_resolution - min_angle) / outer_resolution) + 1,
-            endpoint=False,
+            num=int(left_distance / outer_resolution) + 1,
+            endpoint=True,
         )
+
+        right_distance = np.abs(np.abs(max_angle) - np.abs(center_resolution))
         right_bins = np.linspace(
             center_resolution,
             max_angle,
-            num=int((max_angle - center_resolution) / outer_resolution) + 1,
+            num=int(right_distance / outer_resolution) + 1,
             endpoint=True,
         )
         return np.unique(np.concatenate([left_bins, center_bins, right_bins]))
