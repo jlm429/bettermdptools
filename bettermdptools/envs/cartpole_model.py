@@ -243,11 +243,12 @@ class DiscretizedCartPole:
         )[angular_velocity_idx]
 
         # Simulate physics here (simplified)
+        thresh = 0.1
         force = 10 if action == 1 else -10
-        new_velocity = velocity + (force + np.cos(angle) * -10.0) * 0.02
-        new_position = position + new_velocity * 0.02
-        new_angular_velocity = angular_velocity + (-3.0 * np.sin(angle)) * 0.02
-        new_angle = angle + new_angular_velocity * 0.02
+        new_velocity = velocity + (force + np.sin(angle) * -10.0) * thresh
+        new_position = position + new_velocity * thresh
+        new_angular_velocity = angular_velocity + (3.0 * np.sin(angle) - force) * thresh
+        new_angle = angle + new_angular_velocity * thresh
 
         new_position_idx = np.clip(
             np.digitize(
