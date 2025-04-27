@@ -16,6 +16,7 @@ class DiscretizedCartPole:
         position_bins,
         velocity_bins,
         angular_velocity_bins,
+        threshold_bins,
         angular_center_resolution,
         angular_outer_resolution,
     ):
@@ -26,6 +27,7 @@ class DiscretizedCartPole:
         - position_bins (int): Number of discrete bins for the cart's position.
         - velocity_bins (int): Number of discrete bins for the cart's velocity.
         - angular_velocity_bins (int): Number of discrete bins for the pole's angular velocity.
+        - threshold_bins (float): Step size for binned physics calculations.
         - angular_center_resolution (float): The resolution of angle bins near the center (around zero).
         - angular_outer_resolution (float): The resolution of angle bins away from the center.
 
@@ -38,6 +40,7 @@ class DiscretizedCartPole:
         self.position_bins = position_bins
         self.velocity_bins = velocity_bins
         self.angular_velocity_bins = angular_velocity_bins
+        self.threshold_bins = threshold_bins
         self.action_space = 2  # Left or Right
 
         # Define the range for each variable
@@ -157,15 +160,15 @@ class DiscretizedCartPole:
         left_bins = np.linspace(
             min_angle,
             -center_resolution,
-            num=int((center_resolution - min_angle) / outer_resolution) + 1,
+            num=int((-center_resolution - min_angle) / outer_resolution) + 1,
             endpoint=False,
         )
         right_bins = np.linspace(
             center_resolution,
             max_angle,
-            num=int((max_angle - center_resolution) / outer_resolution) + 1,
+            num=np.max([int((max_angle - center_resolution) / outer_resolution) + 1,2]),
             endpoint=True,
-        )
+        )[1:]
         return np.unique(np.concatenate([left_bins, center_bins, right_bins]))
 
     def setup_transition_probabilities(self):
@@ -226,11 +229,12 @@ class DiscretizedCartPole:
         )[angular_velocity_idx]
 
         # Simulate physics here (simplified)
+        thresh = self.threshold_bins
         force = 10 if action == 1 else -10
-        new_velocity = velocity + (force + np.cos(angle) * -10.0) * 0.02
-        new_position = position + new_velocity * 0.02
-        new_angular_velocity = angular_velocity + (-3.0 * np.sin(angle)) * 0.02
-        new_angle = angle + new_angular_velocity * 0.02
+        new_velocity = velocity + (force + np.sin(angle) * -10.0) * thresh
+        new_position = position + new_velocity * thresh
+        new_angular_velocity = angular_velocity + (3.0 * np.sin(angle) - force) * thresh
+        new_angle = angle + new_angular_velocity * thresh
 
         new_position_idx = np.clip(
             np.digitize(
