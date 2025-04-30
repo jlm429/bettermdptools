@@ -3,7 +3,7 @@ generative AI experiment - discretized cartpole transition and reward (P) matrix
 created with chatGPT
 
 Example usage:
-dpole = DiscretizedCartPole(10, 10, 10, .1, .5)  # Example bin sizes for each variable and adaptive angle binning center/outer resolution
+dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)  # Example bin sizes for each variable and adaptive angle binning center/outer resolution
 
 """
 
