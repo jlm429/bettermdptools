@@ -55,7 +55,7 @@ class CartpoleWrapper(gym.Wrapper):
         position_bins=10,
         velocity_bins=10,
         angular_velocity_bins=10,
-        threshold_bins=0.5,
+        time_step=0.5,
         angular_center_resolution=0.1,
         angular_outer_resolution=0.5,
     ):
@@ -72,8 +72,8 @@ class CartpoleWrapper(gym.Wrapper):
             Number of discrete bins for the cart's velocity.
         angular_velocity_bins : int, optional
             Number of discrete bins for the pole's angular velocity.
-        threshold_bins : float, optional
-            Step size for binned physics calculations.
+        time_step : float, optional
+            Controls how accurate the initial physics update calculation is. Used in calculating transition probabilities.
         angular_center_resolution : float, optional
             The resolution of angle bins near the center (around zero).
         angular_outer_resolution : float, optional
@@ -83,7 +83,7 @@ class CartpoleWrapper(gym.Wrapper):
             position_bins=position_bins,
             velocity_bins=velocity_bins,
             angular_velocity_bins=angular_velocity_bins,
-            threshold_bins=threshold_bins,
+            time_step=time_step,
             angular_center_resolution=angular_center_resolution,
             angular_outer_resolution=angular_outer_resolution,
         )

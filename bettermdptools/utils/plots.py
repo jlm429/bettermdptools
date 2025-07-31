@@ -25,7 +25,7 @@ class Plots:
         if show:
             plt.show()
 
-    # modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
+    # modified from https://gymnasium.farama.org/tutorials/training_agents/frozenlake_q_learning/#visualization
     @staticmethod
     def get_policy_map(pi, val_max, actions, map_size):
         """Map the best learned action to arrows."""
@@ -40,7 +40,7 @@ class Plots:
         val_max = val_max.reshape(map_size[0], map_size[1])
         return val_max, policy_map
 
-    # modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
+    # modified from https://gymnasium.farama.org/tutorials/training_agents/frozenlake_q_learning/#visualization
     @staticmethod
     def plot_policy(val_max, directions, map_size, title, show=True):
         """Plot the policy learned."""
