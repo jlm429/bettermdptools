@@ -32,7 +32,8 @@ from bettermdptools.utils.plots import Plots
 frozen_lake = gym.make('FrozenLake8x8-v1', render_mode=None)
 
 # run VI
-V, V_track, pi = Planner(frozen_lake.P).value_iteration()
+# accessing P through env.unwrapped avoids Gymnasium's deprecated env.P warning
+V, V_track, pi = Planner(frozen_lake.unwrapped.P).value_iteration()
 
 #plot state values
 size=(8,8)
