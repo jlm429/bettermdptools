@@ -41,6 +41,22 @@ Plots.values_heat_map(V, "Frozen Lake\nValue Iteration State Values", size)
 
 ![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
 
+### Conda environment (local dev)
+
+Create a minimal conda env that matches project deps:
+
+```bash
+conda env create -f environment.yml
+conda activate bettermdptools
+```
+
+To remove it completely:
+
+```bash
+conda deactivate
+conda env remove -n bettermdptools
+```
+
 ## Documentation
 
 In order to document our code, we use [pdoc](https://pdoc.dev/) (NOT `pdoc3`). This generates .html files that can be hosted via the `docs/` directory.
