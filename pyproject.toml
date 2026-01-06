@@ -12,7 +12,7 @@ packages = [{ include = "bettermdptools" }]
 python = ">=3.10,<4.0"
 gymnasium = ">=0.26,<0.27"
 pygame = "*"
-numpy = "*"
+numpy = "<2"
 tqdm = "*"
 pandas = "*"
 seaborn = "*"

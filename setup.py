@@ -21,7 +21,7 @@ setup(
     install_requires=[
         "gymnasium>=0.26,<0.27",
         "pygame",
-        "numpy",
+        "numpy<2",
         "tqdm",
         "pandas",
         "seaborn",
