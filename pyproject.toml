@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "bettermdptools"
+version = "0.8.1"
+description = "so much room for activities"
+authors = ["John Mansfield <jlm429@gmail.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+repository = "https://github.com/jlm429/bettermdptools"
+packages = [{ include = "bettermdptools" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+gymnasium = ">=0.26,<0.27"
+pygame = "*"
+numpy = "*"
+tqdm = "*"
+pandas = "*"
+seaborn = "*"
+matplotlib = ">=3.7.0,<=3.8.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.0.0"
+ruff = "^0.14.8"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "I"]
+ignore = ["E203"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["bettermdptools"]
