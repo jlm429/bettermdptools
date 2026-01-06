@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bettermdptools"
-version = "0.8.1"
+version = "0.8.2"
 description = "so much room for activities"
 authors = ["John Mansfield <jlm429@gmail.com>"]
 license = "BSD-3-Clause"
