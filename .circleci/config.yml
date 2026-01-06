@@ -3,24 +3,31 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: cimg/python:3.11-node # Specify the Python version
+      - image: cimg/python:3.11-node
     steps:
       - checkout
+
       - run:
-          name: Set up Python environment
+          name: Install Poetry
           command: |
-            python -m venv venv
-            . venv/bin/activate
+            pip install --upgrade pip
+            pip install poetry
+
       - run:
-          name: Install dependencies
+          name: Configure Poetry
           command: |
-            . venv/bin/activate
-            pip install -r requirements.txt
+            poetry --version
+            poetry config virtualenvs.in-project true
+
+      - run:
+          name: Install dependencies (Poetry)
+          command: |
+            poetry install --no-interaction
+
       - run:
           name: Run tests
           command: |
-            . venv/bin/activate
-            python -m unittest discover -s tests
+            poetry run python -m unittest discover -s tests
 
 workflows:
   version: 2
