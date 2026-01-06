@@ -35,7 +35,7 @@ setup(
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "gymnasium>=0.26, <=0.27.1",
+        "gymnasium>=0.26,<0.27",
         "pygame",
         "numpy",
         "tqdm",
