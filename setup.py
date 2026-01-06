@@ -25,6 +25,6 @@ setup(
         "tqdm",
         "pandas",
         "seaborn",
-        "matplotlib>=3.7.0,<=3.8.0",
+        "matplotlib",
     ],
 )
