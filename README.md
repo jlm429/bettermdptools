@@ -21,7 +21,7 @@ pip install bettermdptools
 git clone https://github.com/jlm429/bettermdptools
 ```
 
-Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](notebooks/) for more.  
+Starter code to get up and running on the gymnasium frozen lake environment. See [bettermdptools/notebooks](examples/) for more.  
 
 ```python
 import gymnasium as gym
