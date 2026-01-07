@@ -28,7 +28,8 @@ def run_value_iteration(env, n_iters=1000, vectorized=False, dtype=np.float64):
     Returns:
     tuple: Value function, value function track, and policy.
     """
-    planner = Planner(env.P)
+    env_model = env.unwrapped if hasattr(env, "unwrapped") else env
+    planner = Planner(env_model.P)
     if vectorized:
         V, V_track, pi = planner.value_iteration_vectorized(
             n_iters=n_iters, dtype=dtype

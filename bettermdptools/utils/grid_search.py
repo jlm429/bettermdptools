@@ -81,6 +81,7 @@ class GridSearch:
         highest_avg_reward = -np.inf
         best_params = None
         rewards_and_params_results = []
+        env_model = env.unwrapped if hasattr(env, "unwrapped") else env
 
         for i in itertools.product(gamma, n_iters, theta):
             if verbose:
@@ -88,7 +89,7 @@ class GridSearch:
                     "running PI with gamma:", i[0], " n_iters:", i[1], " theta:", i[2]
                 )
 
-            V, V_track, pi = Planner(env.P).policy_iteration(
+            V, V_track, pi = Planner(env_model.P).policy_iteration(
                 gamma=i[0], n_iters=i[1], theta=i[2]
             )
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
@@ -109,6 +110,7 @@ class GridSearch:
         highest_avg_reward = -np.inf
         best_params = None
         rewards_and_params_results = []
+        env_model = env.unwrapped if hasattr(env, "unwrapped") else env
 
         for i in itertools.product(gamma, n_iters, theta):
             if verbose:
@@ -116,7 +118,7 @@ class GridSearch:
                     "running VI with gamma:", i[0], " n_iters:", i[1], " theta:", i[2]
                 )
 
-            V, V_track, pi = Planner(env.P).value_iteration(
+            V, V_track, pi = Planner(env_model.P).value_iteration(
                 gamma=i[0], n_iters=i[1], theta=i[2]
             )
             episode_rewards = TestEnv.test_env(env=env, n_iters=100, pi=pi)
