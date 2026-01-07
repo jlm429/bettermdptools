@@ -3,8 +3,7 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 ![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![Linter: Ruff](https://img.shields.io/badge/lint-ruff-blue.svg)
-[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/main)
-
+[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master)
 # bettermdptools
 
 Bettermdptools is a lightweight toolkit for working with **Gymnasium** environments using classic **planning** and **tabular reinforcement learning** methods.
@@ -21,12 +20,6 @@ Install from PyPI:
 
 ```bash
 pip install bettermdptools
-```
-
-Or clone the repository:
-
-```bash
-git clone https://github.com/jlm429/bettermdptools
 ```
 
 ---
