@@ -12,7 +12,7 @@ from bettermdptools.envs.cartpole_wrapper import CartpoleWrapper
 
 # from bettermdptools.envs.pendulum_wrapper import PendulumWrapper
 # from bettermdptools.envs.acrobot_wrapper import AcrobotWrapper
-from bettermdptools.seed import set_seed
+from bettermdptools.utils.seed import set_seed
 
 
 def run_value_iteration(env, n_iters=1000, vectorized=False, dtype=np.float64):
