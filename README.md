@@ -94,7 +94,7 @@ from bettermdptools.experiments import run
 
 See:
 - [examples/experiments_demo.ipynb](examples/experiments_demo.ipynb)
-- [docs/api/entrypoints/experiments.md](docs/api/entrypoints/experiments.md)
+- [docs/api/experiments_api.md](docs/api/experiments_api.md)
 
 ---
 
