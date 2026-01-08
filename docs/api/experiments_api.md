@@ -120,3 +120,7 @@ The most stable contract is:
 - `run(...)` returns a `RunResult`
 - `RunResult.train` and `RunResult.eval` are dictionaries
 - The presence of `pi` in `train` is required for evaluation
+
+## Examples
+
+[`../../examples/experiments_demo.ipynb`](../../examples/experiments_demo.ipynb) 
