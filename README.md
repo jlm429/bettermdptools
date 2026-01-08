@@ -21,6 +21,36 @@ Install from PyPI:
 ```bash
 pip install bettermdptools
 ```
+<details>
+<summary><strong>pygame installation issues (Python 3.11+)</strong></summary>
+
+If you encounter errors installing `pygame` on Python 3.11 or newer, try:
+
+```bash
+pip install pygame --pre
+```
+
+- https://stackoverflow.com/questions/74188013/python-pygame-not-installing
+
+</details>
+
+<details>
+<summary><strong>Google Colab notes (NumPy + Gymnasium)</strong></summary>
+
+Some Gymnasium-compatible environments may require a NumPy downgrade.
+
+When using **Google Colab** - after installing numpy<2 **you must restart the Colab session** for the change to take effect.
+
+Typical workflow:
+
+```bash
+pip install "numpy<2"
+```
+Then:
+
+Runtime → Restart session
+
+</details> 
 
 ---
 
@@ -95,19 +125,6 @@ from bettermdptools.experiments import run
 See:
 - [examples/experiments_demo.ipynb](examples/experiments_demo.ipynb)
 - [docs/api/experiments_api.md](docs/api/experiments_api.md)
-
----
-
-## pygame installation issues (Python 3.11+)
-
-If you encounter errors installing `pygame` on Python 3.11 or newer, try:
-
-```bash
-pip install pygame --pre
-```
-
-See:
-- https://stackoverflow.com/questions/74188013/python-pygame-not-installing
 
 ---
 

@@ -8,7 +8,7 @@ from setuptools import find_packages, setup
 setup(
     name="bettermdptools",
     url="https://github.com/jlm429/bettermdptools",
-    version="0.8.3",
+    version="0.8.4",
     platforms=["Any"],
     license="New BSD",
     author="John Mansfield",
@@ -18,6 +18,19 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
+
+    # --- added ---
+    python_requires=">=3.10,<4.0",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+    ],
+    # -------------
+
     install_requires=[
         "gymnasium>=0.26,<0.27",
         "pygame",
