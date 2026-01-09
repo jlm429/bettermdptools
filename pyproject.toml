@@ -18,6 +18,12 @@ pandas = "*"
 seaborn = "*"
 matplotlib = "*"
 
+[tool.poetry.group.optuna]
+optional = true
+
+[tool.poetry.group.optuna.dependencies]
+optuna = "^4.6"
+
 [tool.poetry.group.dev.dependencies]
 black = "^25.0.0"
 ruff = "^0.14.8"

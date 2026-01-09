@@ -11,3 +11,12 @@ Optionally:
 from .run import run, ExperimentBuilder
 
 __all__ = ["run", "ExperimentBuilder"]
+
+# Optional Optuna add-on
+try:
+    from .optuna import optimize, OptunaResult, MissingOptunaDependency
+
+    __all__ += ["optimize", "OptunaResult", "MissingOptunaDependency"]
+except Exception:
+    # Optuna is optional; do not fail base imports
+    pass
