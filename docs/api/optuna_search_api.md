@@ -232,4 +232,4 @@ The most stable contract is:
 
 ## Examples
 
-- ...
+[`../../examples/optuna_search_examples.ipynb](../../examples/optuna_search_examples.ipynb) 

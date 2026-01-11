@@ -78,53 +78,17 @@ Plots.values_heat_map(
 
 ## Example notebooks
 
-The fastest way to explore the library is through the example notebooks in the `examples/` directory.
-
-### Core environments
-- [`examples/frozen_lake.ipynb`](examples/frozen_lake.ipynb)  
-  Planning and tabular RL on FrozenLake
-
-- [`examples/blackjack.ipynb`](examples/blackjack.ipynb)   
-  Q-learning on Blackjack
-
-- [`examples/cartpole.ipynb`](examples/cartpole.ipynb)  
-  Discretized CartPole using a wrapper for tabular methods
-
-### Experiments API
-- [`examples/experiments_demo.ipynb`](examples/experiments_demo.ipynb)  
-  Demonstrates the optional `bettermdptools.experiments.run(...)` entrypoint across:
-  - FrozenLake (VI and Q-learning)
-  - Blackjack (Q-learning)
-  - CartPole (discretized)
-
-### Utilities and plotting
-- [`examples/plots.ipynb`](examples/plots.ipynb)  
-  Visualization helpers
-
-- [`examples/other_utilities.ipynb`](examples/other_utilities.ipynb)    
-  Miscellaneous helpers
-
-These notebooks are intended as examples and starting points, not benchmarks.
+The fastest way to explore the library is through the notebooks in [`/examples`](/examples) .
 
 ---
 
-## Experiments API (optional)
+## Entrypoint APIs (optional)
 
-Bettermdptools includes an optional high-level experiments entrypoint that wires together:
-- environment creation
-- transition model handling
-- algorithm dispatch
-- optional policy evaluation
-
-Primary entrypoint:
-
-```python
-from bettermdptools.experiments import run
-```
+Bettermdptools provides optional high-level entrypoints for quick experimentation and hyperparameter search.
 
 See:
-- [examples/experiments_demo.ipynb](examples/experiments_demo.ipynb)
 - [docs/api/experiments_api.md](docs/api/experiments_api.md)
+- [docs/api/optuna_search_api.md](docs/api/optuna_search_api.md)
 
 ---
 
