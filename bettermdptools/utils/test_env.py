@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Author: John Mansfield
-
-documentation added by: Gagandeep Randhawa
-"""
-
-"""
 Simulation of the agent's decision process after it has learned a policy.
+
+Author: John Mansfield
+Documentation added by: Gagandeep Randhawa
 """
+
+from __future__ import annotations
+
+from typing import Any
 
 import gymnasium as gym
 import numpy as np
 
 
 class TestEnv:
-    def __init__(self):
-        pass
+    """Utilities for simulating environment rollouts using a learned or user-driven policy."""
 
     @staticmethod
     def test_env(
@@ -28,71 +28,102 @@ class TestEnv:
         convert_state_obs=lambda state: state,
     ):
         """
+        Simulate episodes using a policy and return the total reward from each episode.
+
         Parameters
-        ----------------------------
-        env {OpenAI Gym Environment}: MDP problem
-
-        desc {numpy array}: description of the environment (for custom environments)
-
-        render {Boolean}, default = False: openAI human render mode
-
-        n_iters {int}, default = 10: Number of iterations to simulate the agent for
-
-        pi {lambda}: Policy used to calculate action value at a given state
-
-        user_input {Boolean}, default = False: Prompt for letting user decide which action to take at a given state
-
-        convert_state_obs {lambda}: Optionally used in environments where state observation is transformed.
-
+        ----------
+        env : gymnasium.Env
+            Gymnasium environment instance.
+        desc : np.ndarray, optional
+            Environment description used by some environments (for example, custom FrozenLake maps).
+            Only used when `render=True` causes the environment to be re-created.
+        render : bool, default False
+            If True, the environment is re-created with `render_mode="human"` so it renders visually.
+        n_iters : int, default 10
+            Number of episodes to simulate.
+        pi : array-like or callable, optional
+            Policy mapping states to actions. Commonly an array where `pi[state]` gives the action.
+            If `user_input=True`, this is shown as a suggested action.
+        user_input : bool, default False
+            If True, prompt the user to select each action interactively.
+        convert_state_obs : callable or None, default identity
+            Function applied to observations to convert them into discrete or transformed states.
+            If None, the observation is used directly.
 
         Returns
-        ----------------------------
-        test_scores {numpy array}:
-            Log of rewards from each episode.
+        -------
+        np.ndarray
+            Array of length `n_iters` containing the total reward for each episode.
+
+        Notes
+        -----
+        - This function assumes a discrete action space with `env.action_space.n`.
+        - When `render=True`, the environment is created internally and closed before returning.
+          When `render=False`, the caller is responsible for managing the environment lifecycle.
         """
+        if convert_state_obs is None:
+            convert_state_obs = lambda s: s
+
+        created_env = False
         if render:
-            # reinit environment in 'human' render_mode
             env_name = env.unwrapped.spec.id
-            if desc is None:
-                env = gym.make(env_name, render_mode="human")
-            else:
-                env = gym.make(env_name, desc=desc, render_mode="human")
+            make_kwargs = {"render_mode": "human"}
+            if desc is not None:
+                make_kwargs["desc"] = desc
+            env = gym.make(env_name, **make_kwargs)
+            created_env = True
+
         n_actions = env.action_space.n
-        test_scores = np.full([n_iters], np.nan)
-        for i in range(0, n_iters):
+        test_scores = np.full(n_iters, np.nan, dtype=float)
+
+        for i in range(n_iters):
             state, info = env.reset()
-            done = False
             state = convert_state_obs(state)
-            total_reward = 0
+
+            done = False
+            total_reward = 0.0
+
             while not done:
                 if user_input:
-                    # get user input and suggest policy output
-                    print("state is %i" % state)
-                    print("policy output is %i" % pi[state])
-                    while True:
-                        action = input(
-                            "Please select 0 - %i then hit enter:\n"
-                            % int(n_actions - 1)
-                        )
-                        try:
-                            action = int(action)
-                        except ValueError:
-                            print("Please enter a number")
-                            continue
-                        if 0 <= action < n_actions:
-                            break
-                        else:
-                            print(
-                                "please enter a valid action, 0 - %i \n"
-                                % int(n_actions - 1)
-                            )
+                    action = TestEnv._prompt_for_action(
+                        state=state,
+                        n_actions=n_actions,
+                        pi=pi,
+                    )
                 else:
                     action = pi[state]
+
                 next_state, reward, terminated, truncated, info = env.step(action)
                 done = terminated or truncated
-                next_state = convert_state_obs(next_state)
-                state = next_state
-                total_reward = reward + total_reward
+
+                state = convert_state_obs(next_state)
+                total_reward += reward
+
             test_scores[i] = total_reward
-        env.close()
+
+        if created_env:
+            env.close()
+
         return test_scores
+
+    @staticmethod
+    def _prompt_for_action(state: Any, n_actions: int, pi: Any) -> int:
+        """
+        Prompt the user to select an action and return the chosen value.
+        """
+        print(f"state is {state}")
+        if pi is not None:
+            print(f"policy output is {pi[state]}")
+
+        while True:
+            raw = input(f"Please select 0 - {n_actions - 1} then hit enter:\n")
+            try:
+                action = int(raw)
+            except ValueError:
+                print("Please enter a number")
+                continue
+
+            if 0 <= action < n_actions:
+                return action
+
+            print(f"please enter a valid action, 0 - {n_actions - 1}\n")
