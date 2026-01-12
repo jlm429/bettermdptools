@@ -8,7 +8,7 @@ from setuptools import find_packages, setup
 setup(
     name="bettermdptools",
     url="https://github.com/jlm429/bettermdptools",
-    version="0.8.5",
+    version="0.8.6",
     platforms=["Any"],
     license="New BSD",
     author="John Mansfield",
