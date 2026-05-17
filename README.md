@@ -141,7 +141,6 @@ Guidelines:
 - Use numpy-style docstrings
 - Add or update tests when introducing new functionality
 - Prefer explicit, readable code over clever or showy abstractions
-- Format code with **black** and check linting with **ruff** before submitting
 - Keep public APIs stable and avoid breaking changes unless clearly justified
 - Prefer small, focused pull requests with a limited number of file changes
 
