@@ -69,7 +69,7 @@ V, V_track, pi = Planner(env.P).value_iteration()
 
 Plots.values_heat_map(
     V,
-    title="FrozenLake Value Iteration - State Values",
+    title="State Values",
     size=(8, 8),
 )
 ```
