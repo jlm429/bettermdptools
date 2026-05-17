@@ -6,7 +6,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master)
 # bettermdptools
 
-Bettermdptools is a lightweight toolkit for working with **Gymnasium** environments using classic **planning** and **tabular reinforcement learning** methods.
+Bettermdptools is a lightweight toolkit for working with Gymnasium environments using classic planning and tabular reinforcement learning methods.
 
 It is designed to help users get up and running quickly, explore standard RL algorithms, and experiment with environments like FrozenLake, Taxi, Blackjack, and CartPole without heavy framework overhead.
 
@@ -96,7 +96,7 @@ See:
 
 ### Dependency management
 
-The project supports standard `pip` workflows. For development, using **Poetry** is recommended to ensure reproducible environments.
+The project supports standard `pip` workflows. For development, using Poetry is recommended to ensure reproducible environments.
 
 Example:
 
@@ -109,8 +109,8 @@ poetry shell
 
 The codebase uses the following tools during development:
 
-- **ruff** for fast linting
-- **black** for code formatting
+- ruff for fast linting
+- black for code formatting
 
 Typical usage:
 
