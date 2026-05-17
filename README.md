@@ -92,38 +92,9 @@ See:
 
 ---
 
-## Development and tooling
+## Documentation and Dependency Management
 
-### Dependency management
-
-The project supports standard `pip` workflows. For development, using Poetry is recommended to ensure reproducible environments.
-
-Example:
-
-```bash
-poetry install
-poetry shell
-```
-
-### Code quality
-
-The codebase uses the following tools during development:
-
-- ruff for fast linting
-- black for code formatting
-
-Typical usage:
-
-```bash
-ruff check .
-black .
-```
-
----
-
-## Documentation
-
-API documentation is generated using **pdoc** (not pdoc3) and lives in the `docs/` directory.
+The project supports standard `pip` workflows. For development, using Poetry is recommended to ensure reproducible environments.  API documentation is generated using **pdoc** (not pdoc3) and lives in the `docs/` directory.
 
 To regenerate documentation locally:
 
