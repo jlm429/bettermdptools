@@ -117,7 +117,7 @@
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">    Callback interface for RL algorithms.</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    Notes</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">    - Hooks accept `caller` so callbacks can read algorithm state.</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">    - All hooks accept `caller` so callbacks can read algorithm state (Q table, epsilon, etc.).</span>
 </span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">    - Hooks accept `**kwargs` for forward compatibility.</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">    """</span>
 </span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
@@ -214,7 +214,7 @@
 </span><span id="Callbacks-15"><a href="#Callbacks-15"><span class="linenos">15</span></a><span class="sd">    Callback interface for RL algorithms.</span>
 </span><span id="Callbacks-16"><a href="#Callbacks-16"><span class="linenos">16</span></a>
 </span><span id="Callbacks-17"><a href="#Callbacks-17"><span class="linenos">17</span></a><span class="sd">    Notes</span>
-</span><span id="Callbacks-18"><a href="#Callbacks-18"><span class="linenos">18</span></a><span class="sd">    - Hooks accept `caller` so callbacks can read algorithm state.</span>
+</span><span id="Callbacks-18"><a href="#Callbacks-18"><span class="linenos">18</span></a><span class="sd">    - All hooks accept `caller` so callbacks can read algorithm state (Q table, epsilon, etc.).</span>
 </span><span id="Callbacks-19"><a href="#Callbacks-19"><span class="linenos">19</span></a><span class="sd">    - Hooks accept `**kwargs` for forward compatibility.</span>
 </span><span id="Callbacks-20"><a href="#Callbacks-20"><span class="linenos">20</span></a><span class="sd">    """</span>
 </span><span id="Callbacks-21"><a href="#Callbacks-21"><span class="linenos">21</span></a>

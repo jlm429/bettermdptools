@@ -37,7 +37,7 @@ class CartpoleWrapper(gym.Wrapper):
         angular_outer_resolution=0.5,
     ):
         """
-        Discretize observations and expose a transition and reward model.
+        Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
 
         Parameters
         ----------

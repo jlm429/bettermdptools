@@ -1,11 +1,24 @@
-"""Model-based Value Iteration and Policy Iteration algorithms.
+"""
+Author: Miguel Morales
+BSD 3-Clause License
 
-``Planner`` accepts a Gymnasium-style transition and reward model. Each
-``P[state][action]`` entry is a list of ``(probability, next_state, reward,
-terminal)`` tuples.
+Copyright (c) 2018, Miguel Morales
+All rights reserved.
+https://github.com/mimoralea/gdrl/blob/master/LICENSE
+"""
 
-Based on work by Miguel Morales under the BSD 3-Clause License. Modified by
-John Mansfield, with documentation by Gagandeep Randhawa.
+"""
+modified by: John Mansfield
+
+documentation added by: Gagandeep Randhawa
+"""
+
+"""
+Class that contains functions related to planning algorithms (Value Iteration, Policy Iteration).
+Planner init expects a reward and transitions matrix P, which is nested dictionary Gymnasium-style discrete environment
+where P[state][action] is a list of tuples (probability, next state, reward, terminal).
+
+Model-based learning algorithms: Value Iteration and Policy Iteration
 """
 
 import warnings
@@ -87,9 +100,8 @@ class Planner:
 
         theta : float
             Convergence criterion for value iteration.
-            State values converge when the maximum difference between new and
-            previous values is less than theta. Stops at n_iters or theta
-            convergence, whichever comes first.
+            State values are considered to be converged when the maximum difference between new and previous state values is less than theta.
+            Stops at n_iters or theta convergence - whichever comes first.
 
         Returns
         -------

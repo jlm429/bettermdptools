@@ -14,7 +14,7 @@ class Callbacks:
     Callback interface for RL algorithms.
 
     Notes
-    - Hooks accept `caller` so callbacks can read algorithm state.
+    - All hooks accept `caller` so callbacks can read algorithm state (Q table, epsilon, etc.).
     - Hooks accept `**kwargs` for forward compatibility.
     """
 

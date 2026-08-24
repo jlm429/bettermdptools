@@ -203,11 +203,11 @@ class DiscretizedPendulum:
     torque_bins : int, optional (default=11)
         Number of bins to discretize the torque.
     n_workers : int, optional (default=4)
-        Workers used to set up transition probabilities.
+        Number of worker processes to use for setting up transition probabilities.
     cache_dir : str, optional (default='./cached')
         Directory to cache the transition probabilities.
     dim_samples : int, optional (default=11)
-        Samples used for each modeled dimension.
+        Number of samples to use for each dimension when setting up transition probabilities.
     Attributes:
     -----------
     angle_bins : int
@@ -215,7 +215,7 @@ class DiscretizedPendulum:
     angular_velocity_bins : int
         Number of bins to discretize the angular velocity. Must be odd.
     dim_samples : int
-        Samples used for each modeled dimension.
+        Number of samples to use for each dimension when setting up transition probabilities.
     angle_bin_edges : numpy.ndarray
         Edges of the bins for discretizing the angle.
     angular_velocity_bin_edges : numpy.ndarray

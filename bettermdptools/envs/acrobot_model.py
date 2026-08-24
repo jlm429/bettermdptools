@@ -120,7 +120,11 @@ class DiscretizedAcrobot:
         )
 
     def setup_transition_probabilities(self):
-        """Build deterministic transitions for every modeled state and action."""
+        """
+        Sets up the transition probabilities for the environment. This method iterates through all possible
+        states and actions, simulates the next state, and records the transition probability
+        (deterministic in this setup), reward, and termination status.
+        """
         percent = 0
 
         for state in range(self.n_states):
@@ -143,7 +147,7 @@ class DiscretizedAcrobot:
         - index (int): The flat index representing the state.
 
         Returns:
-        - list: Indices for position, velocity, angle, and angular velocity.
+        - list: A list of indices representing the state in terms of position, velocity, angle, and angular velocity bins.
         """
 
         totals = [
@@ -237,7 +241,7 @@ class DiscretizedAcrobot:
             k3 = np.asarray(derivs(y0 + dt2 * k2))
             k4 = np.asarray(derivs(y0 + dt * k3))
             yout[i + 1] = y0 + dt / 6.0 * (k1 + 2 * k2 + 2 * k3 + k4)
-        # Keep the final timestep and remove the zero action value.
+        # We only care about the final timestep and we cleave off action value which will be zero
         return yout[-1][:4]
 
     def compute_next_state(

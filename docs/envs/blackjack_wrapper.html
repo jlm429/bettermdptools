@@ -287,7 +287,7 @@ BSD 3-Clause License</p>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="k">class</span><span class="w"> </span><span class="nc">BlackjackWrapper</span><span class="p">(</span><span class="n">gym</span><span class="o">.</span><span class="n">Wrapper</span><span class="p">):</span>
 </span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
 </span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">        Discretize Blackjack observations and expose a transition and reward model.</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">        Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.</span>
 </span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>
 </span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a><span class="sd">        Parameters</span>
 </span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">        ----------</span>
@@ -425,7 +425,7 @@ If the observations from <code><a href="#CustomTransformObservation.func">func</
             <div class="pdoc-code codehilite"><pre><span></span><span id="BlackjackWrapper-75"><a href="#BlackjackWrapper-75"><span class="linenos"> 75</span></a><span class="k">class</span><span class="w"> </span><span class="nc">BlackjackWrapper</span><span class="p">(</span><span class="n">gym</span><span class="o">.</span><span class="n">Wrapper</span><span class="p">):</span>
 </span><span id="BlackjackWrapper-76"><a href="#BlackjackWrapper-76"><span class="linenos"> 76</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
 </span><span id="BlackjackWrapper-77"><a href="#BlackjackWrapper-77"><span class="linenos"> 77</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="BlackjackWrapper-78"><a href="#BlackjackWrapper-78"><span class="linenos"> 78</span></a><span class="sd">        Discretize Blackjack observations and expose a transition and reward model.</span>
+</span><span id="BlackjackWrapper-78"><a href="#BlackjackWrapper-78"><span class="linenos"> 78</span></a><span class="sd">        Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.</span>
 </span><span id="BlackjackWrapper-79"><a href="#BlackjackWrapper-79"><span class="linenos"> 79</span></a>
 </span><span id="BlackjackWrapper-80"><a href="#BlackjackWrapper-80"><span class="linenos"> 80</span></a><span class="sd">        Parameters</span>
 </span><span id="BlackjackWrapper-81"><a href="#BlackjackWrapper-81"><span class="linenos"> 81</span></a><span class="sd">        ----------</span>
@@ -509,7 +509,7 @@ Moreover, the behavior of the <code><a href="#BlackjackWrapper.step">step()</a><
     <a class="headerlink" href="#BlackjackWrapper.__init__"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="BlackjackWrapper.__init__-76"><a href="#BlackjackWrapper.__init__-76"><span class="linenos"> 76</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
 </span><span id="BlackjackWrapper.__init__-77"><a href="#BlackjackWrapper.__init__-77"><span class="linenos"> 77</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="BlackjackWrapper.__init__-78"><a href="#BlackjackWrapper.__init__-78"><span class="linenos"> 78</span></a><span class="sd">        Discretize Blackjack observations and expose a transition and reward model.</span>
+</span><span id="BlackjackWrapper.__init__-78"><a href="#BlackjackWrapper.__init__-78"><span class="linenos"> 78</span></a><span class="sd">        Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.</span>
 </span><span id="BlackjackWrapper.__init__-79"><a href="#BlackjackWrapper.__init__-79"><span class="linenos"> 79</span></a>
 </span><span id="BlackjackWrapper.__init__-80"><a href="#BlackjackWrapper.__init__-80"><span class="linenos"> 80</span></a><span class="sd">        Parameters</span>
 </span><span id="BlackjackWrapper.__init__-81"><a href="#BlackjackWrapper.__init__-81"><span class="linenos"> 81</span></a><span class="sd">        ----------</span>
@@ -546,7 +546,7 @@ Moreover, the behavior of the <code><a href="#BlackjackWrapper.step">step()</a><
 </span></pre></div>
 
 
-            <div class="docstring"><p>Discretize Blackjack observations and expose a transition and reward model.</p>
+            <div class="docstring"><p>Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.</p>
 
 <h6 id="parameters">Parameters</h6>
 

@@ -346,11 +346,11 @@ BSD 3-Clause License</p>
 </span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a><span class="sd">    torque_bins : int, optional (default=11)</span>
 </span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a><span class="sd">        Number of bins to discretize the torque.</span>
 </span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a><span class="sd">    n_workers : int, optional (default=4)</span>
-</span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a><span class="sd">        Workers used to set up transition probabilities.</span>
+</span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a><span class="sd">        Number of worker processes to use for setting up transition probabilities.</span>
 </span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a><span class="sd">    cache_dir : str, optional (default='./cached')</span>
 </span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a><span class="sd">        Directory to cache the transition probabilities.</span>
 </span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a><span class="sd">    dim_samples : int, optional (default=11)</span>
-</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a><span class="sd">        Samples used for each modeled dimension.</span>
+</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a><span class="sd">        Number of samples to use for each dimension when setting up transition probabilities.</span>
 </span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a><span class="sd">    Attributes:</span>
 </span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a><span class="sd">    -----------</span>
 </span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="sd">    angle_bins : int</span>
@@ -358,7 +358,7 @@ BSD 3-Clause License</p>
 </span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a><span class="sd">    angular_velocity_bins : int</span>
 </span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a><span class="sd">        Number of bins to discretize the angular velocity. Must be odd.</span>
 </span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a><span class="sd">    dim_samples : int</span>
-</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a><span class="sd">        Samples used for each modeled dimension.</span>
+</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a><span class="sd">        Number of samples to use for each dimension when setting up transition probabilities.</span>
 </span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a><span class="sd">    angle_bin_edges : numpy.ndarray</span>
 </span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a><span class="sd">        Edges of the bins for discretizing the angle.</span>
 </span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a><span class="sd">    angular_velocity_bin_edges : numpy.ndarray</span>
@@ -879,11 +879,11 @@ BSD 3-Clause License</p>
 </span><span id="DiscretizedPendulum-204"><a href="#DiscretizedPendulum-204"><span class="linenos">204</span></a><span class="sd">    torque_bins : int, optional (default=11)</span>
 </span><span id="DiscretizedPendulum-205"><a href="#DiscretizedPendulum-205"><span class="linenos">205</span></a><span class="sd">        Number of bins to discretize the torque.</span>
 </span><span id="DiscretizedPendulum-206"><a href="#DiscretizedPendulum-206"><span class="linenos">206</span></a><span class="sd">    n_workers : int, optional (default=4)</span>
-</span><span id="DiscretizedPendulum-207"><a href="#DiscretizedPendulum-207"><span class="linenos">207</span></a><span class="sd">        Workers used to set up transition probabilities.</span>
+</span><span id="DiscretizedPendulum-207"><a href="#DiscretizedPendulum-207"><span class="linenos">207</span></a><span class="sd">        Number of worker processes to use for setting up transition probabilities.</span>
 </span><span id="DiscretizedPendulum-208"><a href="#DiscretizedPendulum-208"><span class="linenos">208</span></a><span class="sd">    cache_dir : str, optional (default='./cached')</span>
 </span><span id="DiscretizedPendulum-209"><a href="#DiscretizedPendulum-209"><span class="linenos">209</span></a><span class="sd">        Directory to cache the transition probabilities.</span>
 </span><span id="DiscretizedPendulum-210"><a href="#DiscretizedPendulum-210"><span class="linenos">210</span></a><span class="sd">    dim_samples : int, optional (default=11)</span>
-</span><span id="DiscretizedPendulum-211"><a href="#DiscretizedPendulum-211"><span class="linenos">211</span></a><span class="sd">        Samples used for each modeled dimension.</span>
+</span><span id="DiscretizedPendulum-211"><a href="#DiscretizedPendulum-211"><span class="linenos">211</span></a><span class="sd">        Number of samples to use for each dimension when setting up transition probabilities.</span>
 </span><span id="DiscretizedPendulum-212"><a href="#DiscretizedPendulum-212"><span class="linenos">212</span></a><span class="sd">    Attributes:</span>
 </span><span id="DiscretizedPendulum-213"><a href="#DiscretizedPendulum-213"><span class="linenos">213</span></a><span class="sd">    -----------</span>
 </span><span id="DiscretizedPendulum-214"><a href="#DiscretizedPendulum-214"><span class="linenos">214</span></a><span class="sd">    angle_bins : int</span>
@@ -891,7 +891,7 @@ BSD 3-Clause License</p>
 </span><span id="DiscretizedPendulum-216"><a href="#DiscretizedPendulum-216"><span class="linenos">216</span></a><span class="sd">    angular_velocity_bins : int</span>
 </span><span id="DiscretizedPendulum-217"><a href="#DiscretizedPendulum-217"><span class="linenos">217</span></a><span class="sd">        Number of bins to discretize the angular velocity. Must be odd.</span>
 </span><span id="DiscretizedPendulum-218"><a href="#DiscretizedPendulum-218"><span class="linenos">218</span></a><span class="sd">    dim_samples : int</span>
-</span><span id="DiscretizedPendulum-219"><a href="#DiscretizedPendulum-219"><span class="linenos">219</span></a><span class="sd">        Samples used for each modeled dimension.</span>
+</span><span id="DiscretizedPendulum-219"><a href="#DiscretizedPendulum-219"><span class="linenos">219</span></a><span class="sd">        Number of samples to use for each dimension when setting up transition probabilities.</span>
 </span><span id="DiscretizedPendulum-220"><a href="#DiscretizedPendulum-220"><span class="linenos">220</span></a><span class="sd">    angle_bin_edges : numpy.ndarray</span>
 </span><span id="DiscretizedPendulum-221"><a href="#DiscretizedPendulum-221"><span class="linenos">221</span></a><span class="sd">        Edges of the bins for discretizing the angle.</span>
 </span><span id="DiscretizedPendulum-222"><a href="#DiscretizedPendulum-222"><span class="linenos">222</span></a><span class="sd">    angular_velocity_bin_edges : numpy.ndarray</span>
@@ -1063,11 +1063,11 @@ angular_velocity_bins : int
 torque_bins : int, optional (default=11)
     Number of bins to discretize the torque.
 n_workers : int, optional (default=4)
-    Workers used to set up transition probabilities.
+    Number of worker processes to use for setting up transition probabilities.
 cache_dir : str, optional (default='./cached')
     Directory to cache the transition probabilities.
 dim_samples : int, optional (default=11)
-    Samples used for each modeled dimension.</p>
+    Number of samples to use for each dimension when setting up transition probabilities.</p>
 
 <h2 id="attributes">Attributes:</h2>
 
@@ -1076,7 +1076,7 @@ dim_samples : int, optional (default=11)
 angular_velocity_bins : int
     Number of bins to discretize the angular velocity. Must be odd.
 dim_samples : int
-    Samples used for each modeled dimension.
+    Number of samples to use for each dimension when setting up transition probabilities.
 angle_bin_edges : numpy.ndarray
     Edges of the bins for discretizing the angle.
 angular_velocity_bin_edges : numpy.ndarray

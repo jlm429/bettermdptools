@@ -115,9 +115,9 @@
                     <h1 class="modulename">
 <a href="./../../bettermdptools.html">bettermdptools</a><wbr>.<a href="./../envs.html">envs</a><wbr>.cartpole_model    </h1>
 
-                        <div class="docstring"><p>Discretized CartPole model with adaptive angle binning.</p>
+                        <div class="docstring"><p>generative AI experiment - discretized cartpole transition and reward (P) matrix with adaptive angle binning</p>
 
-<p>Created as a generative AI experiment.</p>
+<p>created with chatGPT</p>
 
 <p>Example usage:
 dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)</p>
@@ -127,9 +127,9 @@ dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)</p>
 
                         <label class="view-source-button" for="mod-cartpole_model-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">"""Discretized CartPole model with adaptive angle binning.</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">"""generative AI experiment - discretized cartpole transition and reward (P) matrix with adaptive angle binning</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="sd">Created as a generative AI experiment.</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="sd">created with chatGPT</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a>
 </span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="sd">Example usage:</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="sd">dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)</span>
@@ -266,7 +266,7 @@ dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)</p>
 </span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
 </span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">adaptive_angle_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle_range</span><span class="p">,</span> <span class="n">center_resolution</span><span class="p">,</span> <span class="n">outer_resolution</span><span class="p">):</span>
 </span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">        Generate fine angle bins near the center and coarse bins farther away.</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">        Generates adaptive bins for the pole angle, with finer resolution near the center and coarser resolution farther away.</span>
 </span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>
 </span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="sd">        Parameters:</span>
 </span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="sd">        - angle_range (tuple): The minimum and maximum angles in radians.</span>
@@ -299,7 +299,7 @@ dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)</p>
 </span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">left_bins</span><span class="p">,</span> <span class="n">center_bins</span><span class="p">,</span> <span class="n">right_bins</span><span class="p">]))</span>
 </span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>
 </span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_transition_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="w">        </span><span class="sd">"""Build deterministic transitions for every modeled state and action."""</span>
+</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="w">        </span><span class="sd">"""Sets up transition probabilities for every modeled state and action."""</span>
 </span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a>        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">):</span>
 </span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>            <span class="n">position</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">angular_velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_to_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 </span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>            <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="p">):</span>
@@ -553,7 +553,7 @@ dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)</p>
 </span><span id="DiscretizedCartPole-138"><a href="#DiscretizedCartPole-138"><span class="linenos">138</span></a>
 </span><span id="DiscretizedCartPole-139"><a href="#DiscretizedCartPole-139"><span class="linenos">139</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">adaptive_angle_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle_range</span><span class="p">,</span> <span class="n">center_resolution</span><span class="p">,</span> <span class="n">outer_resolution</span><span class="p">):</span>
 </span><span id="DiscretizedCartPole-140"><a href="#DiscretizedCartPole-140"><span class="linenos">140</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="DiscretizedCartPole-141"><a href="#DiscretizedCartPole-141"><span class="linenos">141</span></a><span class="sd">        Generate fine angle bins near the center and coarse bins farther away.</span>
+</span><span id="DiscretizedCartPole-141"><a href="#DiscretizedCartPole-141"><span class="linenos">141</span></a><span class="sd">        Generates adaptive bins for the pole angle, with finer resolution near the center and coarser resolution farther away.</span>
 </span><span id="DiscretizedCartPole-142"><a href="#DiscretizedCartPole-142"><span class="linenos">142</span></a>
 </span><span id="DiscretizedCartPole-143"><a href="#DiscretizedCartPole-143"><span class="linenos">143</span></a><span class="sd">        Parameters:</span>
 </span><span id="DiscretizedCartPole-144"><a href="#DiscretizedCartPole-144"><span class="linenos">144</span></a><span class="sd">        - angle_range (tuple): The minimum and maximum angles in radians.</span>
@@ -586,7 +586,7 @@ dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)</p>
 </span><span id="DiscretizedCartPole-171"><a href="#DiscretizedCartPole-171"><span class="linenos">171</span></a>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">left_bins</span><span class="p">,</span> <span class="n">center_bins</span><span class="p">,</span> <span class="n">right_bins</span><span class="p">]))</span>
 </span><span id="DiscretizedCartPole-172"><a href="#DiscretizedCartPole-172"><span class="linenos">172</span></a>
 </span><span id="DiscretizedCartPole-173"><a href="#DiscretizedCartPole-173"><span class="linenos">173</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_transition_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="DiscretizedCartPole-174"><a href="#DiscretizedCartPole-174"><span class="linenos">174</span></a><span class="w">        </span><span class="sd">"""Build deterministic transitions for every modeled state and action."""</span>
+</span><span id="DiscretizedCartPole-174"><a href="#DiscretizedCartPole-174"><span class="linenos">174</span></a><span class="w">        </span><span class="sd">"""Sets up transition probabilities for every modeled state and action."""</span>
 </span><span id="DiscretizedCartPole-175"><a href="#DiscretizedCartPole-175"><span class="linenos">175</span></a>        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">):</span>
 </span><span id="DiscretizedCartPole-176"><a href="#DiscretizedCartPole-176"><span class="linenos">176</span></a>            <span class="n">position</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">angular_velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_to_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 </span><span id="DiscretizedCartPole-177"><a href="#DiscretizedCartPole-177"><span class="linenos">177</span></a>            <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="p">):</span>
@@ -1068,7 +1068,7 @@ coordinates into one discrete index for tabular algorithms.</p>
     <a class="headerlink" href="#DiscretizedCartPole.adaptive_angle_bins"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="DiscretizedCartPole.adaptive_angle_bins-139"><a href="#DiscretizedCartPole.adaptive_angle_bins-139"><span class="linenos">139</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">adaptive_angle_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle_range</span><span class="p">,</span> <span class="n">center_resolution</span><span class="p">,</span> <span class="n">outer_resolution</span><span class="p">):</span>
 </span><span id="DiscretizedCartPole.adaptive_angle_bins-140"><a href="#DiscretizedCartPole.adaptive_angle_bins-140"><span class="linenos">140</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="DiscretizedCartPole.adaptive_angle_bins-141"><a href="#DiscretizedCartPole.adaptive_angle_bins-141"><span class="linenos">141</span></a><span class="sd">        Generate fine angle bins near the center and coarse bins farther away.</span>
+</span><span id="DiscretizedCartPole.adaptive_angle_bins-141"><a href="#DiscretizedCartPole.adaptive_angle_bins-141"><span class="linenos">141</span></a><span class="sd">        Generates adaptive bins for the pole angle, with finer resolution near the center and coarser resolution farther away.</span>
 </span><span id="DiscretizedCartPole.adaptive_angle_bins-142"><a href="#DiscretizedCartPole.adaptive_angle_bins-142"><span class="linenos">142</span></a>
 </span><span id="DiscretizedCartPole.adaptive_angle_bins-143"><a href="#DiscretizedCartPole.adaptive_angle_bins-143"><span class="linenos">143</span></a><span class="sd">        Parameters:</span>
 </span><span id="DiscretizedCartPole.adaptive_angle_bins-144"><a href="#DiscretizedCartPole.adaptive_angle_bins-144"><span class="linenos">144</span></a><span class="sd">        - angle_range (tuple): The minimum and maximum angles in radians.</span>
@@ -1102,7 +1102,7 @@ coordinates into one discrete index for tabular algorithms.</p>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Generate fine angle bins near the center and coarse bins farther away.</p>
+            <div class="docstring"><p>Generates adaptive bins for the pole angle, with finer resolution near the center and coarser resolution farther away.</p>
 
 <p>Parameters:</p>
 
@@ -1133,7 +1133,7 @@ coordinates into one discrete index for tabular algorithms.</p>
     </div>
     <a class="headerlink" href="#DiscretizedCartPole.setup_transition_probabilities"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="DiscretizedCartPole.setup_transition_probabilities-173"><a href="#DiscretizedCartPole.setup_transition_probabilities-173"><span class="linenos">173</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_transition_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="DiscretizedCartPole.setup_transition_probabilities-174"><a href="#DiscretizedCartPole.setup_transition_probabilities-174"><span class="linenos">174</span></a><span class="w">        </span><span class="sd">"""Build deterministic transitions for every modeled state and action."""</span>
+</span><span id="DiscretizedCartPole.setup_transition_probabilities-174"><a href="#DiscretizedCartPole.setup_transition_probabilities-174"><span class="linenos">174</span></a><span class="w">        </span><span class="sd">"""Sets up transition probabilities for every modeled state and action."""</span>
 </span><span id="DiscretizedCartPole.setup_transition_probabilities-175"><a href="#DiscretizedCartPole.setup_transition_probabilities-175"><span class="linenos">175</span></a>        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_space</span><span class="p">):</span>
 </span><span id="DiscretizedCartPole.setup_transition_probabilities-176"><a href="#DiscretizedCartPole.setup_transition_probabilities-176"><span class="linenos">176</span></a>            <span class="n">position</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">angular_velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_to_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 </span><span id="DiscretizedCartPole.setup_transition_probabilities-177"><a href="#DiscretizedCartPole.setup_transition_probabilities-177"><span class="linenos">177</span></a>            <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_space</span><span class="p">):</span>
@@ -1144,7 +1144,7 @@ coordinates into one discrete index for tabular algorithms.</p>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Build deterministic transitions for every modeled state and action.</p>
+            <div class="docstring"><p>Sets up transition probabilities for every modeled state and action.</p>
 </div>
 
 

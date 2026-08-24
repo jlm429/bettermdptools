@@ -31,7 +31,7 @@ class AcrobotWrapper(gym.Wrapper):
         precomputed_P=None,
     ):
         """
-        Discretize observations and expose a transition and reward model.
+        Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
 
         Parameters
         ----------

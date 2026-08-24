@@ -86,7 +86,7 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
 </span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
 </span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TestEnv</span><span class="p">:</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="w">    </span><span class="sd">"""Simulate rollouts using a learned or user-driven policy."""</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="w">    </span><span class="sd">"""Utilities for simulating environment rollouts using a learned or user-driven policy."""</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>
 </span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>    <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>
@@ -108,19 +108,19 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">        env : gymnasium.Env</span>
 </span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a><span class="sd">            Gymnasium environment instance.</span>
 </span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">        desc : np.ndarray, optional</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="sd">            Description used by environments such as custom FrozenLake maps.</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="sd">            Environment description used by some environments (for example, custom FrozenLake maps).</span>
 </span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">            Only used when `render=True` causes the environment to be re-created.</span>
 </span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">        render : bool, default False</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">            Re-create the environment with `render_mode="human"` when true.</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">            If True, the environment is re-created with `render_mode="human"` when true.</span>
 </span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="sd">        n_iters : int, default 10</span>
 </span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="sd">            Number of episodes to simulate.</span>
 </span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="sd">        pi : array-like or callable, optional</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="sd">            Policy mapping states to actions, commonly indexed by state.</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="sd">            Policy mapping states to actions. Commonly an array where `pi[state]` gives the action.</span>
 </span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
 </span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="sd">        user_input : bool, default False</span>
 </span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
 </span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="sd">            Convert observations into discrete or transformed states.</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="sd">            Function applied to observations to convert them into discrete or transformed states.</span>
 </span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="sd">            If None, the observation is used directly.</span>
 </span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>
 </span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">        Returns</span>
@@ -131,7 +131,7 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="sd">        Notes</span>
 </span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="sd">        -----</span>
 </span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="sd">        - A rendered environment is created internally and closed before return.</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="sd">        - When `render=True`, the environment is created internally and closed before returning.</span>
 </span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">          Otherwise, the caller manages the environment lifecycle.</span>
 </span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a><span class="sd">        """</span>
 </span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -216,7 +216,7 @@ Documentation added by: Gagandeep Randhawa</p>
     </div>
     <a class="headerlink" href="#TestEnv"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="TestEnv-22"><a href="#TestEnv-22"><span class="linenos"> 22</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TestEnv</span><span class="p">:</span>
-</span><span id="TestEnv-23"><a href="#TestEnv-23"><span class="linenos"> 23</span></a><span class="w">    </span><span class="sd">"""Simulate rollouts using a learned or user-driven policy."""</span>
+</span><span id="TestEnv-23"><a href="#TestEnv-23"><span class="linenos"> 23</span></a><span class="w">    </span><span class="sd">"""Utilities for simulating environment rollouts using a learned or user-driven policy."""</span>
 </span><span id="TestEnv-24"><a href="#TestEnv-24"><span class="linenos"> 24</span></a>
 </span><span id="TestEnv-25"><a href="#TestEnv-25"><span class="linenos"> 25</span></a>    <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span id="TestEnv-26"><a href="#TestEnv-26"><span class="linenos"> 26</span></a>
@@ -238,19 +238,19 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="TestEnv-42"><a href="#TestEnv-42"><span class="linenos"> 42</span></a><span class="sd">        env : gymnasium.Env</span>
 </span><span id="TestEnv-43"><a href="#TestEnv-43"><span class="linenos"> 43</span></a><span class="sd">            Gymnasium environment instance.</span>
 </span><span id="TestEnv-44"><a href="#TestEnv-44"><span class="linenos"> 44</span></a><span class="sd">        desc : np.ndarray, optional</span>
-</span><span id="TestEnv-45"><a href="#TestEnv-45"><span class="linenos"> 45</span></a><span class="sd">            Description used by environments such as custom FrozenLake maps.</span>
+</span><span id="TestEnv-45"><a href="#TestEnv-45"><span class="linenos"> 45</span></a><span class="sd">            Environment description used by some environments (for example, custom FrozenLake maps).</span>
 </span><span id="TestEnv-46"><a href="#TestEnv-46"><span class="linenos"> 46</span></a><span class="sd">            Only used when `render=True` causes the environment to be re-created.</span>
 </span><span id="TestEnv-47"><a href="#TestEnv-47"><span class="linenos"> 47</span></a><span class="sd">        render : bool, default False</span>
-</span><span id="TestEnv-48"><a href="#TestEnv-48"><span class="linenos"> 48</span></a><span class="sd">            Re-create the environment with `render_mode="human"` when true.</span>
+</span><span id="TestEnv-48"><a href="#TestEnv-48"><span class="linenos"> 48</span></a><span class="sd">            If True, the environment is re-created with `render_mode="human"` when true.</span>
 </span><span id="TestEnv-49"><a href="#TestEnv-49"><span class="linenos"> 49</span></a><span class="sd">        n_iters : int, default 10</span>
 </span><span id="TestEnv-50"><a href="#TestEnv-50"><span class="linenos"> 50</span></a><span class="sd">            Number of episodes to simulate.</span>
 </span><span id="TestEnv-51"><a href="#TestEnv-51"><span class="linenos"> 51</span></a><span class="sd">        pi : array-like or callable, optional</span>
-</span><span id="TestEnv-52"><a href="#TestEnv-52"><span class="linenos"> 52</span></a><span class="sd">            Policy mapping states to actions, commonly indexed by state.</span>
+</span><span id="TestEnv-52"><a href="#TestEnv-52"><span class="linenos"> 52</span></a><span class="sd">            Policy mapping states to actions. Commonly an array where `pi[state]` gives the action.</span>
 </span><span id="TestEnv-53"><a href="#TestEnv-53"><span class="linenos"> 53</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
 </span><span id="TestEnv-54"><a href="#TestEnv-54"><span class="linenos"> 54</span></a><span class="sd">        user_input : bool, default False</span>
 </span><span id="TestEnv-55"><a href="#TestEnv-55"><span class="linenos"> 55</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
 </span><span id="TestEnv-56"><a href="#TestEnv-56"><span class="linenos"> 56</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
-</span><span id="TestEnv-57"><a href="#TestEnv-57"><span class="linenos"> 57</span></a><span class="sd">            Convert observations into discrete or transformed states.</span>
+</span><span id="TestEnv-57"><a href="#TestEnv-57"><span class="linenos"> 57</span></a><span class="sd">            Function applied to observations to convert them into discrete or transformed states.</span>
 </span><span id="TestEnv-58"><a href="#TestEnv-58"><span class="linenos"> 58</span></a><span class="sd">            If None, the observation is used directly.</span>
 </span><span id="TestEnv-59"><a href="#TestEnv-59"><span class="linenos"> 59</span></a>
 </span><span id="TestEnv-60"><a href="#TestEnv-60"><span class="linenos"> 60</span></a><span class="sd">        Returns</span>
@@ -261,7 +261,7 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="TestEnv-65"><a href="#TestEnv-65"><span class="linenos"> 65</span></a><span class="sd">        Notes</span>
 </span><span id="TestEnv-66"><a href="#TestEnv-66"><span class="linenos"> 66</span></a><span class="sd">        -----</span>
 </span><span id="TestEnv-67"><a href="#TestEnv-67"><span class="linenos"> 67</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
-</span><span id="TestEnv-68"><a href="#TestEnv-68"><span class="linenos"> 68</span></a><span class="sd">        - A rendered environment is created internally and closed before return.</span>
+</span><span id="TestEnv-68"><a href="#TestEnv-68"><span class="linenos"> 68</span></a><span class="sd">        - When `render=True`, the environment is created internally and closed before returning.</span>
 </span><span id="TestEnv-69"><a href="#TestEnv-69"><span class="linenos"> 69</span></a><span class="sd">          Otherwise, the caller manages the environment lifecycle.</span>
 </span><span id="TestEnv-70"><a href="#TestEnv-70"><span class="linenos"> 70</span></a><span class="sd">        """</span>
 </span><span id="TestEnv-71"><a href="#TestEnv-71"><span class="linenos"> 71</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -333,7 +333,7 @@ Documentation added by: Gagandeep Randhawa</p>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Simulate rollouts using a learned or user-driven policy.</p>
+            <div class="docstring"><p>Utilities for simulating environment rollouts using a learned or user-driven policy.</p>
 </div>
 
 
@@ -367,19 +367,19 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="TestEnv.test_env-42"><a href="#TestEnv.test_env-42"><span class="linenos"> 42</span></a><span class="sd">        env : gymnasium.Env</span>
 </span><span id="TestEnv.test_env-43"><a href="#TestEnv.test_env-43"><span class="linenos"> 43</span></a><span class="sd">            Gymnasium environment instance.</span>
 </span><span id="TestEnv.test_env-44"><a href="#TestEnv.test_env-44"><span class="linenos"> 44</span></a><span class="sd">        desc : np.ndarray, optional</span>
-</span><span id="TestEnv.test_env-45"><a href="#TestEnv.test_env-45"><span class="linenos"> 45</span></a><span class="sd">            Description used by environments such as custom FrozenLake maps.</span>
+</span><span id="TestEnv.test_env-45"><a href="#TestEnv.test_env-45"><span class="linenos"> 45</span></a><span class="sd">            Environment description used by some environments (for example, custom FrozenLake maps).</span>
 </span><span id="TestEnv.test_env-46"><a href="#TestEnv.test_env-46"><span class="linenos"> 46</span></a><span class="sd">            Only used when `render=True` causes the environment to be re-created.</span>
 </span><span id="TestEnv.test_env-47"><a href="#TestEnv.test_env-47"><span class="linenos"> 47</span></a><span class="sd">        render : bool, default False</span>
-</span><span id="TestEnv.test_env-48"><a href="#TestEnv.test_env-48"><span class="linenos"> 48</span></a><span class="sd">            Re-create the environment with `render_mode="human"` when true.</span>
+</span><span id="TestEnv.test_env-48"><a href="#TestEnv.test_env-48"><span class="linenos"> 48</span></a><span class="sd">            If True, the environment is re-created with `render_mode="human"` when true.</span>
 </span><span id="TestEnv.test_env-49"><a href="#TestEnv.test_env-49"><span class="linenos"> 49</span></a><span class="sd">        n_iters : int, default 10</span>
 </span><span id="TestEnv.test_env-50"><a href="#TestEnv.test_env-50"><span class="linenos"> 50</span></a><span class="sd">            Number of episodes to simulate.</span>
 </span><span id="TestEnv.test_env-51"><a href="#TestEnv.test_env-51"><span class="linenos"> 51</span></a><span class="sd">        pi : array-like or callable, optional</span>
-</span><span id="TestEnv.test_env-52"><a href="#TestEnv.test_env-52"><span class="linenos"> 52</span></a><span class="sd">            Policy mapping states to actions, commonly indexed by state.</span>
+</span><span id="TestEnv.test_env-52"><a href="#TestEnv.test_env-52"><span class="linenos"> 52</span></a><span class="sd">            Policy mapping states to actions. Commonly an array where `pi[state]` gives the action.</span>
 </span><span id="TestEnv.test_env-53"><a href="#TestEnv.test_env-53"><span class="linenos"> 53</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
 </span><span id="TestEnv.test_env-54"><a href="#TestEnv.test_env-54"><span class="linenos"> 54</span></a><span class="sd">        user_input : bool, default False</span>
 </span><span id="TestEnv.test_env-55"><a href="#TestEnv.test_env-55"><span class="linenos"> 55</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
 </span><span id="TestEnv.test_env-56"><a href="#TestEnv.test_env-56"><span class="linenos"> 56</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
-</span><span id="TestEnv.test_env-57"><a href="#TestEnv.test_env-57"><span class="linenos"> 57</span></a><span class="sd">            Convert observations into discrete or transformed states.</span>
+</span><span id="TestEnv.test_env-57"><a href="#TestEnv.test_env-57"><span class="linenos"> 57</span></a><span class="sd">            Function applied to observations to convert them into discrete or transformed states.</span>
 </span><span id="TestEnv.test_env-58"><a href="#TestEnv.test_env-58"><span class="linenos"> 58</span></a><span class="sd">            If None, the observation is used directly.</span>
 </span><span id="TestEnv.test_env-59"><a href="#TestEnv.test_env-59"><span class="linenos"> 59</span></a>
 </span><span id="TestEnv.test_env-60"><a href="#TestEnv.test_env-60"><span class="linenos"> 60</span></a><span class="sd">        Returns</span>
@@ -390,7 +390,7 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="TestEnv.test_env-65"><a href="#TestEnv.test_env-65"><span class="linenos"> 65</span></a><span class="sd">        Notes</span>
 </span><span id="TestEnv.test_env-66"><a href="#TestEnv.test_env-66"><span class="linenos"> 66</span></a><span class="sd">        -----</span>
 </span><span id="TestEnv.test_env-67"><a href="#TestEnv.test_env-67"><span class="linenos"> 67</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
-</span><span id="TestEnv.test_env-68"><a href="#TestEnv.test_env-68"><span class="linenos"> 68</span></a><span class="sd">        - A rendered environment is created internally and closed before return.</span>
+</span><span id="TestEnv.test_env-68"><a href="#TestEnv.test_env-68"><span class="linenos"> 68</span></a><span class="sd">        - When `render=True`, the environment is created internally and closed before returning.</span>
 </span><span id="TestEnv.test_env-69"><a href="#TestEnv.test_env-69"><span class="linenos"> 69</span></a><span class="sd">          Otherwise, the caller manages the environment lifecycle.</span>
 </span><span id="TestEnv.test_env-70"><a href="#TestEnv.test_env-70"><span class="linenos"> 70</span></a><span class="sd">        """</span>
 </span><span id="TestEnv.test_env-71"><a href="#TestEnv.test_env-71"><span class="linenos"> 71</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -448,19 +448,19 @@ Documentation added by: Gagandeep Randhawa</p>
 <li><strong>env</strong> (gymnasium.Env):
 Gymnasium environment instance.</li>
 <li><strong>desc</strong> (np.ndarray, optional):
-Description used by environments such as custom FrozenLake maps.
+Environment description used by some environments (for example, custom FrozenLake maps).
 Only used when <code>render=True</code> causes the environment to be re-created.</li>
 <li><strong>render</strong> (bool, default False):
-Re-create the environment with <code>render_mode="human"</code> when true.</li>
+If True, the environment is re-created with <code>render_mode="human"</code> when true.</li>
 <li><strong>n_iters</strong> (int, default 10):
 Number of episodes to simulate.</li>
 <li><strong>pi</strong> (array-like or callable, optional):
-Policy mapping states to actions, commonly indexed by state.
+Policy mapping states to actions. Commonly an array where `pi[state]` gives the action.
 If <code>user_input=True</code>, this is shown as a suggested action.</li>
 <li><strong>user_input</strong> (bool, default False):
 If True, prompt the user to select each action interactively.</li>
 <li><strong>convert_state_obs</strong> (callable or None, default identity):
-Convert observations into discrete or transformed states.
+Function applied to observations to convert them into discrete or transformed states.
 If None, the observation is used directly.</li>
 </ul>
 
@@ -474,7 +474,7 @@ If None, the observation is used directly.</li>
 
 <ul>
 <li>This function assumes a discrete action space with <code>env.action_space.n</code>.</li>
-<li>A rendered environment is created internally and closed before return.
+<li>When `render=True`, the environment is created internally and closed before returning.
 Otherwise, the caller manages the environment lifecycle.</li>
 </ul>
 </div>

@@ -1,10 +1,25 @@
-"""Model-free Q-Learning and SARSA algorithms.
+"""
+Author: Miguel Morales
+BSD 3-Clause License
 
-``RL`` accepts a Gymnasium environment. Discrete observation spaces work
-directly, while callers can supply a conversion function for other spaces.
+Copyright (c) 2018, Miguel Morales
+All rights reserved.
+https://github.com/mimoralea/gdrl/blob/master/LICENSE
+"""
 
-Based on work by Miguel Morales under the BSD 3-Clause License. Modified by
-John Mansfield, with documentation by Gagandeep Randhawa.
+"""
+modified by: John Mansfield
+
+documentation added by: Gagandeep Randhawa
+"""
+
+"""
+Class that contains functions related to reinforcement learning algorithms. RL init expects a Gymnasium environment (env).
+
+Model-free learning algorithms: Q-Learning and SARSA
+work out of the box with any gymnasium environments that
+have single discrete valued state spaces, like frozen lake. A lambda function
+is required to convert state spaces not in this format.
 """
 
 import warnings

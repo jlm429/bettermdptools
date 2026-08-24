@@ -115,7 +115,7 @@ class EnvFactory:
         Parameters
         ----------
         env_id:
-            Gymnasium environment id, such as "FrozenLake8x8-v1".
+            Gymnasium environment id (for example, "FrozenLake8x8-v1", "CartPole-v1").
         gym_kwargs:
             Keyword arguments forwarded to `gym.make`.
         wrapper:
@@ -156,7 +156,7 @@ class EnvFactory:
                 meta={"source": "gym", "wrapped": False},
             )
 
-        # If P is unavailable, apply an explicit or registered wrapper.
+        # If no P is available, optionally apply a wrapper (explicit or registry-based)
         if wrapper is None:
             for key, spec in self._registry.items():
                 if key in env_id:
@@ -167,8 +167,9 @@ class EnvFactory:
         if wrapper_callable is None:
             raise ValueError(
                 f"Environment {env_id!r} does not expose a P matrix, and no "
-                "wrapper was provided. This library requires P for planning "
-                "and tabular RL. Provide `wrapper=` or use a supported env."
+                "wrapper was provided. This library focuses on environments that "
+                "provide P for planning/tabular RL. Provide `wrapper=` (callable or "
+                "import path) or use a supported env."
             )
 
         wrapped_env = wrapper_callable(env, **wrapper_kwargs)
@@ -183,7 +184,7 @@ class EnvFactory:
         convert = getattr(wrapped_env, "transform_obs", None)
 
         # Some wrappers may transform observations internally.
-        # Integer observations do not need another conversion.
+        # If observations are already integers, conversion should be an identity function.
         if convert is not None:
             obs_space = getattr(wrapped_env, "observation_space", None)
             if getattr(obs_space, "n", None) is not None:
