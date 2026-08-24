@@ -14,14 +14,18 @@ class Callbacks:
     Callback interface for RL algorithms.
 
     Notes
-    - All hooks accept `caller` so callbacks can read algorithm state (Q table, epsilon, etc.).
+    - Hooks accept `caller` so callbacks can read algorithm state.
     - Hooks accept `**kwargs` for forward compatibility.
     """
 
-    def on_episode_begin(self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any) -> None:
+    def on_episode_begin(
+        self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
+    ) -> None:
         pass
 
-    def on_episode_end(self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any) -> None:
+    def on_episode_end(
+        self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
+    ) -> None:
         pass
 
     def on_episode(self, caller: Any, episode: int, **kwargs: Any) -> None:
@@ -30,6 +34,7 @@ class Callbacks:
     def on_env_step(self, caller: Any, **kwargs: Any) -> None:
         pass
 
+
 # Backward-compatible name (keeps existing imports working)
 class MyCallbacks(Callbacks):
     """
@@ -37,7 +42,9 @@ class MyCallbacks(Callbacks):
 
     Override any hook method in a subclass to execute custom logic during training.
     """
+
     pass
+
 
 @dataclass
 class ExampleCallbacks(Callbacks):
@@ -65,12 +72,16 @@ class ExampleCallbacks(Callbacks):
                 msg += f" gamma={gamma:.4f}"
             print(msg)
 
-    def on_episode_begin(self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any) -> None:
+    def on_episode_begin(
+        self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
+    ) -> None:
         # Example: reset per-episode counters stored on the callback instance
         # self.steps_this_episode = 0
         pass
 
-    def on_episode_end(self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any) -> None:
+    def on_episode_end(
+        self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
+    ) -> None:
         # Example: read metrics passed by the algorithm if available
         # total_reward = kwargs.get("episode_reward")
         pass

@@ -65,7 +65,7 @@ from bettermdptools.utils.plots import Plots
 
 env = gym.make("FrozenLake8x8-v1", render_mode=None)
 
-V, V_track, pi = Planner(env.P).value_iteration()
+V, V_track, pi = Planner(env.unwrapped.P).value_iteration()
 
 Plots.values_heat_map(
     V,
@@ -73,6 +73,10 @@ Plots.values_heat_map(
     size=(8, 8),
 )
 ```
+
+Gymnasium keeps built-in transition dictionaries on the unwrapped environment.
+Custom bettermdptools wrappers continue to expose their generated model as `.P`.
+
 ![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
 ---
 

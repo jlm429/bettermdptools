@@ -5,20 +5,15 @@ BSD 3-Clause License
 Copyright (c) 2018, Miguel Morales
 All rights reserved.
 https://github.com/mimoralea/gdrl/blob/master/LICENSE
-"""
-
-"""
 modified by: John Mansfield
 
 documentation added by: Gagandeep Randhawa
-"""
 
-"""
-Class that contains functions related to reinforcement learning algorithms. RL init expects an OpenAI environment (env).
+Reinforcement learning algorithms. RL expects a Gymnasium environment.
 
 Model-free learning algorithms: Q-Learning and SARSA
-work out of the box with any gymnasium environments that 
-have single discrete valued state spaces, like frozen lake. A lambda function 
+work out of the box with any gymnasium environments that
+have single discrete valued state spaces, like frozen lake. A lambda function
 is required to convert state spaces not in this format.
 """
 
@@ -44,8 +39,8 @@ class RL:
         #       return np.random.choice(indxs)
         #   else:
         #       return np.random.randint(len(Q[state]))
-        self.select_action = (
-            lambda state, Q, epsilon: np.random.choice(
+        self.select_action = lambda state, Q, epsilon: (
+            np.random.choice(
                 np.arange(len(Q[state]))[np.isclose(Q[state], np.max(Q[state]))]
             )
             if np.random.random() > epsilon
@@ -146,6 +141,11 @@ class RL:
                 Log of complete policy for each episode.
             rewards : np.ndarray
                 Rewards obtained in each episode.
+
+        Notes
+        -----
+        Episodes stop after either termination or truncation. The TD target
+        bootstraps across truncation, but not across a true terminal state.
         """
         if nS is None:
             nS = self.env.observation_space.n
@@ -163,24 +163,21 @@ class RL:
             self.callbacks.on_episode_begin(self)
             self.callbacks.on_episode(self, episode=e)
             state, info = self.env.reset()
-            done = False
+            episode_done = False
             state = convert_state_obs(state)
             total_reward = 0
-            while not done:
+            while not episode_done:
                 if self.render:
                     warnings.warn(
-                        "Occasional render has been deprecated by openAI.  Use test_env.py to render."
+                        "Occasional rendering is deprecated. Use test_env.py "
+                        "to render."
                     )
                 action = self.select_action(state, Q, epsilons[e])
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
-                if truncated:
-                    warnings.warn(
-                        "Episode was truncated.  TD target value may be incorrect."
-                    )
-                done = terminated or truncated
+                episode_done = terminated or truncated
                 self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)
-                td_target = reward + gamma * Q[next_state].max() * (not done)
+                td_target = reward + gamma * Q[next_state].max() * (not terminated)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state = next_state
@@ -253,6 +250,11 @@ class RL:
                 Log of complete policy for each episode.
             rewards : np.ndarray
                 Rewards obtained in each episode.
+
+        Notes
+        -----
+        Episodes stop after either termination or truncation. The TD target
+        bootstraps across truncation, but not across a true terminal state.
         """
         if nS is None:
             nS = self.env.observation_space.n
@@ -271,25 +273,24 @@ class RL:
             self.callbacks.on_episode_begin(self)
             self.callbacks.on_episode(self, episode=e)
             state, info = self.env.reset()
-            done = False
+            episode_done = False
             state = convert_state_obs(state)
             action = self.select_action(state, Q, epsilons[e])
             total_reward = 0
-            while not done:
+            while not episode_done:
                 if self.render:
                     warnings.warn(
-                        "Occasional render has been deprecated by openAI.  Use test_env.py to render."
+                        "Occasional rendering is deprecated. Use test_env.py "
+                        "to render."
                     )
                 next_state, reward, terminated, truncated, _ = self.env.step(action)
-                if truncated:
-                    warnings.warn(
-                        "Episode was truncated.  TD target value may be incorrect."
-                    )
-                done = terminated or truncated
+                episode_done = terminated or truncated
                 self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)
                 next_action = self.select_action(next_state, Q, epsilons[e])
-                td_target = reward + gamma * Q[next_state][next_action] * (not done)
+                td_target = reward + gamma * Q[next_state][next_action] * (
+                    not terminated
+                )
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state, action = next_state, next_action

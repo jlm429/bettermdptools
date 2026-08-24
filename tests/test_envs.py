@@ -1,5 +1,6 @@
 import unittest
 import warnings
+from tempfile import TemporaryDirectory
 
 import gymnasium as gym
 import numpy as np
@@ -21,13 +22,29 @@ class TestEnvs(unittest.TestCase):
         base_env = gym.make("CartPole-v1", render_mode=None)
         cls.cartpole = CartpoleWrapper(base_env, position_bins=2, velocity_bins=2)
         cls.frozen_lake = gym.make("FrozenLake8x8-v1", render_mode=None)
-        cls.taxi = gym.make("Taxi-v3", render_mode=None)
+        cls.taxi = gym.make("Taxi-v4", render_mode=None)
 
-        base_env = gym.make('Pendulum-v1', render_mode=None)
-        cls.pendulum = PendulumWrapper(base_env)
+        base_env = gym.make("Pendulum-v1", render_mode=None)
+        cls.pendulum_cache = TemporaryDirectory(dir=".")
+        cls.pendulum = PendulumWrapper(
+            base_env,
+            cache_dir=cls.pendulum_cache.name,
+        )
 
-        warnings.filterwarnings('ignore')
         warnings.filterwarnings("ignore")
+        warnings.filterwarnings("ignore")
+
+    @classmethod
+    def tearDownClass(cls):
+        for env in (
+            cls.blackjack,
+            cls.cartpole,
+            cls.frozen_lake,
+            cls.taxi,
+            cls.pendulum,
+        ):
+            env.close()
+        cls.pendulum_cache.cleanup()
 
     def test_acrobot_value_iteration(self):
         # instantiate here so setup isn't slow every test
@@ -60,7 +77,9 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_fl_value_iteration(self):
-        V, V_track, pi = Planner(self.frozen_lake.P).value_iteration(n_iters=2)
+        V, V_track, pi = Planner(self.frozen_lake.unwrapped.P).value_iteration(
+            n_iters=2
+        )
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -69,7 +88,7 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_taxi_value_iteration(self):
-        V, V_track, pi = Planner(self.taxi.P).value_iteration(n_iters=2)
+        V, V_track, pi = Planner(self.taxi.unwrapped.P).value_iteration(n_iters=2)
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -85,7 +104,7 @@ class TestEnvs(unittest.TestCase):
         test_scores = TestEnv.test_env(env=self.pendulum, n_iters=1, pi=pi)
         mean_score = np.mean(test_scores)
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
-        
+
     # def test_acrobot_policy_iteration(self):
     #     # CURRENTLY TOO SLOW TO RUN
     #     V, V_track, pi = Planner(acrobot.P).policy_iteration(n_iters=1)
@@ -116,7 +135,9 @@ class TestEnvs(unittest.TestCase):
     #     self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_fl_policy_iteration(self):
-        V, V_track, pi = Planner(self.frozen_lake.P).policy_iteration(n_iters=2)
+        V, V_track, pi = Planner(self.frozen_lake.unwrapped.P).policy_iteration(
+            n_iters=2
+        )
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -126,7 +147,9 @@ class TestEnvs(unittest.TestCase):
 
     # def test_taxi_policy_iteration(self):
     #     # VERY SLOW TO RUN
-    #     V, V_track, pi = Planner(self.taxi.P).policy_iteration(n_iters=1)
+    #     V, V_track, pi = Planner(self.taxi.unwrapped.P).policy_iteration(
+    #         n_iters=1
+    #     )
     #     self.assertIsNotNone(V, "Value function should not be None")
     #     self.assertIsNotNone(pi, "Policy should not be None")
 
@@ -204,7 +227,9 @@ class TestEnvs(unittest.TestCase):
         self.assertIsNotNone(mean_score, "Mean test score should not be None")
 
     def test_pendulum_q_learning(self):
-        Q, V, pi, Q_track, pi_track, rewards = RL(self.pendulum).q_learning(n_episodes=2)
+        Q, V, pi, Q_track, pi_track, rewards = RL(self.pendulum).q_learning(
+            n_episodes=2
+        )
         self.assertIsNotNone(Q, "Q-table should not be None")
         self.assertIsNotNone(V, "Value function should not be None")
         self.assertIsNotNone(pi, "Policy should not be None")
@@ -216,5 +241,6 @@ class TestEnvs(unittest.TestCase):
     # def test_fail_on_purpose(self):
     #     self.assertTrue(False, "This test should fail")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

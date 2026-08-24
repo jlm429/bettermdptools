@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from .env_factory import EnvFactory
 from .algorithms import normalize_algo_name, run_algorithm
+from .env_factory import EnvFactory
 from .types import EnvBundle, RunResult
 
 

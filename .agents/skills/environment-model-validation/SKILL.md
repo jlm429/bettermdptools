@@ -29,6 +29,8 @@ Read the repository [agent guide](../../../AGENTS.md) first.
   transitions do not bootstrap future value.
 - `terminated` and `truncated` follow Gymnasium semantics. Reset and step tuple shapes
   remain compatible with the supported Gymnasium version in `pyproject.toml`.
+- Gymnasium 1.x built-in discrete models are accessed explicitly through
+  `env.unwrapped.P`; custom wrappers expose their own model through a `P` property.
 - Continuous-space bin boundaries, clipping, and edge observations map consistently.
 
 ## Supply evidence

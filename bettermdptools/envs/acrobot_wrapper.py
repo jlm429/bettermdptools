@@ -3,13 +3,10 @@ import gymnasium as gym
 from bettermdptools.envs.acrobot_model import DiscretizedAcrobot
 
 
-class CustomTransformObservation(gym.ObservationWrapper):
+class CustomTransformObservation(gym.wrappers.TransformObservation):
     def __init__(self, env, func, observation_space):
         """
-        Helper class that modifies the observation space. The v26 gymnasium TransformObservation wrapper does not
-        accept an observation_space parameter, which is needed in order to match the lambda conversion (tuple->int).
-        Instead, we subclass gym.ObservationWrapper (parent class of gym.TransformObservation)
-        to set both the conversion function and new observation space.
+        Transform observations while declaring the transformed observation space.
 
         Parameters
         ----------
@@ -20,27 +17,7 @@ class CustomTransformObservation(gym.ObservationWrapper):
         observation_space : gymnasium.spaces.Space
             New observation space
         """
-        super().__init__(env)
-        if observation_space is not None:
-            self.observation_space = observation_space
-        self.func = func
-
-    def observation(self, observation):
-        """
-        Applies a function to the observation received from the environment's step function,
-        which is passed back to the user.
-
-        Parameters
-        ----------
-        observation : Tuple
-            Base environment observation tuple
-
-        Returns
-        -------
-        int
-            The converted observation (int).
-        """
-        return self.func(observation)
+        super().__init__(env=env, func=func, observation_space=observation_space)
 
 
 class AcrobotWrapper(gym.Wrapper):
@@ -54,7 +31,7 @@ class AcrobotWrapper(gym.Wrapper):
         precomputed_P=None,
     ):
         """
-        Cartpole wrapper that modifies the observation space and creates a transition/reward matrix P.
+        Modify the observation space and create transition and reward matrix P.
 
         Parameters
         ----------

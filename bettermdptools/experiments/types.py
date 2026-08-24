@@ -19,7 +19,7 @@ class EnvBundle:
     env:
         A gymnasium environment instance, which may be wrapped.
     P:
-        Transition dictionary in Gym-style discrete format.
+        Transition dictionary in Gymnasium-style discrete format.
     convert_state_obs:
         Function that maps an environment observation to an integer state index.
         For most discrete Gym environments, this is the identity function.

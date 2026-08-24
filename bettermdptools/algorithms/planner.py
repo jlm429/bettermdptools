@@ -5,17 +5,12 @@ BSD 3-Clause License
 Copyright (c) 2018, Miguel Morales
 All rights reserved.
 https://github.com/mimoralea/gdrl/blob/master/LICENSE
-"""
-
-"""
 modified by: John Mansfield
 
 documentation added by: Gagandeep Randhawa
-"""
 
-"""
-Class that contains functions related to planning algorithms (Value Iteration, Policy Iteration). 
-Planner init expects a reward and transitions matrix P, which is nested dictionary gym style discrete environment 
+Planning algorithms, including Value Iteration and Policy Iteration.
+Planner expects a Gymnasium-style nested transition and reward dictionary P,
 where P[state][action] is a list of tuples (probability, next state, reward, terminal).
 
 Model-based learning algorithms: Value Iteration and Policy Iteration
@@ -100,7 +95,8 @@ class Planner:
 
         theta : float
             Convergence criterion for value iteration.
-            State values are considered to be converged when the maximum difference between new and previous state values is less than theta.
+            State values converge when the maximum difference between new and
+            previous values is less than theta.
             Stops at n_iters or theta convergence - whichever comes first.
 
         Returns

@@ -54,13 +54,10 @@ import pickle
 import gymnasium as gym
 
 
-class CustomTransformObservation(gym.ObservationWrapper):
+class CustomTransformObservation(gym.wrappers.TransformObservation):
     def __init__(self, env, func, observation_space):
         """
-        Helper class that modifies the observation space. The v26 gymnasium TransformObservation wrapper does not
-        accept an observation_space parameter, which is needed in order to match the lambda conversion (tuple->int).
-        Instead, we subclass gym.ObservationWrapper (parent class of gym.TransformObservation)
-        to set both the conversion function and new observation space.
+        Transform observations while declaring the transformed observation space.
 
         Parameters
         ----------
@@ -71,33 +68,13 @@ class CustomTransformObservation(gym.ObservationWrapper):
         observation_space : gymnasium.spaces.Space
             New observation space.
         """
-        super().__init__(env)
-        if observation_space is not None:
-            self.observation_space = observation_space
-        self.func = func
-
-    def observation(self, observation):
-        """
-        Applies a function to the observation received from the environment's step function,
-        which is passed back to the user.
-
-        Parameters
-        ----------
-        observation : Tuple
-            Blackjack base environment observation tuple.
-
-        Returns
-        -------
-        int
-            The converted observation (290 discrete observable states).
-        """
-        return self.func(observation)
+        super().__init__(env=env, func=func, observation_space=observation_space)
 
 
 class BlackjackWrapper(gym.Wrapper):
     def __init__(self, env):
         """
-        Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.
+        Modify the observation space and create transition and reward matrix P.
 
         Parameters
         ----------
@@ -105,18 +82,22 @@ class BlackjackWrapper(gym.Wrapper):
             Blackjack base environment.
 
         Explanation of _transform_obs lambda:
-        Lambda function assigned to the variable `self._convert_state_obs` takes parameter, `state` and
-        converts the input into a compact single integer value by concatenating player hand with dealer card.
+        The function assigned to `self._convert_state_obs` converts `state` to a
+        compact integer by combining the player's hand and dealer's card.
         See comments above for further information.
         """
         self._transform_obs = lambda obs: (
             int(f"{28}{(obs[1] - 2) % 10}")
             if (obs[0] == 21 and obs[2])
-            else int(f"{27}{(obs[1] - 2) % 10}")
-            if (obs[0] == 21 and not obs[2])
-            else int(f"{obs[0] + 6}{(obs[1] - 2) % 10}")
-            if obs[2]
-            else int(f"{obs[0] - 4}{(obs[1] - 2) % 10}")
+            else (
+                int(f"{27}{(obs[1] - 2) % 10}")
+                if (obs[0] == 21 and not obs[2])
+                else (
+                    int(f"{obs[0] + 6}{(obs[1] - 2) % 10}")
+                    if obs[2]
+                    else int(f"{obs[0] - 4}{(obs[1] - 2) % 10}")
+                )
+            )
         )
         env = CustomTransformObservation(
             env, self._transform_obs, gym.spaces.Discrete(290)

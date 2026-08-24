@@ -10,7 +10,7 @@ packages = [{ include = "bettermdptools" }]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-gymnasium = ">=0.26,<0.27"
+gymnasium = ">=1.3.0,<1.4"
 pygame = "*"
 numpy = "<2"
 tqdm = "*"
@@ -26,6 +26,7 @@ optuna = "^4.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.0.0"
+pytest = "^9.0.0"
 ruff = "^0.14.8"
 
 [build-system]
