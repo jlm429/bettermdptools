@@ -1,21 +1,29 @@
 r"""
 # bettermdptools
 
-Welcome to **bettermdptools**, a comprehensive library designed to facilitate working with Markov Decision Processes (MDPs) and reinforcement learning environments. This library is built to provide robust tools for both model-based and model-free reinforcement learning algorithms, along with utilities for environment modeling, visualization, and more.
+Welcome to **bettermdptools**, a library for working with Markov Decision
+Processes (MDPs) and reinforcement learning environments. It provides tools for
+model-based and model-free algorithms, environment modeling, and visualization.
 
 ## Key Features
 
 ### Reinforcement Learning Algorithms
-bettermdptools includes implementations of popular model-free reinforcement learning algorithms such as Q-Learning and SARSA. These algorithms are designed to work seamlessly with any gymnasium environments that have single discrete valued state spaces. For environments that do not fit this format, a lambda function can be used to convert state spaces accordingly.
+bettermdptools includes model-free algorithms such as Q-Learning and SARSA.
+They work with Gymnasium environments that have single discrete-valued state
+spaces. Other state spaces can be converted with a callable.
 
 ### Planning Algorithms
-The library also provides model-based planning algorithms like Value Iteration and Policy Iteration. These algorithms are essential for solving MDPs where the transition probabilities and rewards are known.
+The library also provides model-based planning algorithms such as Value
+Iteration and Policy Iteration for MDPs with known transitions and rewards.
 
 ### Environment Models
-bettermdptools comes with pre-built environment models for popular problems such as Blackjack, CartPole, and Pendulum. These models include discretized versions of the environments, making it easier to apply traditional reinforcement learning and planning algorithms.
+bettermdptools includes environment models for Blackjack, CartPole, and
+Pendulum. Discretized models allow tabular learning and planning algorithms to
+work with continuous environments.
 
 ### Visualization Tools
-To help you better understand and analyze the performance of your algorithms, bettermdptools includes a variety of plotting utilities. These tools can generate heatmaps, line plots, and other visualizations to track the progress and performance of your learning agents.
+Plotting utilities generate heatmaps, line plots, and other visualizations for
+analyzing learning progress and performance.
 
 ## Getting Started
 
@@ -27,7 +35,8 @@ https://github.com/jlm429/bettermdptools
 
 ## Modules
 
-- [Utils](./bettermdptools/utils.html): Utility functions and classes used across the library.
-- [Envs](./bettermdptools/envs.html): Environment wrappers and models for various reinforcement learning environments.
-- [Algorithms](./bettermdptools/algorithms.html): Implementations of various reinforcement learning and planning algorithms.
+- [Utils](./bettermdptools/utils.html): Shared utility functions and classes.
+- [Envs](./bettermdptools/envs.html): Environment wrappers and models.
+- [Algorithms](./bettermdptools/algorithms.html): Learning and planning
+  algorithms.
 """

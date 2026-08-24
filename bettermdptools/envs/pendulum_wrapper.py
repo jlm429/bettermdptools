@@ -40,7 +40,8 @@ class PendulumWrapper(gym.Wrapper):
         dim_samples=11,
     ):
         """
-        Pendulum wrapper that modifies the observation and action spaces and creates a transition/reward matrix P.
+        Modify the observation and action spaces and create transition and
+        reward matrix P.
 
         Parameters
         ----------
@@ -118,7 +119,7 @@ class PendulumWrapper(gym.Wrapper):
 
     def step(self, action):
         """
-        Takes a discrete action, maps it to a continuous torque, and interacts with the environment.
+        Map a discrete action to continuous torque and step the environment.
 
         Parameters
         ----------

@@ -74,7 +74,7 @@ class CustomTransformObservation(gym.wrappers.TransformObservation):
 class BlackjackWrapper(gym.Wrapper):
     def __init__(self, env):
         """
-        Blackjack wrapper that modifies the observation space and creates a transition/reward matrix P.
+        Modify the observation space and create transition and reward matrix P.
 
         Parameters
         ----------
@@ -82,8 +82,8 @@ class BlackjackWrapper(gym.Wrapper):
             Blackjack base environment.
 
         Explanation of _transform_obs lambda:
-        Lambda function assigned to the variable `self._convert_state_obs` takes parameter, `state` and
-        converts the input into a compact single integer value by concatenating player hand with dealer card.
+        The function assigned to `self._convert_state_obs` converts `state` to a
+        compact integer by combining the player's hand and dealer's card.
         See comments above for further information.
         """
         self._transform_obs = lambda obs: (

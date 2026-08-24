@@ -4,7 +4,7 @@ Utility functions for generating bin edges for discretizing continuous variables
 
 
 def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
-    """Generates bin edges for a symmetric range with exponentially increasing/decreasing bin widths.
+    """Generate symmetric bin edges whose widths change exponentially.
 
     Parameters
     ----------

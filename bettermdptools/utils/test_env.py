@@ -19,7 +19,7 @@ def _identity(value):
 
 
 class TestEnv:
-    """Utilities for simulating environment rollouts using a learned or user-driven policy."""
+    """Simulate rollouts using a learned or user-driven policy."""
 
     __test__ = False
 
@@ -41,19 +41,19 @@ class TestEnv:
         env : gymnasium.Env
             Gymnasium environment instance.
         desc : np.ndarray, optional
-            Environment description used by some environments (for example, custom FrozenLake maps).
+            Description used by environments such as custom FrozenLake maps.
             Only used when `render=True` causes the environment to be re-created.
         render : bool, default False
-            If True, the environment is re-created with `render_mode="human"` so it renders visually.
+            If True, re-create the environment with `render_mode="human"`.
         n_iters : int, default 10
             Number of episodes to simulate.
         pi : array-like or callable, optional
-            Policy mapping states to actions. Commonly an array where `pi[state]` gives the action.
+            Policy mapping states to actions, commonly indexed as `pi[state]`.
             If `user_input=True`, this is shown as a suggested action.
         user_input : bool, default False
             If True, prompt the user to select each action interactively.
         convert_state_obs : callable or None, default identity
-            Function applied to observations to convert them into discrete or transformed states.
+            Converts observations into discrete or transformed states.
             If None, the observation is used directly.
 
         Returns
@@ -64,8 +64,8 @@ class TestEnv:
         Notes
         -----
         - This function assumes a discrete action space with `env.action_space.n`.
-        - When `render=True`, the environment is created internally and closed before returning.
-          When `render=False`, the caller is responsible for managing the environment lifecycle.
+        - With `render=True`, the environment is created internally and closed.
+          Otherwise, the caller manages the environment lifecycle.
         """
         if convert_state_obs is None:
             convert_state_obs = _identity

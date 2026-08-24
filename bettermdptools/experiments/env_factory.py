@@ -3,12 +3,13 @@
 Environment creation and adaptation for ready-to-run experiments.
 
 This layer sits on top of existing environment wrappers. It focuses on producing
-an EnvBundle that includes a Gym-style transition dictionary `P`, along with the
+an EnvBundle that includes a Gymnasium-style transition dictionary `P`, along with
 metadata needed for planning and tabular reinforcement learning.
 
 Philosophy
 - bettermdptools targets environments that expose a transition dictionary `P`.
-- If an environment already exposes `P`, it is used directly.
+- Built-in models are read from `env.unwrapped.P`.
+- Explicit wrapper models are read from the wrapper's `env.P` property.
 - If not, an optional wrapper may be applied to provide `P` and tabular spaces.
 - If `P` cannot be obtained, an error is raised to keep behavior explicit.
 """
@@ -184,7 +185,7 @@ class EnvFactory:
         convert = getattr(wrapped_env, "transform_obs", None)
 
         # Some wrappers may transform observations internally.
-        # If observations are already integers, conversion should be an identity function.
+        # Integer observations need only an identity conversion.
         if convert is not None:
             obs_space = getattr(wrapped_env, "observation_space", None)
             if getattr(obs_space, "n", None) is not None:

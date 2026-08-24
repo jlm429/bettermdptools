@@ -27,7 +27,7 @@ class Plots:
 
     @staticmethod
     def get_values_agg_axis_means(pi, val_max, map_size, agg_axes):
-        """Aggregate by taking means over axes of multi-dimension maps. Used to pre-process for visuals."""
+        """Aggregate multidimensional maps over axes before visualization."""
         val_max, policy_map = Plots.get_policy_map(pi, val_max, None, map_size)
         for ax in agg_axes:
             policy_map = np.mean(policy_map, axis=ax)

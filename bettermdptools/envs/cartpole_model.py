@@ -1,9 +1,9 @@
 """
-generative AI experiment - discretized cartpole transition and reward (P) matrix with adaptive angle binning
+Discretized CartPole transition and reward matrix with adaptive angle binning.
 created with chatGPT
 
 Example usage:
-dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)  # Example bin sizes for each variable and adaptive angle binning center/outer resolution
+dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)
 
 """
 
@@ -26,16 +26,16 @@ class DiscretizedCartPole:
         Parameters:
         - position_bins (int): Number of discrete bins for the cart's position.
         - velocity_bins (int): Number of discrete bins for the cart's velocity.
-        - angular_velocity_bins (int): Number of discrete bins for the pole's angular velocity.
+        - angular_velocity_bins (int): Number of angular velocity bins.
         - threshold_bins (float): Step size for binned physics calculations.
-        - angular_center_resolution (float): The resolution of angle bins near the center (around zero).
-        - angular_outer_resolution (float): The resolution of angle bins away from the center.
+        - angular_center_resolution (float): Angle resolution near zero.
+        - angular_outer_resolution (float): Angle resolution away from zero.
 
         Attributes:
         - state_space (int): Total number of discrete states in the environment.
-        - P (dict): Transition probability matrix where P[state][action] is a list of tuples (probability, next_state,
-        reward, done).
-        - transform_obs (lambda): Function to transform continuous observations into a discrete state index.
+        - P (dict): Transition matrix whose entries contain probability, next
+          state, reward, and termination status.
+        - transform_obs (lambda): Converts observations to state indices.
         """
         self.position_bins = position_bins
         self.velocity_bins = velocity_bins
@@ -79,13 +79,12 @@ class DiscretizedCartPole:
         )
         """
         Explanation of transform_obs lambda:
-        This lambda function will take cartpole observations, determine which bins they fall into,
+        This function determines which bins contain CartPole observations,
         and then convert bin coordinates into a single index.  This makes it possible
-        to use traditional reinforcement learning and planning algorithms, designed for discrete spaces, with continuous
-        state space environments.
+        to use tabular learning and planning with continuous state spaces.
         
         Parameters:
-        - obs (list): A list of continuous observations [position, velocity, angle, angular_velocity].
+        - obs (list): Position, velocity, angle, and angular velocity.
 
         Returns:
         - int: A single integer representing the discretized state index.
@@ -140,8 +139,7 @@ class DiscretizedCartPole:
 
     def adaptive_angle_bins(self, angle_range, center_resolution, outer_resolution):
         """
-        Generates adaptive bins for the pole's angle to allow for finer resolution near the center and coarser
-        resolution farther away.
+        Generate adaptive angle bins with finer resolution near the center.
 
         Parameters:
         - angle_range (tuple): The minimum and maximum angles in radians.
@@ -175,9 +173,8 @@ class DiscretizedCartPole:
 
     def setup_transition_probabilities(self):
         """
-        Sets up the transition probabilities for the environment. This method iterates through all possible
-        states and actions, simulates the next state, and records the transition probability
-        (deterministic in this setup), reward, and termination status.
+        Iterate through all states and actions and record their deterministic
+        transitions, rewards, and termination status.
         """
         for state in range(self.state_space):
             position, velocity, angle, angular_velocity = self.index_to_state(state)
@@ -195,7 +192,7 @@ class DiscretizedCartPole:
         - index (int): The flat index representing the state.
 
         Returns:
-        - list: A list of indices representing the state in terms of position, velocity, angle, and angular velocity bins.
+        - list: Position, velocity, angle, and angular velocity bin indices.
         """
         totals = [
             self.position_bins,
@@ -211,7 +208,8 @@ class DiscretizedCartPole:
         self, position_idx, velocity_idx, angle_idx, angular_velocity_idx, action
     ):
         """
-        Computes the next state based on the current state indices and the action taken. Applies simplified physics calculations to determine the next state.
+        Compute the next state from state indices and an action using simplified
+        physics.
 
         Parameters:
         - position_idx (int): Current index of the cart's position.
@@ -221,7 +219,7 @@ class DiscretizedCartPole:
         - action (int): Action taken (0 for left, 1 for right).
 
         Returns:
-        - tuple: Contains the next state index, the reward, and the done flag indicating if the episode has ended.
+        - tuple: Next state index, reward, and episode termination flag.
         """
         position = np.linspace(*self.position_range, self.position_bins)[position_idx]
         velocity = np.linspace(*self.velocity_range, self.velocity_bins)[velocity_idx]
