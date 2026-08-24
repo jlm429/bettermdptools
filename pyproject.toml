@@ -26,6 +26,7 @@ optuna = "^4.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.0.0"
+pytest = "^9.0.0"
 ruff = "^0.14.8"
 
 [build-system]
