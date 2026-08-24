@@ -41,7 +41,8 @@ print(out.eval["scores"][:5])
 
 - Environment creation via `gym.make`
 - Obtaining a Gym-style transition dictionary `P`
-  - Uses `env.P` or `env.unwrapped.P` when present
+  - Uses `env.unwrapped.P` for built-in discrete environments
+  - Uses a wrapper's explicit `env.P` model when present
   - Applies a wrapper when needed (explicit or registry-based)
 - Dispatching to Planner algorithms (`vi`, `pi`) or tabular RL algorithms (`q_learning`, `sarsa`)
 - Returning a consistent `RunResult` object
@@ -53,7 +54,7 @@ print(out.eval["scores"][:5])
 
 ```python
 from bettermdptools.experiments import run
-out = run(algo="q_learning", env_id="Taxi-v3")
+out = run(algo="q_learning", env_id="Taxi-v4")
 ```
 
 #### Parameters
@@ -105,7 +106,8 @@ Common training keys:
 
 Many planning and tabular RL methods require a Gym-style transition dictionary `P` and discrete state and action spaces.
 
-- If `env.P` (or `env.unwrapped.P`) exists, it is used directly.
+- Built-in discrete models are read from `env.unwrapped.P`.
+- Explicit wrapper models are read from the wrapper's `env.P` property.
 - Otherwise, a wrapper can be provided to adapt the environment.
 - Some environments may be supported by a small internal wrapper registry.
 

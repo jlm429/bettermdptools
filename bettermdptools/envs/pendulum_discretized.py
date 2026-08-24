@@ -9,12 +9,28 @@ import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
-from gymnasium.envs.classic_control.acrobot import wrap
-from gymnasium.envs.classic_control.pendulum import angle_normalize
 
 from bettermdptools.envs.binning import generate_bin_edges
 
-CACHED_P_PATH_FORMAT = "cached_P_discretized_pendulum_{angle_bins}_{angular_velocity_bins}_{action_bins}.pkl.gz"
+CACHED_P_PATH_FORMAT = (
+    "cached_P_discretized_pendulum_{angle_bins}_{angular_velocity_bins}_"
+    "{action_bins}.pkl.gz"
+)
+
+
+def angle_normalize(angle):
+    """Normalize an angle to the half-open interval [-pi, pi)."""
+    return ((angle + np.pi) % (2 * np.pi)) - np.pi
+
+
+def wrap(value, lower_bound, upper_bound):
+    """Wrap a scalar into the closed interval used by the model."""
+    difference = upper_bound - lower_bound
+    while value > upper_bound:
+        value -= difference
+    while value < lower_bound:
+        value += difference
+    return value
 
 
 def index_to_state(index, angle_bins, angular_velocity_bins):
@@ -52,7 +68,7 @@ def compute_next_probable_states(
     torque_bin_edges,
     num_samples=11,
     g=10.0,
-    l=1.0,
+    l=1.0,  # noqa: E741 - Preserve the existing public keyword argument.
     m=1.0,
     dt=0.05,
 ):
@@ -99,9 +115,15 @@ def compute_next_probable_states(
             new_angle = angle + new_angular_velocity * dt
             new_angle = wrap(new_angle, -np.pi, np.pi)
 
-            new_angle_idx = np.digitize(new_angle, angle_bin_edges) - 1
-            new_angular_velocity_idx = (
-                np.digitize(new_angular_velocity, angular_velocity_bin_edges) - 1
+            new_angle_idx = np.clip(
+                np.digitize(new_angle, angle_bin_edges) - 1,
+                0,
+                angle_bins - 1,
+            )
+            new_angular_velocity_idx = np.clip(
+                np.digitize(new_angular_velocity, angular_velocity_bin_edges) - 1,
+                0,
+                angular_velocity_bins - 1,
             )
 
             new_state = state_to_index(
@@ -181,11 +203,11 @@ class DiscretizedPendulum:
     torque_bins : int, optional (default=11)
         Number of bins to discretize the torque.
     n_workers : int, optional (default=4)
-        Number of worker processes to use for setting up transition probabilities.
+        Workers used to set up transition probabilities.
     cache_dir : str, optional (default='./cached')
         Directory to cache the transition probabilities.
     dim_samples : int, optional (default=11)
-        Number of samples to use for each dimension when setting up transition probabilities.
+        Samples used for each modeled dimension.
     Attributes:
     -----------
     angle_bins : int
@@ -193,7 +215,7 @@ class DiscretizedPendulum:
     angular_velocity_bins : int
         Number of bins to discretize the angular velocity. Must be odd.
     dim_samples : int
-        Number of samples to use for each dimension when setting up transition probabilities.
+        Samples used for each modeled dimension.
     angle_bin_edges : numpy.ndarray
         Edges of the bins for discretizing the angle.
     angular_velocity_bin_edges : numpy.ndarray
@@ -257,10 +279,22 @@ class DiscretizedPendulum:
                 pickle.dump(self.P, f)
 
     def discretize_angle(self, angle):
-        return np.digitize(angle, self.angle_bin_edges) - 1
+        return int(
+            np.clip(
+                np.digitize(angle, self.angle_bin_edges) - 1,
+                0,
+                self.angle_bins - 1,
+            )
+        )
 
     def discretize_angular_velocity(self, angular_velocity):
-        return np.digitize(angular_velocity, self.angular_velocity_bin_edges) - 1
+        return int(
+            np.clip(
+                np.digitize(angular_velocity, self.angular_velocity_bin_edges) - 1,
+                0,
+                self.angular_velocity_bins - 1,
+            )
+        )
 
     def index_to_state(self, index):
         return index_to_state(index, self.angle_bins, self.angular_velocity_bins)
@@ -271,7 +305,7 @@ class DiscretizedPendulum:
         )
         if idx < 0 or idx >= self.state_space:
             raise ValueError(f"Invalid state index: {idx}")
-        return idx
+        return int(idx)
 
     def transform_cont_obs(self, cont_obs):
         x = cont_obs[0]
@@ -312,6 +346,13 @@ class DiscretizedPendulum:
         n_completed = len(new_P)
 
         batch_size = 1000
+
+        if num_workers == 1:
+            for arg in args:
+                state, P_state = setup_transition_probabilities_for_state(arg)
+                new_P[state] = P_state
+            self.P = new_P
+            return
 
         with ProcessPoolExecutor(max_workers=num_workers) as executor:
             for i in range(0, len(args), batch_size):
@@ -355,5 +396,7 @@ if __name__ == "__main__":
         transitions = discretized_pendulum.P[state][action]
         for prob, next_state, reward, terminated in transitions:
             print(
-                f"Action: {action}, Probability: {prob}, Next state: {next_state}, Reward: {reward}, Terminated: {terminated}"
+                f"Action: {action}, Probability: {prob}, "
+                f"Next state: {next_state}, Reward: {reward}, "
+                f"Terminated: {terminated}"
             )

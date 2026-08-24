@@ -203,7 +203,8 @@ Because each trial delegates to `experiments.run(...)`, the training output keys
 
 This search entrypoint uses the same environment and wrapper logic as `experiments.run(...)`.
 
-- If `env.P` (or `env.unwrapped.P`) exists, it is used directly.
+- Built-in discrete models are read from `env.unwrapped.P`.
+- Explicit wrapper models are read from the wrapper's `env.P` property.
 - Otherwise, a wrapper may be applied explicitly or via the internal registry.
 - If a valid transition dictionary cannot be obtained, the trial raises an error.
 

@@ -4,19 +4,17 @@ BSD 3-Clause License
 """
 
 import gymnasium as gym
+import numpy as np
 
 from bettermdptools.envs.pendulum_discretized import (
     DiscretizedPendulum,
 )  # Ensure this path is correct
 
 
-class CustomTransformObservation(gym.ObservationWrapper):
+class CustomTransformObservation(gym.wrappers.TransformObservation):
     def __init__(self, env, func, observation_space):
         """
-        Helper class that modifies the observation space. The v26 gymnasium TransformObservation wrapper does not
-        accept an observation_space parameter, which is needed in order to match the lambda conversion (tuple->int).
-        Instead, we subclass gym.ObservationWrapper (parent class of gym.TransformObservation)
-        to set both the conversion function and new observation space.
+        Transform observations while declaring the transformed observation space.
 
         Parameters
         ----------
@@ -27,33 +25,22 @@ class CustomTransformObservation(gym.ObservationWrapper):
         observation_space : gymnasium.spaces.Space
             New observation space
         """
-        super().__init__(env)
-        if observation_space is not None:
-            self.observation_space = observation_space
-        self.func = func
-
-    def observation(self, observation):
-        """
-        Applies a function to the observation received from the environment's step function,
-        which is passed back to the user.
-
-        Parameters
-        ----------
-        observation : Tuple
-            Base environment observation tuple
-
-        Returns
-        -------
-        int
-            The converted observation (int).
-        """
-        return self.func(observation)
+        super().__init__(env=env, func=func, observation_space=observation_space)
 
 
 class PendulumWrapper(gym.Wrapper):
-    def __init__(self, env, angle_bins=11, angular_velocity_bins=11, torque_bins=11):
+    def __init__(
+        self,
+        env,
+        angle_bins=11,
+        angular_velocity_bins=11,
+        torque_bins=11,
+        n_workers=4,
+        cache_dir="./cached",
+        dim_samples=11,
+    ):
         """
-        Pendulum wrapper that modifies the observation and action spaces and creates a transition/reward matrix P.
+        Discretize observations and actions, and expose a tabular model.
 
         Parameters
         ----------
@@ -65,14 +52,21 @@ class PendulumWrapper(gym.Wrapper):
             Number of discrete bins for the pendulum's angular velocity.
         torque_bins : int
             Number of discrete bins for the torque action.
+        n_workers : int
+            Number of workers used to generate the transition model.
+        cache_dir : str
+            Directory used to cache the generated transition model.
+        dim_samples : int
+            Samples per modeled state dimension.
         """
-        super().__init__(env)
-
         # Initialize the DiscretizedPendulum model
         self.discretized_pendulum = DiscretizedPendulum(
             angle_bins=angle_bins,
             angular_velocity_bins=angular_velocity_bins,
             torque_bins=torque_bins,
+            n_workers=n_workers,
+            cache_dir=cache_dir,
+            dim_samples=dim_samples,
         )
 
         # Transition probability matrix
@@ -83,12 +77,11 @@ class PendulumWrapper(gym.Wrapper):
         self._get_action_value = self.discretized_pendulum.get_action_value
 
         # Wrap the environment's observation space
-        self.observation_space = gym.spaces.Discrete(
-            self.discretized_pendulum.state_space
+        observation_space = gym.spaces.Discrete(self.discretized_pendulum.state_space)
+        transformed_env = CustomTransformObservation(
+            env, self._transform_obs, observation_space
         )
-        self.env = CustomTransformObservation(
-            env, self._transform_obs, self.observation_space
-        )
+        super().__init__(transformed_env)
         self.gym_env = env
 
         # Override the action space to be discrete
@@ -118,12 +111,14 @@ class PendulumWrapper(gym.Wrapper):
 
     @property
     def get_action_value(self):
-        f = lambda action: [self._get_action_value(action)]
-        return f
+        def action_value(action):
+            return [self._get_action_value(action)]
+
+        return action_value
 
     def step(self, action):
         """
-        Takes a discrete action, maps it to a continuous torque, and interacts with the environment.
+        Map a discrete action to torque and step the environment.
 
         Parameters
         ----------
@@ -132,19 +127,14 @@ class PendulumWrapper(gym.Wrapper):
 
         Returns
         -------
-        int
-            The discretized next state index.
-        float
-            The reward obtained from the environment.
-        bool
-            Whether the episode has terminated.
-        dict
-            Additional information from the environment.
+        tuple
+            Discretized observation, reward, terminated, truncated, and info.
         """
         # Map discrete action to continuous torque
         torque = self.discretized_pendulum.get_action_value(action)
 
-        return self.env.step([torque])
+        continuous_action = np.asarray([torque], dtype=self.env.action_space.dtype)
+        return self.env.step(continuous_action)
 
 
 def get_env_str(angle_bins, angular_velocity_bins, torque_bins):

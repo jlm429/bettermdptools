@@ -18,7 +18,6 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
-
     # --- added ---
     python_requires=">=3.10,<4.0",
     classifiers=[
@@ -30,9 +29,8 @@ setup(
         "Operating System :: OS Independent",
     ],
     # -------------
-
     install_requires=[
-        "gymnasium>=0.26,<0.27",
+        "gymnasium>=1.3.0,<1.4",
         "pygame",
         "numpy<2",
         "tqdm",

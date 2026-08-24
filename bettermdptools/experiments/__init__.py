@@ -8,13 +8,13 @@ Optionally:
 - `ExperimentBuilder` - fluent configuration API
 """
 
-from .run import run, ExperimentBuilder
+from .run import ExperimentBuilder, run
 
 __all__ = ["run", "ExperimentBuilder"]
 
 # Optional Optuna add-on
 try:
-    from .optuna import optimize, OptunaResult, MissingOptunaDependency
+    from .optuna import MissingOptunaDependency, OptunaResult, optimize
 
     __all__ += ["optimize", "OptunaResult", "MissingOptunaDependency"]
 except Exception:

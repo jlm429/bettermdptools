@@ -2,8 +2,9 @@
 Utility functions for generating bin edges for discretizing continuous variables.
 """
 
+
 def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
-    """Generates bin edges for a symmetric range with exponentially increasing/decreasing bin widths.
+    """Generate symmetric bin edges with geometrically changing widths.
 
     Parameters
     ----------
@@ -12,7 +13,7 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
 
     n_bins : int
         Number of bins (must be odd).
-    
+
     width_ratio : float
         Ratio of the outermost bin widths to the central bin width.
 
@@ -54,7 +55,7 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     # Calculate the sum of the geometric series for bin widths
     if q != 1.0:
         # Sum = 1 (center) + 2 * (q + q^2 + ... + q^k)
-        geometric_sum = 1 + 2 * (q * (q ** k - 1) / (q - 1))
+        geometric_sum = 1 + 2 * (q * (q**k - 1) / (q - 1))
     else:
         # If q == 1, all bins have the same width
         geometric_sum = n_bins
@@ -63,8 +64,8 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     w0 = 2 * range_limit / geometric_sum
 
     # Generate bin widths: [w_k, ..., w1, w0, w1, ..., w_k]
-    bin_widths_left = [w0 * q ** i for i in range(k, 0, -1)]
-    bin_widths_right = [w0 * q ** i for i in range(1, k + 1)]
+    bin_widths_left = [w0 * q**i for i in range(k, 0, -1)]
+    bin_widths_right = [w0 * q**i for i in range(1, k + 1)]
     bin_widths = bin_widths_left + [w0] + bin_widths_right
 
     # Construct bin edges starting from -range_limit
@@ -77,7 +78,8 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
 
     return bin_edges
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Test the generate_bin_edges function
     range_limit = 10
     n_bins = 11
@@ -88,18 +90,18 @@ if __name__ == '__main__':
     center_bin_width = bin_edges[n_bins // 2 + 1] - bin_edges[n_bins // 2]
     first_bin_width = bin_edges[1] - bin_edges[0]
     last_bin_width = bin_edges[-1] - bin_edges[-2]
-    print(f'Center bin width: {center_bin_width}')
-    print(f'First bin width: {first_bin_width}')
-    print(f'Last bin width: {last_bin_width}')
+    print(f"Center bin width: {center_bin_width}")
+    print(f"First bin width: {first_bin_width}")
+    print(f"Last bin width: {last_bin_width}")
 
     # Plot the bin edges as vertical lines
     import matplotlib.pyplot as plt
+
     plt.figure(figsize=(8, 4))
     for edge in bin_edges:
-        plt.axvline(edge, color='k', linestyle='--', linewidth=0.5)
+        plt.axvline(edge, color="k", linestyle="--", linewidth=0.5)
     plt.xlim(-range_limit, range_limit)
     plt.ylim(0, 1)
     plt.show()
-    
 
     # print("Bin Edges:", bin_edges)

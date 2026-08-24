@@ -23,8 +23,19 @@ import gymnasium as gym
 
 from .types import EnvBundle
 
-
 WrapperSpec = Union[None, Callable[..., Any], str]
+
+
+def _identity(value: Any) -> Any:
+    return value
+
+
+def _get_transition_model(env: gym.Env) -> Any:
+    """Return a tabular model without relying on wrapper attribute forwarding."""
+    model = getattr(env, "P", None)
+    if model is not None:
+        return model
+    return getattr(env.unwrapped, "P", None)
 
 
 def _get_attr_chain(obj: Any, names: Tuple[str, ...]) -> Any:
@@ -80,8 +91,12 @@ class EnvFactory:
                 "_registry",
                 {
                     # Wrapper mappings used for environments that do not expose `P`
-                    "CartPole": "bettermdptools.envs.cartpole_wrapper:CartpoleWrapper",
-                    "Blackjack": "bettermdptools.envs.blackjack_wrapper:BlackjackWrapper",
+                    "CartPole": (
+                        "bettermdptools.envs.cartpole_wrapper:CartpoleWrapper"
+                    ),
+                    "Blackjack": (
+                        "bettermdptools.envs.blackjack_wrapper:BlackjackWrapper"
+                    ),
                     "Acrobot": "bettermdptools.envs.acrobot_wrapper:AcrobotWrapper",
                     "Pendulum": "bettermdptools.envs.pendulum_wrapper:PendulumWrapper",
                 },
@@ -100,7 +115,7 @@ class EnvFactory:
         Parameters
         ----------
         env_id:
-            Gymnasium environment id (for example, "FrozenLake8x8-v1", "CartPole-v1").
+            Gymnasium environment id, such as "FrozenLake8x8-v1".
         gym_kwargs:
             Keyword arguments forwarded to `gym.make`.
         wrapper:
@@ -121,29 +136,27 @@ class EnvFactory:
 
         env = gym.make(env_id, **gym_kwargs)
 
-        # Prefer env.P; fall back to env.unwrapped.P
-        P = getattr(env, "P", None) or getattr(
-            getattr(env, "unwrapped", None), "P", None
-        )
+        P = _get_transition_model(env)
 
         if P is not None:
             nS = getattr(getattr(env, "observation_space", None), "n", None)
             nA = getattr(getattr(env, "action_space", None), "n", None)
             if nS is None or nA is None:
                 raise ValueError(
-                    f"Environment {env_id!r} exposes P but does not have Discrete observation/action spaces. "
-                    "Tabular algorithms require Discrete spaces or a wrapper that discretizes them."
+                    f"Environment {env_id!r} exposes P but does not have "
+                    "Discrete observation/action spaces. Tabular algorithms "
+                    "require Discrete spaces or a discretizing wrapper."
                 )
             return EnvBundle(
                 env=env,
                 P=P,
-                convert_state_obs=lambda s: s,
+                convert_state_obs=_identity,
                 nS=int(nS),
                 nA=int(nA),
                 meta={"source": "gym", "wrapped": False},
             )
 
-        # If no P is available, optionally apply a wrapper (explicit or registry-based)
+        # If P is unavailable, apply an explicit or registered wrapper.
         if wrapper is None:
             for key, spec in self._registry.items():
                 if key in env_id:
@@ -153,39 +166,39 @@ class EnvFactory:
         wrapper_callable = _resolve_wrapper(wrapper)
         if wrapper_callable is None:
             raise ValueError(
-                f"Environment {env_id!r} does not expose a P matrix, and no wrapper was provided. "
-                "This library focuses on environments that provide P for planning/tabular RL. "
-                "Provide `wrapper=` (callable or import path) or use a supported env."
+                f"Environment {env_id!r} does not expose a P matrix, and no "
+                "wrapper was provided. This library requires P for planning "
+                "and tabular RL. Provide `wrapper=` or use a supported env."
             )
 
         wrapped_env = wrapper_callable(env, **wrapper_kwargs)
-        P = getattr(wrapped_env, "P", None) or getattr(
-            getattr(wrapped_env, "unwrapped", None), "P", None
-        )
+        P = _get_transition_model(wrapped_env)
         if P is None:
             raise ValueError(
-                f"Wrapper {wrapper_callable.__name__} did not expose a P matrix via `.P`. "
+                f"Wrapper {wrapper_callable.__name__} did not expose a P "
+                "matrix via `.P`. "
                 "Supported wrappers should provide a `.P` property."
             )
 
         convert = getattr(wrapped_env, "transform_obs", None)
 
         # Some wrappers may transform observations internally.
-        # If observations are already integers, conversion should be an identity function.
+        # Integer observations do not need another conversion.
         if convert is not None:
             obs_space = getattr(wrapped_env, "observation_space", None)
             if getattr(obs_space, "n", None) is not None:
-                convert = lambda s: s
+                convert = _identity
 
         if convert is None:
-            convert = lambda s: s
+            convert = _identity
 
         nS = getattr(getattr(wrapped_env, "observation_space", None), "n", None)
         nA = getattr(getattr(wrapped_env, "action_space", None), "n", None)
         if nS is None or nA is None:
             raise ValueError(
-                f"Wrapped environment for {env_id!r} does not expose Discrete observation/action spaces. "
-                "Wrappers should set observation_space to Discrete(nS) and preserve action_space."
+                f"Wrapped environment for {env_id!r} does not expose "
+                "Discrete observation/action spaces. Wrappers should set "
+                "observation_space to Discrete(nS) and preserve action_space."
             )
 
         return EnvBundle(

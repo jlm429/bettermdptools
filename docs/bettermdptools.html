@@ -36,7 +36,7 @@
             <ul>
                     <li><a href="bettermdptools/algorithms.html">algorithms</a></li>
                     <li><a href="bettermdptools/envs.html">envs</a></li>
-                    <li><a href="bettermdptools/seed.html">seed</a></li>
+                    <li><a href="bettermdptools/experiments.html">experiments</a></li>
                     <li><a href="bettermdptools/utils.html">utils</a></li>
             </ul>
 
@@ -56,25 +56,33 @@ bettermdptools    </h1>
 
                         <div class="docstring"><h1 id="bettermdptools">bettermdptools</h1>
 
-<p>Welcome to <strong>bettermdptools</strong>, a comprehensive library designed to facilitate working with Markov Decision Processes (MDPs) and reinforcement learning environments. This library is built to provide robust tools for both model-based and model-free reinforcement learning algorithms, along with utilities for environment modeling, visualization, and more.</p>
+<p>Welcome to <strong>bettermdptools</strong>, a library for working with Markov Decision
+Processes (MDPs) and reinforcement learning environments. It provides
+model-based and model-free algorithms plus environment modeling and
+visualization utilities.</p>
 
 <h2 id="key-features">Key Features</h2>
 
 <h3 id="reinforcement-learning-algorithms">Reinforcement Learning Algorithms</h3>
 
-<p>bettermdptools includes implementations of popular model-free reinforcement learning algorithms such as Q-Learning and SARSA. These algorithms are designed to work seamlessly with any gymnasium environments that have single discrete valued state spaces. For environments that do not fit this format, a lambda function can be used to convert state spaces accordingly.</p>
+<p>bettermdptools implements model-free algorithms such as Q-Learning and SARSA.
+They work with Gymnasium environments that have a single discrete state space.
+Other state spaces can be converted with a callable.</p>
 
 <h3 id="planning-algorithms">Planning Algorithms</h3>
 
-<p>The library also provides model-based planning algorithms like Value Iteration and Policy Iteration. These algorithms are essential for solving MDPs where the transition probabilities and rewards are known.</p>
+<p>The library also provides Value Iteration and Policy Iteration for MDPs with
+known transition probabilities and rewards.</p>
 
 <h3 id="environment-models">Environment Models</h3>
 
-<p>bettermdptools comes with pre-built environment models for popular problems such as Blackjack, CartPole, and Pendulum. These models include discretized versions of the environments, making it easier to apply traditional reinforcement learning and planning algorithms.</p>
+<p>bettermdptools provides environment models for Blackjack, CartPole, and
+Pendulum, including discretized forms for tabular algorithms.</p>
 
 <h3 id="visualization-tools">Visualization Tools</h3>
 
-<p>To help you better understand and analyze the performance of your algorithms, bettermdptools includes a variety of plotting utilities. These tools can generate heatmaps, line plots, and other visualizations to track the progress and performance of your learning agents.</p>
+<p>Plotting utilities produce heatmaps, line plots, and other visualizations for
+tracking agent performance.</p>
 
 <h2 id="getting-started">Getting Started</h2>
 
@@ -87,9 +95,10 @@ bettermdptools    </h1>
 <h2 id="modules">Modules</h2>
 
 <ul>
-<li><a href="./bettermdptools/utils.html">Utils</a>: Utility functions and classes used across the library.</li>
-<li><a href="./bettermdptools/envs.html">Envs</a>: Environment wrappers and models for various reinforcement learning environments.</li>
-<li><a href="./bettermdptools/algorithms.html">Algorithms</a>: Implementations of various reinforcement learning and planning algorithms.</li>
+<li><a href="./bettermdptools/utils.html">Utils</a>: Shared utility functions and classes.</li>
+<li><a href="./bettermdptools/envs.html">Envs</a>: Environment wrappers and models.</li>
+<li><a href="./bettermdptools/algorithms.html">Algorithms</a>: Learning and planning
+algorithms.</li>
 </ul>
 </div>
 
@@ -97,39 +106,48 @@ bettermdptools    </h1>
 
                         <label class="view-source-button" for="mod-bettermdptools-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sa">r</span><span class="sd">"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd"># bettermdptools</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="sd">Welcome to **bettermdptools**, a comprehensive library designed to facilitate working with Markov Decision Processes (MDPs) and reinforcement learning environments. This library is built to provide robust tools for both model-based and model-free reinforcement learning algorithms, along with utilities for environment modeling, visualization, and more.</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">## Key Features</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">### Reinforcement Learning Algorithms</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">bettermdptools includes implementations of popular model-free reinforcement learning algorithms such as Q-Learning and SARSA. These algorithms are designed to work seamlessly with any gymnasium environments that have single discrete valued state spaces. For environments that do not fit this format, a lambda function can be used to convert state spaces accordingly.</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="sd">Welcome to **bettermdptools**, a library for working with Markov Decision</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">Processes (MDPs) and reinforcement learning environments. It provides</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">model-based and model-free algorithms plus environment modeling and</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">visualization utilities.</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">## Key Features</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">### Planning Algorithms</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">The library also provides model-based planning algorithms like Value Iteration and Policy Iteration. These algorithms are essential for solving MDPs where the transition probabilities and rewards are known.</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">### Environment Models</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">bettermdptools comes with pre-built environment models for popular problems such as Blackjack, CartPole, and Pendulum. These models include discretized versions of the environments, making it easier to apply traditional reinforcement learning and planning algorithms.</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">### Visualization Tools</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">To help you better understand and analyze the performance of your algorithms, bettermdptools includes a variety of plotting utilities. These tools can generate heatmaps, line plots, and other visualizations to track the progress and performance of your learning agents.</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">### Reinforcement Learning Algorithms</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">bettermdptools implements model-free algorithms such as Q-Learning and SARSA.</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">They work with Gymnasium environments that have a single discrete state space.</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">Other state spaces can be converted with a callable.</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">### Planning Algorithms</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">The library also provides Value Iteration and Policy Iteration for MDPs with</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">known transition probabilities and rewards.</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">## Getting Started</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">### Installation</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">### Environment Models</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">bettermdptools provides environment models for Blackjack, CartPole, and</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">Pendulum, including discretized forms for tabular algorithms.</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">You can install bettermdptools via pip or by cloning the GitHub repository:</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">https://github.com/jlm429/bettermdptools</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">### Visualization Tools</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">Plotting utilities produce heatmaps, line plots, and other visualizations for</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">tracking agent performance.</span>
 </span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">## Modules</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">## Getting Started</span>
 </span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">- [Utils](./bettermdptools/utils.html): Utility functions and classes used across the library.</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">- [Envs](./bettermdptools/envs.html): Environment wrappers and models for various reinforcement learning environments.</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">- [Algorithms](./bettermdptools/algorithms.html): Implementations of various reinforcement learning and planning algorithms.</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">### Installation</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">You can install bettermdptools via pip or by cloning the GitHub repository:</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="sd">https://github.com/jlm429/bettermdptools</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">## Modules</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a><span class="sd">- [Utils](./bettermdptools/utils.html): Shared utility functions and classes.</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a><span class="sd">- [Envs](./bettermdptools/envs.html): Environment wrappers and models.</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="sd">- [Algorithms](./bettermdptools/algorithms.html): Learning and planning</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="sd">  algorithms.</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="sd">"""</span>
 </span></pre></div>
 
 
