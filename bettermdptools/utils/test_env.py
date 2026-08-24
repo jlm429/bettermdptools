@@ -32,6 +32,7 @@ class TestEnv:
         pi=None,
         user_input=False,
         convert_state_obs=_identity,
+        seed=None,
     ):
         """
         Simulate episodes using a policy and return the total reward from each episode.
@@ -55,6 +56,9 @@ class TestEnv:
         convert_state_obs : callable or None, default identity
             Converts observations into discrete or transformed states.
             If None, the observation is used directly.
+        seed : int, optional
+            Seed passed to the first environment reset. Later resets continue
+            the environment's seeded random number sequence.
 
         Returns
         -------
@@ -83,7 +87,10 @@ class TestEnv:
         test_scores = np.full(n_iters, np.nan, dtype=float)
 
         for i in range(n_iters):
-            state, info = env.reset()
+            if i == 0 and seed is not None:
+                state, info = env.reset(seed=seed)
+            else:
+                state, info = env.reset()
             state = convert_state_obs(state)
 
             done = False

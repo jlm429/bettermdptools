@@ -86,8 +86,8 @@ def run(
     env_id:
         Gymnasium environment id string.
     seed:
-        Global seed to apply on a best-effort basis. Note that gymnasium
-        environments may not apply seeds consistently.
+        Seed applied to global random number generators and the first training
+        and evaluation environment resets.
     env_kwargs:
         Keyword arguments forwarded to gym.make(env_id, **env_kwargs).
     wrapper:
@@ -109,9 +109,12 @@ def run(
     """
     env_kwargs = env_kwargs or {}
     wrapper_kwargs = wrapper_kwargs or {}
-    algo_kwargs = algo_kwargs or {}
+    algo_kwargs = dict(algo_kwargs or {})
 
     used_seed = _maybe_set_seed(seed)
+    algo_name = normalize_algo_name(algo)
+    if used_seed is not None and algo_name in {"q_learning", "sarsa"}:
+        algo_kwargs.setdefault("seed", used_seed)
 
     # EnvFactory maintains a small internal registry, so an instance is used
     factory = EnvFactory()
@@ -128,10 +131,13 @@ def run(
     if eval_kwargs:
         if "pi" not in train_out:
             raise ValueError("Evaluation requires a policy `pi` in training output.")
-        eval_out = _eval_policy(bundle, train_out["pi"], eval_kwargs)
+        eval_options = dict(eval_kwargs)
+        if used_seed is not None:
+            eval_options.setdefault("seed", used_seed)
+        eval_out = _eval_policy(bundle, train_out["pi"], eval_options)
 
     return RunResult(
-        algo=normalize_algo_name(algo),
+        algo=algo_name,
         env_id=env_id,
         seed=used_seed,
         train=train_out,

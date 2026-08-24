@@ -97,6 +97,7 @@ class RL:
         min_epsilon=0.1,
         epsilon_decay_ratio=0.9,
         n_episodes=10000,
+        seed=None,
     ):
         """
         Q-Learning algorithm.
@@ -125,6 +126,9 @@ class RL:
             Decay schedule of epsilon for future iterations, by default 0.9.
         n_episodes : int, optional
             Number of episodes for the agent, by default 10000.
+        seed : int, optional
+            Seed passed to the first environment reset. Later resets continue
+            the environment's seeded random number sequence.
 
         Returns
         -------
@@ -162,7 +166,10 @@ class RL:
         for e in tqdm(range(n_episodes), leave=False):
             self.callbacks.on_episode_begin(self)
             self.callbacks.on_episode(self, episode=e)
-            state, info = self.env.reset()
+            if e == 0 and seed is not None:
+                state, info = self.env.reset(seed=seed)
+            else:
+                state, info = self.env.reset()
             episode_done = False
             state = convert_state_obs(state)
             total_reward = 0
@@ -206,6 +213,7 @@ class RL:
         min_epsilon=0.1,
         epsilon_decay_ratio=0.9,
         n_episodes=10000,
+        seed=None,
     ):
         """
         SARSA algorithm.
@@ -234,6 +242,9 @@ class RL:
             Decay schedule of epsilon for future iterations, by default 0.9.
         n_episodes : int, optional
             Number of episodes for the agent, by default 10000.
+        seed : int, optional
+            Seed passed to the first environment reset. Later resets continue
+            the environment's seeded random number sequence.
 
         Returns
         -------
@@ -272,7 +283,10 @@ class RL:
         for e in tqdm(range(n_episodes), leave=False):
             self.callbacks.on_episode_begin(self)
             self.callbacks.on_episode(self, episode=e)
-            state, info = self.env.reset()
+            if e == 0 and seed is not None:
+                state, info = self.env.reset(seed=seed)
+            else:
+                state, info = self.env.reset()
             episode_done = False
             state = convert_state_obs(state)
             action = self.select_action(state, Q, epsilons[e])

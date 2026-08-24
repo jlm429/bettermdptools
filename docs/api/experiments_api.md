@@ -65,7 +65,8 @@ out = run(algo="q_learning", env_id="Taxi-v4")
   Gymnasium environment id string.
 
 - `seed: Optional[int]`  
-  Best-effort global seeding.
+  Seeds global random number generators and the first training and evaluation
+  environment resets.
 
 - `env_kwargs: Optional[Dict[str, Any]]`  
   Forwarded to `gym.make`.

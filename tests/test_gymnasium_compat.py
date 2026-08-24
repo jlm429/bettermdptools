@@ -11,6 +11,7 @@ from bettermdptools.envs.acrobot_wrapper import AcrobotWrapper
 from bettermdptools.envs.blackjack_wrapper import BlackjackWrapper
 from bettermdptools.envs.cartpole_wrapper import CartpoleWrapper
 from bettermdptools.envs.pendulum_wrapper import PendulumWrapper
+from bettermdptools.experiments import run
 from bettermdptools.experiments.env_factory import EnvFactory
 
 
@@ -230,6 +231,60 @@ def test_environment_factory_reads_the_unwrapped_discrete_model():
         assert bundle.nA == bundle.env.action_space.n
     finally:
         bundle.env.close()
+
+
+class SeededRunEnv(gym.Env):
+    metadata = {"render_modes": []}
+    observation_space = gym.spaces.Discrete(1)
+    action_space = gym.spaces.Discrete(1)
+    P = {0: {0: [(1.0, 0, 0.0, True)]}}
+    instances = []
+
+    def __init__(self):
+        self.reset_seeds = []
+        type(self).instances.append(self)
+
+    def reset(self, *, seed=None, options=None):
+        super().reset(seed=seed)
+        self.reset_seeds.append(seed)
+        return 0, {}
+
+    def step(self, action):
+        assert self.action_space.contains(action)
+        reward = float(self.np_random.integers(0, 2))
+        return 0, reward, True, False, {}
+
+
+@pytest.mark.parametrize("algorithm", ["q_learning", "sarsa"])
+def test_run_seed_is_reproducible_end_to_end(algorithm):
+    env_id = "BetterMDPTools-SeededRun-v0"
+    if env_id not in gym.registry:
+        gym.register(env_id, entry_point=SeededRunEnv)
+    SeededRunEnv.instances = []
+
+    run_kwargs = {
+        "algo": algorithm,
+        "env_id": env_id,
+        "seed": 417,
+        "algo_kwargs": {"n_episodes": 8},
+        "eval_kwargs": {"n_iters": 4},
+    }
+
+    first = run(**run_kwargs)
+    second = run(**run_kwargs)
+
+    np.testing.assert_array_equal(first.train["Q"], second.train["Q"])
+    np.testing.assert_array_equal(first.train["rewards"], second.train["rewards"])
+    np.testing.assert_array_equal(first.eval["scores"], second.eval["scores"])
+
+    expected_reset_seeds = [417, *([None] * 7), 417, *([None] * 3)]
+    assert [env.reset_seeds for env in SeededRunEnv.instances] == [
+        expected_reset_seeds,
+        expected_reset_seeds,
+    ]
+
+    for env in SeededRunEnv.instances:
+        env.close()
 
 
 class AlternatingBoundaryEnv(gym.Env):

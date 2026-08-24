@@ -106,7 +106,8 @@ Number of Optuna trials to run.
 
 ### seed : Optional[int]
 
-Best-effort seed applied to `experiments.run(...)` and used to seed the Optuna sampler.
+Seed applied to `experiments.run(...)` environment resets and global random
+number generators, and used to seed the Optuna sampler.
 
 ---
 
