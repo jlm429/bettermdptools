@@ -50,9 +50,9 @@ older IDs from external examples.
   supports that guarantee. Test it through wrappers, not only on an unwrapped env.
 - `bettermdptools.utils.seed.set_seed` seeds global generators on a best-effort
   basis. It does not replace seeding environment resets.
-- The current experiment entrypoint reports best-effort global seeding and does not
-  establish end-to-end reset seeding. Do not promise stronger reproducibility or
-  repair deferred seeding behavior unless seeding is the explicit task.
+- The experiment entrypoint seeds global generators and the first training and
+  evaluation resets. Later episode resets continue each environment's seeded random
+  sequence instead of restarting it.
 
 ## Evidence
 

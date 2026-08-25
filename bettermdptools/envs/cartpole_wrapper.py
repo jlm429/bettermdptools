@@ -63,6 +63,7 @@ class CartpoleWrapper(gym.Wrapper):
             threshold_bins=threshold_bins,
             angular_center_resolution=angular_center_resolution,
             angular_outer_resolution=angular_outer_resolution,
+            sutton_barto_reward=getattr(env.unwrapped, "_sutton_barto_reward", False),
         )
         self._P = dpole.P
         self._transform_obs = dpole.transform_obs

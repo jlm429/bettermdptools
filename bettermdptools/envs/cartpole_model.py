@@ -19,6 +19,7 @@ class DiscretizedCartPole:
         threshold_bins,
         angular_center_resolution,
         angular_outer_resolution,
+        sutton_barto_reward=False,
     ):
         """
         Initializes the DiscretizedCartPole model.
@@ -30,6 +31,7 @@ class DiscretizedCartPole:
         - threshold_bins (float): Step size for binned physics calculations.
         - angular_center_resolution (float): Angle resolution near zero.
         - angular_outer_resolution (float): Angle resolution away from zero.
+        - sutton_barto_reward (bool): Whether to use Sutton and Barto rewards.
 
         Attributes:
         - state_space (int): Total number of discrete states in the environment.
@@ -42,6 +44,7 @@ class DiscretizedCartPole:
         self.angular_velocity_bins = angular_velocity_bins
         self.threshold_bins = threshold_bins
         self.action_space = 2  # Left or Right
+        self.sutton_barto_reward = sutton_barto_reward
 
         # Define the range for each variable
         self.position_range = (-2.4, 2.4)
@@ -280,11 +283,9 @@ class DiscretizedCartPole:
             ),
         )
 
-        reward = 1 if np.abs(new_angle) < 12 * np.pi / 180 else -1
-        done = (
-            True
-            if np.abs(new_angle) >= 12 * np.pi / 180 or np.abs(new_position) > 2.4
-            else False
-        )
+        done = bool(np.abs(new_angle) > 12 * np.pi / 180 or np.abs(new_position) > 2.4)
+        reward = -1.0 if self.sutton_barto_reward and done else 0.0
+        if not self.sutton_barto_reward:
+            reward = 1.0
 
         return new_state_idx, reward, done
