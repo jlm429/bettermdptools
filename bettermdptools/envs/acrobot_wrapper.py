@@ -24,8 +24,8 @@ class AcrobotWrapper(gym.Wrapper):
     def __init__(
         self,
         env,
-        angular_resolution_rad=0.01,
-        angular_vel_resolution_rad_per_sec=0.05,
+        angular_resolution_rad=None,
+        angular_vel_resolution_rad_per_sec=None,
         angle_bins=None,
         velocity_bins=None,
         precomputed_P=None,
@@ -37,10 +37,13 @@ class AcrobotWrapper(gym.Wrapper):
         ----------
         env : gymnasium.Env
             Base environment
-        angular_resolution_rad : float
-            The resolution of angle bins in radians.
-        angular_vel_resolution_rad_per_sec : float
-            The resolution of angular velocity bins in radians per second.
+        angular_resolution_rad : float, optional
+            The resolution of angle bins in radians. If neither this nor
+            ``angle_bins`` is given, ten bins are used.
+        angular_vel_resolution_rad_per_sec : float, optional
+            The resolution of angular velocity bins in radians per second. If
+            neither this nor ``velocity_bins`` is given, ten bins are used for
+            each velocity dimension.
         angle_bins : int, optional
             Number of discrete bins for the angles.
         velocity_bins : int, optional

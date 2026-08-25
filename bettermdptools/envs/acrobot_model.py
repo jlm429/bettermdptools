@@ -17,8 +17,8 @@ class DiscretizedAcrobot:
 
     def __init__(
         self,
-        angular_resolution_rad=0.01,
-        angular_vel_resolution_rad_per_sec=0.05,
+        angular_resolution_rad=None,
+        angular_vel_resolution_rad_per_sec=None,
         angle_bins=None,
         velocity_bins=None,
         precomputed_P=None,
@@ -27,20 +27,53 @@ class DiscretizedAcrobot:
         self.verbose = verbose
 
         if angle_bins is None:
-            self.angle_1_bins = int(np.pi // angular_resolution_rad) + 1
-            self.angle_2_bins = int(np.pi // angular_resolution_rad) + 1
-        else:
-            self.angle_1_bins = angle_bins
-            self.angle_2_bins = angle_bins
+            if angular_resolution_rad is None:
+                angle_bins = 10
+            else:
+                if (
+                    not np.isfinite(angular_resolution_rad)
+                    or angular_resolution_rad <= 0
+                ):
+                    raise ValueError(
+                        "angular_resolution_rad must be finite and positive"
+                    )
+                angle_bins = int(np.ceil((2 * np.pi) / angular_resolution_rad)) + 1
+        if not isinstance(angle_bins, (int, np.integer)) or angle_bins < 2:
+            raise ValueError("angle_bins must be an integer greater than one")
+        self.angle_1_bins = angle_bins
+        self.angle_2_bins = angle_bins
 
         if velocity_bins is None:
-            self.angular_vel_1_bins = (
-                int((2 * self.MAX_VEL_1) // angular_vel_resolution_rad_per_sec) + 1
-            )
-            self.angular_vel_2_bins = (
-                int((2 * self.MAX_VEL_2) // angular_vel_resolution_rad_per_sec) + 1
-            )
+            if angular_vel_resolution_rad_per_sec is None:
+                self.angular_vel_1_bins = 10
+                self.angular_vel_2_bins = 10
+            else:
+                if (
+                    not np.isfinite(angular_vel_resolution_rad_per_sec)
+                    or angular_vel_resolution_rad_per_sec <= 0
+                ):
+                    raise ValueError(
+                        "angular_vel_resolution_rad_per_sec must be finite and positive"
+                    )
+                self.angular_vel_1_bins = (
+                    int(
+                        np.ceil(
+                            (2 * self.MAX_VEL_1) / angular_vel_resolution_rad_per_sec
+                        )
+                    )
+                    + 1
+                )
+                self.angular_vel_2_bins = (
+                    int(
+                        np.ceil(
+                            (2 * self.MAX_VEL_2) / angular_vel_resolution_rad_per_sec
+                        )
+                    )
+                    + 1
+                )
         else:
+            if not isinstance(velocity_bins, (int, np.integer)) or velocity_bins < 2:
+                raise ValueError("velocity_bins must be an integer greater than one")
             self.angular_vel_1_bins = velocity_bins
             self.angular_vel_2_bins = velocity_bins
 
@@ -67,57 +100,36 @@ class DiscretizedAcrobot:
         else:
             self.P = precomputed_P
 
-        # add transform_obs
-        self.transform_obs = lambda obs: (
-            np.ravel_multi_index(
-                (
-                    np.clip(
-                        np.digitize(
-                            obs[0], np.linspace(*self.angle_range, self.angle_1_bins)
-                        )
-                        - 1,
-                        0,
-                        self.angle_1_bins - 1,
-                    ),
-                    np.clip(
-                        np.digitize(
-                            obs[1], np.linspace(*self.angle_range, self.angle_2_bins)
-                        )
-                        - 1,
-                        0,
-                        self.angle_2_bins - 1,
-                    ),
-                    np.clip(
-                        np.digitize(
-                            obs[2],
-                            np.linspace(
-                                *self.velocity_1_range, self.angular_vel_1_bins
-                            ),
-                        )
-                        - 1,
-                        0,
-                        self.angular_vel_1_bins - 1,
-                    ),
-                    np.clip(
-                        np.digitize(
-                            obs[3],
-                            np.linspace(
-                                *self.velocity_2_range, self.angular_vel_2_bins
-                            ),
-                        )
-                        - 1,
-                        0,
-                        self.angular_vel_2_bins - 1,
-                    ),
-                ),
-                (
-                    self.angle_1_bins,
-                    self.angle_2_bins,
-                    self.angular_vel_1_bins,
-                    self.angular_vel_2_bins,
-                ),
-            )
+        self.transform_obs = self._transform_obs
+
+    def _transform_obs(self, observation):
+        """Convert Gymnasium's trigonometric observation into a model state."""
+        if len(observation) != 6:
+            raise ValueError("Acrobot observations must contain six values")
+
+        values = (
+            np.arctan2(observation[1], observation[0]),
+            np.arctan2(observation[3], observation[2]),
+            observation[4],
+            observation[5],
         )
+        grids = (
+            np.linspace(*self.angle_range, self.angle_1_bins),
+            np.linspace(*self.angle_range, self.angle_2_bins),
+            np.linspace(*self.velocity_1_range, self.angular_vel_1_bins),
+            np.linspace(*self.velocity_2_range, self.angular_vel_2_bins),
+        )
+        shape = (
+            self.angle_1_bins,
+            self.angle_2_bins,
+            self.angular_vel_1_bins,
+            self.angular_vel_2_bins,
+        )
+        indices = tuple(
+            np.clip(np.digitize(value, grid) - 1, 0, size - 1)
+            for value, grid, size in zip(values, grids, shape)
+        )
+        return np.ravel_multi_index(indices, shape)
 
     def setup_transition_probabilities(self):
         """
