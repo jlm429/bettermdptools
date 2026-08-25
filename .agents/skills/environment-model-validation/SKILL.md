@@ -17,10 +17,11 @@ Inspect the affected files under `bettermdptools/envs/`, their construction path
 Do not infer support from an environment name or claim that every supported
 Gymnasium environment has a custom model.
 
-Known custom paths include Blackjack's precomputed transition model and observation
-transform, plus CartPole's generated discretized model. Other wrapper and model
-files exist. Inspect their current implementation, test coverage, construction
-cost, and assumptions before making a support claim.
+Known custom paths include Blackjack's exact generated transition model and
+context-aware observation transform, plus generated discretized models for CartPole
+and Acrobot. Other wrapper and model files exist. Inspect their current
+implementation, test coverage, construction cost, and assumptions before making a
+support claim.
 
 ## Trace the representation
 
