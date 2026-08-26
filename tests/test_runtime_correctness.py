@@ -491,9 +491,15 @@ def test_environment_factory_closes_an_environment_when_adaptation_fails():
     register_test_env(env_id, ModelLessLifecycleEnv)
     ModelLessLifecycleEnv.instances = []
 
-    with pytest.raises(ValueError, match="does not expose a P matrix"):
+    with pytest.raises(ValueError) as error:
         EnvFactory().make(env_id)
 
+    message = str(error.value)
+    assert (
+        "native-P route is unavailable because it does not expose native P" in message
+    )
+    assert "wrapper-P route is unavailable" in message
+    assert "no explicit or registered bettermdptools wrapper was found" in message
     assert ModelLessLifecycleEnv.instances[-1].closed
 
 

@@ -39,6 +39,15 @@ def _get_transition_model(env: gym.Env) -> Any:
     return getattr(env.unwrapped, "P", None)
 
 
+def _discrete_space_sizes(env: gym.Env) -> Tuple[Optional[int], Optional[int]]:
+    """Return tabular space sizes when both environment spaces are discrete."""
+    nS = getattr(getattr(env, "observation_space", None), "n", None)
+    nA = getattr(getattr(env, "action_space", None), "n", None)
+    if nS is None or nA is None:
+        return None, None
+    return int(nS), int(nA)
+
+
 def _get_attr_chain(obj: Any, names: Tuple[str, ...]) -> Any:
     for n in names:
         if obj is None:
@@ -142,15 +151,14 @@ class EnvFactory:
         try:
             P = _get_transition_model(env)
 
-            if P is not None:
-                nS = getattr(getattr(env, "observation_space", None), "n", None)
-                nA = getattr(getattr(env, "action_space", None), "n", None)
-                if nS is None or nA is None:
-                    raise ValueError(
-                        f"Environment {env_id!r} exposes P but does not have "
-                        "Discrete observation/action spaces. Tabular algorithms "
-                        "require Discrete spaces or a discretizing wrapper."
-                    )
+            nS, nA = _discrete_space_sizes(env)
+            native_reason = (
+                "it does not expose native P"
+                if P is None
+                else "its observation and action spaces are not both Discrete"
+            )
+
+            if P is not None and nS is not None and nA is not None:
                 return EnvBundle(
                     env=env,
                     P=P,
@@ -170,10 +178,13 @@ class EnvFactory:
             wrapper_callable = _resolve_wrapper(wrapper)
             if wrapper_callable is None:
                 raise ValueError(
-                    f"Environment {env_id!r} does not expose a P matrix, and no "
-                    "wrapper was provided. This library focuses on environments that "
-                    "provide P for planning/tabular RL. Provide `wrapper=` "
-                    "(callable or import path) or use a supported env."
+                    f"Environment {env_id!r} cannot provide a tabular transition "
+                    "model: the native-P route is unavailable because "
+                    f"{native_reason}; "
+                    "the wrapper-P route is unavailable because no explicit or "
+                    "registered bettermdptools wrapper was found. Use an environment "
+                    "with native P and Discrete observation/action spaces, or provide "
+                    "a supported `wrapper=` that exposes P and Discrete spaces."
                 )
 
             wrapped_env = wrapper_callable(env, **wrapper_kwargs)
@@ -181,9 +192,11 @@ class EnvFactory:
             P = _get_transition_model(wrapped_env)
             if P is None:
                 raise ValueError(
-                    f"Wrapper {wrapper_callable.__name__} did not expose a P "
-                    "matrix via `.P`. "
-                    "Supported wrappers should provide a `.P` property."
+                    f"Environment {env_id!r} cannot provide a tabular transition "
+                    "model: the native-P route is unavailable because "
+                    f"{native_reason}; "
+                    f"the wrapper-P route is unavailable because wrapper "
+                    f"{wrapper_callable.__name__} did not expose P."
                 )
 
             convert = getattr(wrapped_env, "transform_obs", None)
@@ -202,9 +215,12 @@ class EnvFactory:
             nA = getattr(getattr(wrapped_env, "action_space", None), "n", None)
             if nS is None or nA is None:
                 raise ValueError(
-                    f"Wrapped environment for {env_id!r} does not expose "
-                    "Discrete observation/action spaces. Wrappers should set "
-                    "observation_space to Discrete(nS) and preserve action_space."
+                    f"Environment {env_id!r} cannot provide a tabular transition "
+                    "model: the native-P route is unavailable because "
+                    f"{native_reason}; "
+                    f"the wrapper-P route is unavailable because wrapper "
+                    f"{wrapper_callable.__name__} does not expose Discrete observation "
+                    "and action spaces."
                 )
 
             return EnvBundle(
