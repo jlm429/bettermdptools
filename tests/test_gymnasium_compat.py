@@ -436,7 +436,8 @@ def test_pendulum_model_boundaries_and_transition_invariants(tmp_path):
     try:
         model = env.discretized_pendulum
         assert model.discretize_angle(-np.pi) == 0
-        assert model.discretize_angle(np.pi) == model.angle_bins - 1
+        assert model.discretize_angle(np.pi) == 0
+        assert model.discretize_angle(np.nextafter(np.pi, 0)) == model.angle_bins - 1
         assert model.discretize_angular_velocity(-8.0) == 0
         assert model.discretize_angular_velocity(8.0) == model.angular_velocity_bins - 1
         assert_transition_model(

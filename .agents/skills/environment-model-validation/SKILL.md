@@ -50,6 +50,8 @@ support claim.
 - Discretization covers lower and upper boundaries, clips or rejects out-of-range
   observations deliberately, maps edge values consistently, and declares spaces
   that contain emitted observations and accepted actions.
+- Generated model cache identities include every input that changes `P` plus a
+  schema version that is bumped when transition or reward semantics change.
 
 ## Supply behavioral evidence
 

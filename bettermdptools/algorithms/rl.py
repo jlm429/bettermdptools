@@ -18,6 +18,7 @@ is required to convert state spaces not in this format.
 """
 
 import warnings
+from numbers import Integral, Real
 
 import numpy as np
 from tqdm.auto import tqdm
@@ -61,7 +62,7 @@ class RL:
         min_value : float
             Minimum value init_value is allowed to decay to.
         decay_ratio : float
-            The exponential factor exp(decay_ratio).
+            Fraction of `max_steps` over which values decay, in (0, 1].
         max_steps : int
             Max iteration steps for decaying init_value.
         log_start : float, optional
@@ -74,14 +75,55 @@ class RL:
         np.ndarray
             Decay values where values[i] is the value used at i-th step.
         """
-        decay_steps = int(max_steps * decay_ratio)
+        if (
+            isinstance(max_steps, bool)
+            or not isinstance(max_steps, Integral)
+            or max_steps < 1
+        ):
+            raise ValueError("max_steps must be a positive integer")
+        if (
+            isinstance(decay_ratio, bool)
+            or not isinstance(decay_ratio, Real)
+            or not np.isfinite(decay_ratio)
+            or not 0 < decay_ratio <= 1
+        ):
+            raise ValueError("decay_ratio must be finite and in (0, 1]")
+        if any(
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not np.isfinite(value)
+            for value in (init_value, min_value)
+        ):
+            raise ValueError("init_value and min_value must be finite")
+        if init_value < min_value:
+            raise ValueError("init_value must be greater than or equal to min_value")
+        if (
+            isinstance(log_start, bool)
+            or not isinstance(log_start, Real)
+            or not np.isfinite(log_start)
+            or log_start >= 0
+        ):
+            raise ValueError("log_start must be finite and negative")
+        if (
+            isinstance(log_base, bool)
+            or not isinstance(log_base, Real)
+            or not np.isfinite(log_base)
+            or log_base <= 1
+        ):
+            raise ValueError("log_base must be finite and greater than 1")
+
+        max_steps = int(max_steps)
+        if max_steps == 1 or init_value == min_value:
+            return np.full(max_steps, init_value, dtype=float)
+
+        decay_steps = min(max_steps, max(2, int(max_steps * decay_ratio)))
         rem_steps = max_steps - decay_steps
         values = np.logspace(log_start, 0, decay_steps, base=log_base, endpoint=True)[
             ::-1
         ]
         values = (values - values.min()) / (values.max() - values.min())
         values = (init_value - min_value) * values + min_value
-        values = np.pad(values, (0, rem_steps), "edge")
+        values = np.pad(values, (0, rem_steps), constant_values=min_value)
         return values
 
     def q_learning(

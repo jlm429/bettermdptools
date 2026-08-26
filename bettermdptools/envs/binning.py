@@ -2,6 +2,10 @@
 Utility functions for generating bin edges for discretizing continuous variables.
 """
 
+from numbers import Integral, Real
+
+import numpy as np
+
 
 def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     """Generate symmetric bin edges whose widths change exponentially.
@@ -29,14 +33,27 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     """
 
     # Parameter validation
-    if not isinstance(n_bins, int) or n_bins <= 0:
+    if isinstance(n_bins, bool) or not isinstance(n_bins, Integral) or n_bins <= 0:
         raise ValueError("n_bins must be a positive integer.")
+    n_bins = int(n_bins)
     if n_bins % 2 == 0:
         raise ValueError("n_bins must be an odd integer.")
-    if range_limit <= 0:
-        raise ValueError("range_limit must be a positive number.")
-    if width_ratio <= 0:
-        raise ValueError("width_ratio must be a positive number.")
+    if (
+        isinstance(range_limit, bool)
+        or not isinstance(range_limit, Real)
+        or not np.isfinite(range_limit)
+        or range_limit <= 0
+    ):
+        raise ValueError("range_limit must be a finite positive number.")
+    if (
+        isinstance(width_ratio, bool)
+        or not isinstance(width_ratio, Real)
+        or not np.isfinite(width_ratio)
+        or width_ratio <= 0
+    ):
+        raise ValueError("width_ratio must be a finite positive number.")
+    if not isinstance(center, (bool, np.bool_)):
+        raise ValueError("center must be a boolean.")
 
     k = (n_bins - 1) // 2  # Number of bins on each side of the center
 
