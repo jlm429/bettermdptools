@@ -335,8 +335,7 @@ class Planner:
     def _extract_undiscounted_policy(self, Q, dtype):
         """Prefer terminal progress when primary action values are tied."""
         maxima = np.max(Q, axis=1)
-        tolerance = 4 * np.finfo(np.dtype(dtype)).eps * np.maximum(1.0, np.abs(maxima))
-        eligible = np.abs(Q - maxima[:, None]) <= tolerance[:, None]
+        eligible = Q == maxima[:, None]
 
         secondary_gamma = 0.99
         secondary_values = np.full(
@@ -346,7 +345,7 @@ class Planner:
         )
         secondary_Q = np.full(Q.shape, -np.inf, dtype=np.float64)
 
-        for _ in range(1000):
+        while True:
             for s in range(len(self.P)):
                 for a in range(len(self.P[s])):
                     if not eligible[s, a]:

@@ -11,6 +11,7 @@ from bettermdptools.envs.binning import generate_bin_edges
 from bettermdptools.envs.blackjack_wrapper import BlackjackWrapper
 from bettermdptools.envs.pendulum_discretized import (
     DiscretizedPendulum,
+    angle_normalize,
     index_to_continous_state,
     wrap,
 )
@@ -151,6 +152,42 @@ def test_undiscounted_planning_ties_prefer_a_policy_that_reaches_terminal(
         env.close()
 
 
+def test_undiscounted_terminal_progress_preserves_strict_primary_optimality():
+    model = {
+        0: {
+            0: [(1.0, 0, np.float32(1.0 - 1e-7), True)],
+            1: [(1.0, 0, np.float32(1.0), True)],
+        }
+    }
+
+    policy = Planner(model).policy_improvement(
+        np.zeros(1, dtype=np.float32), gamma=1.0, dtype=np.float32
+    )
+
+    assert policy == {0: 1}
+
+
+def test_undiscounted_terminal_progress_has_no_fixed_propagation_horizon():
+    terminal_state = 1000
+    model = {
+        0: {
+            0: [(1.0, 0, 0.0, False)],
+            1: [(1.0, 1, 0.0, False)],
+        }
+    }
+    for state in range(1, terminal_state):
+        transition = [(1.0, state + 1, 0.0, False)]
+        model[state] = {0: transition, 1: transition}
+    terminal_transition = [(1.0, terminal_state, 0.0, True)]
+    model[terminal_state] = {0: terminal_transition, 1: terminal_transition}
+
+    policy = Planner(model).policy_improvement(
+        np.zeros(len(model), dtype=np.float32), gamma=1.0, dtype=np.float32
+    )
+
+    assert policy[0] == 1
+
+
 @pytest.mark.parametrize(
     "method_name",
     ["value_iteration", "value_iteration_vectorized", "policy_iteration"],
@@ -281,6 +318,11 @@ def test_pendulum_parallel_and_serial_construction_are_identical(tmp_path):
 def test_pendulum_boundaries_wrap_and_indices_reject_aliases(tmp_path):
     model = DiscretizedPendulum(3, 3, 3, n_workers=1, cache_dir=tmp_path, dim_samples=3)
 
+    assert np.isscalar(angle_normalize(1.0))
+    np.testing.assert_allclose(
+        angle_normalize(np.array([-np.pi, np.pi, 3 * np.pi])),
+        [-np.pi, -np.pi, -np.pi],
+    )
     assert model.discretize_angle(-np.pi) == 0
     assert model.discretize_angle(np.pi) == 0
     assert model.discretize_angle(3 * np.pi) == 0

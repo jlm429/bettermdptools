@@ -23,6 +23,8 @@ CACHED_P_PATH_FORMAT = (
 def angle_normalize(angle):
     """Normalize an angle to the half-open interval [-pi, pi)."""
     normalized = np.remainder(angle, 2 * np.pi)
+    if np.ndim(normalized) == 0:
+        return normalized - 2 * np.pi if normalized >= np.pi else normalized
     return np.where(normalized >= np.pi, normalized - 2 * np.pi, normalized)
 
 
