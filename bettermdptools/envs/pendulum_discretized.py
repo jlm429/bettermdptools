@@ -257,11 +257,12 @@ class DiscretizedPendulum:
     torque_bins : int, optional (default=11)
         Number of bins to discretize the torque.
     n_workers : int, optional (default=4)
-        Number of worker processes to use for setting up transition probabilities.
+        Positive number of worker processes used to build transition probabilities.
     cache_dir : str, optional (default='./cached')
         Directory to cache the transition probabilities.
     dim_samples : int, optional (default=11)
-        Samples per dimension when setting up transition probabilities.
+        Samples per dimension when setting up transition probabilities. Must be
+        an integer of at least 3 and is part of the model cache identity.
     Attributes:
     -----------
     angle_bins : int

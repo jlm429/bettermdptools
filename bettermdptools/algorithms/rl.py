@@ -58,17 +58,17 @@ class RL:
         Parameters
         ----------
         init_value : float
-            Initial value of the quantity being decayed.
+            Finite initial value of the quantity being decayed.
         min_value : float
-            Minimum value init_value is allowed to decay to.
+            Finite minimum value, no greater than `init_value`.
         decay_ratio : float
             Fraction of `max_steps` over which values decay, in (0, 1].
         max_steps : int
-            Max iteration steps for decaying init_value.
+            Positive number of steps in the returned schedule.
         log_start : float, optional
-            Starting value of the decay sequence, by default -2.
+            Finite negative start of the logarithmic sequence, by default -2.
         log_base : float, optional
-            Base of the log space, by default 10.
+            Finite logarithm base greater than 1, by default 10.
 
         Returns
         -------
@@ -159,15 +159,15 @@ class RL:
         min_alpha : float, optional
             Minimum learning rate, by default 0.01.
         alpha_decay_ratio : float, optional
-            Decay schedule of learning rate for future iterations, by default 0.5.
+            Learning-rate schedule ratio passed to `decay_schedule`, by default 0.5.
         init_epsilon : float, optional
             Initial epsilon value for epsilon greedy strategy, by default 1.0.
         min_epsilon : float, optional
             Minimum epsilon, by default 0.1.
         epsilon_decay_ratio : float, optional
-            Decay schedule of epsilon for future iterations, by default 0.9.
+            Exploration schedule ratio passed to `decay_schedule`, by default 0.9.
         n_episodes : int, optional
-            Number of episodes for the agent, by default 10000.
+            Positive number of episodes for the agent, by default 10000.
         seed : int, optional
             Seed passed to the first environment reset. Later resets continue
             the environment's seeded random number sequence.
@@ -275,15 +275,15 @@ class RL:
         min_alpha : float, optional
             Minimum learning rate, by default 0.01.
         alpha_decay_ratio : float, optional
-            Decay schedule of learning rate for future iterations, by default 0.5.
+            Learning-rate schedule ratio passed to `decay_schedule`, by default 0.5.
         init_epsilon : float, optional
             Initial epsilon value for epsilon greedy strategy, by default 1.0.
         min_epsilon : float, optional
             Minimum epsilon, by default 0.1.
         epsilon_decay_ratio : float, optional
-            Decay schedule of epsilon for future iterations, by default 0.9.
+            Exploration schedule ratio passed to `decay_schedule`, by default 0.9.
         n_episodes : int, optional
-            Number of episodes for the agent, by default 10000.
+            Positive number of episodes for the agent, by default 10000.
         seed : int, optional
             Seed passed to the first environment reset. Later resets continue
             the environment's seeded random number sequence.

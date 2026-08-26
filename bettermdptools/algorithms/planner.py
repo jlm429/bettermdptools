@@ -52,7 +52,7 @@ class Planner:
         gamma : float, optional
             Discount factor, by default 1.0.
         n_iters : int, optional
-            Number of iterations, by default 1000.
+            Iteration budget of at least 2, by default 1000.
         theta : float, optional
             Convergence criterion for value iteration, by default 1e-10.
 
@@ -105,7 +105,7 @@ class Planner:
             Discount factor
 
         n_iters : int
-            Number of iterations
+            Iteration budget of at least 2.
 
         theta : float
             Convergence criterion for value iteration.
@@ -194,11 +194,11 @@ class Planner:
         gamma : float, optional
             Discount factor, by default 1.0.
         n_iters : int, optional
-            Number of iterations, by default 50.
+            Iteration budget of at least 2, by default 50.
         theta : float, optional
             Convergence criterion for policy evaluation, by default 1e-10.
         eval_n_iters : int, optional
-            Maximum Bellman sweeps per policy evaluation, by default 1000.
+            Positive maximum Bellman sweeps per policy evaluation, by default 1000.
             Bounding evaluation prevents an improper undiscounted policy from
             blocking policy improvement indefinitely.
 
@@ -266,7 +266,7 @@ class Planner:
         theta : float, optional
             Convergence criterion, by default 1e-10.
         n_iters : int, optional
-            Maximum Bellman sweeps, by default 1000.
+            Positive maximum Bellman sweeps, by default 1000.
 
         Returns
         -------

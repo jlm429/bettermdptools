@@ -13,13 +13,13 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     Parameters
     ----------
     range_limit : float
-        The extreme value of the range [-range_limit, range_limit].
+        Finite positive extreme of the range [-range_limit, range_limit].
 
     n_bins : int
         Number of bins (must be odd).
 
     width_ratio : float
-        Ratio of the outermost bin widths to the central bin width.
+        Finite positive ratio of the outermost to central bin widths.
 
     center : bool, default=True
         True: Outer bins are wider than the center bin.
