@@ -436,7 +436,8 @@ def test_pendulum_model_boundaries_and_transition_invariants(tmp_path):
     try:
         model = env.discretized_pendulum
         assert model.discretize_angle(-np.pi) == 0
-        assert model.discretize_angle(np.pi) == model.angle_bins - 1
+        assert model.discretize_angle(np.pi) == 0
+        assert model.discretize_angle(np.nextafter(np.pi, 0)) == model.angle_bins - 1
         assert model.discretize_angular_velocity(-8.0) == 0
         assert model.discretize_angular_velocity(8.0) == model.angular_velocity_bins - 1
         assert_transition_model(
@@ -500,6 +501,20 @@ def test_environment_factory_reads_the_unwrapped_discrete_model():
         assert bundle.P is bundle.env.unwrapped.P
         assert bundle.nS == bundle.env.observation_space.n
         assert bundle.nA == bundle.env.action_space.n
+        assert bundle.meta == {"source": "gym", "wrapped": False}
+    finally:
+        bundle.env.close()
+
+
+def test_environment_factory_reads_a_supported_wrapper_model():
+    bundle = EnvFactory().make("Blackjack-v1")
+    try:
+        assert isinstance(bundle.env, BlackjackWrapper)
+        assert bundle.P is bundle.env.P
+        assert bundle.nS == bundle.env.observation_space.n
+        assert bundle.nA == bundle.env.action_space.n
+        assert bundle.meta["source"] == "wrapped"
+        assert bundle.meta["wrapper"] == "BlackjackWrapper"
     finally:
         bundle.env.close()
 

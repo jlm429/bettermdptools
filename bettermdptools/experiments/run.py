@@ -106,6 +106,11 @@ def run(
     RunResult
         A dataclass containing training results, optional evaluation output,
         and metadata.
+
+    Notes
+    -----
+    The internally created environment is closed before this function returns
+    or propagates an exception.
     """
     env_kwargs = env_kwargs or {}
     wrapper_kwargs = wrapper_kwargs or {}
@@ -125,25 +130,30 @@ def run(
         wrapper_kwargs=wrapper_kwargs,
     )
 
-    train_out = run_algorithm(algo, bundle, **algo_kwargs)
+    try:
+        train_out = run_algorithm(algo, bundle, **algo_kwargs)
 
-    eval_out = None
-    if eval_kwargs:
-        if "pi" not in train_out:
-            raise ValueError("Evaluation requires a policy `pi` in training output.")
-        eval_options = dict(eval_kwargs)
-        if used_seed is not None:
-            eval_options.setdefault("seed", used_seed)
-        eval_out = _eval_policy(bundle, train_out["pi"], eval_options)
+        eval_out = None
+        if eval_kwargs:
+            if "pi" not in train_out:
+                raise ValueError(
+                    "Evaluation requires a policy `pi` in training output."
+                )
+            eval_options = dict(eval_kwargs)
+            if used_seed is not None:
+                eval_options.setdefault("seed", used_seed)
+            eval_out = _eval_policy(bundle, train_out["pi"], eval_options)
 
-    return RunResult(
-        algo=algo_name,
-        env_id=env_id,
-        seed=used_seed,
-        train=train_out,
-        eval=eval_out,
-        meta={"env": bundle.meta},
-    )
+        return RunResult(
+            algo=algo_name,
+            env_id=env_id,
+            seed=used_seed,
+            train=train_out,
+            eval=eval_out,
+            meta={"env": bundle.meta},
+        )
+    finally:
+        bundle.env.close()
 
 
 class ExperimentBuilder:

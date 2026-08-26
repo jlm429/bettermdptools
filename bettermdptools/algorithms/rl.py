@@ -18,6 +18,7 @@ is required to convert state spaces not in this format.
 """
 
 import warnings
+from numbers import Integral, Real
 
 import numpy as np
 from tqdm.auto import tqdm
@@ -57,31 +58,72 @@ class RL:
         Parameters
         ----------
         init_value : float
-            Initial value of the quantity being decayed.
+            Finite initial value of the quantity being decayed.
         min_value : float
-            Minimum value init_value is allowed to decay to.
+            Finite minimum value, no greater than `init_value`.
         decay_ratio : float
-            The exponential factor exp(decay_ratio).
+            Fraction of `max_steps` over which values decay, in (0, 1].
         max_steps : int
-            Max iteration steps for decaying init_value.
+            Positive number of steps in the returned schedule.
         log_start : float, optional
-            Starting value of the decay sequence, by default -2.
+            Finite negative start of the logarithmic sequence, by default -2.
         log_base : float, optional
-            Base of the log space, by default 10.
+            Finite logarithm base greater than 1, by default 10.
 
         Returns
         -------
         np.ndarray
             Decay values where values[i] is the value used at i-th step.
         """
-        decay_steps = int(max_steps * decay_ratio)
+        if (
+            isinstance(max_steps, bool)
+            or not isinstance(max_steps, Integral)
+            or max_steps < 1
+        ):
+            raise ValueError("max_steps must be a positive integer")
+        if (
+            isinstance(decay_ratio, bool)
+            or not isinstance(decay_ratio, Real)
+            or not np.isfinite(decay_ratio)
+            or not 0 < decay_ratio <= 1
+        ):
+            raise ValueError("decay_ratio must be finite and in (0, 1]")
+        if any(
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not np.isfinite(value)
+            for value in (init_value, min_value)
+        ):
+            raise ValueError("init_value and min_value must be finite")
+        if init_value < min_value:
+            raise ValueError("init_value must be greater than or equal to min_value")
+        if (
+            isinstance(log_start, bool)
+            or not isinstance(log_start, Real)
+            or not np.isfinite(log_start)
+            or log_start >= 0
+        ):
+            raise ValueError("log_start must be finite and negative")
+        if (
+            isinstance(log_base, bool)
+            or not isinstance(log_base, Real)
+            or not np.isfinite(log_base)
+            or log_base <= 1
+        ):
+            raise ValueError("log_base must be finite and greater than 1")
+
+        max_steps = int(max_steps)
+        if max_steps == 1 or init_value == min_value:
+            return np.full(max_steps, init_value, dtype=float)
+
+        decay_steps = min(max_steps, max(2, int(max_steps * decay_ratio)))
         rem_steps = max_steps - decay_steps
         values = np.logspace(log_start, 0, decay_steps, base=log_base, endpoint=True)[
             ::-1
         ]
         values = (values - values.min()) / (values.max() - values.min())
         values = (init_value - min_value) * values + min_value
-        values = np.pad(values, (0, rem_steps), "edge")
+        values = np.pad(values, (0, rem_steps), constant_values=min_value)
         return values
 
     def q_learning(
@@ -117,15 +159,15 @@ class RL:
         min_alpha : float, optional
             Minimum learning rate, by default 0.01.
         alpha_decay_ratio : float, optional
-            Decay schedule of learning rate for future iterations, by default 0.5.
+            Learning-rate schedule ratio passed to `decay_schedule`, by default 0.5.
         init_epsilon : float, optional
             Initial epsilon value for epsilon greedy strategy, by default 1.0.
         min_epsilon : float, optional
             Minimum epsilon, by default 0.1.
         epsilon_decay_ratio : float, optional
-            Decay schedule of epsilon for future iterations, by default 0.9.
+            Exploration schedule ratio passed to `decay_schedule`, by default 0.9.
         n_episodes : int, optional
-            Number of episodes for the agent, by default 10000.
+            Positive number of episodes for the agent, by default 10000.
         seed : int, optional
             Seed passed to the first environment reset. Later resets continue
             the environment's seeded random number sequence.
@@ -233,15 +275,15 @@ class RL:
         min_alpha : float, optional
             Minimum learning rate, by default 0.01.
         alpha_decay_ratio : float, optional
-            Decay schedule of learning rate for future iterations, by default 0.5.
+            Learning-rate schedule ratio passed to `decay_schedule`, by default 0.5.
         init_epsilon : float, optional
             Initial epsilon value for epsilon greedy strategy, by default 1.0.
         min_epsilon : float, optional
             Minimum epsilon, by default 0.1.
         epsilon_decay_ratio : float, optional
-            Decay schedule of epsilon for future iterations, by default 0.9.
+            Exploration schedule ratio passed to `decay_schedule`, by default 0.9.
         n_episodes : int, optional
-            Number of episodes for the agent, by default 10000.
+            Positive number of episodes for the agent, by default 10000.
         seed : int, optional
             Seed passed to the first environment reset. Later resets continue
             the environment's seeded random number sequence.

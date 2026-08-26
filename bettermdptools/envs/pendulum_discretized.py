@@ -7,33 +7,65 @@ import gzip
 import os
 import pickle
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from numbers import Integral
 
 import numpy as np
 
 from bettermdptools.envs.binning import generate_bin_edges
 
+CACHE_VERSION = 2
 CACHED_P_PATH_FORMAT = (
-    "cached_P_discretized_pendulum_{angle_bins}_{angular_velocity_bins}_"
-    "{action_bins}.pkl.gz"
+    "cached_P_discretized_pendulum_v{cache_version}_{angle_bins}_"
+    "{angular_velocity_bins}_{action_bins}_{dim_samples}.pkl.gz"
 )
 
 
 def angle_normalize(angle):
     """Normalize an angle to the half-open interval [-pi, pi)."""
-    return ((angle + np.pi) % (2 * np.pi)) - np.pi
+    normalized = np.remainder(angle, 2 * np.pi)
+    if np.ndim(normalized) == 0:
+        return normalized - 2 * np.pi if normalized >= np.pi else normalized
+    return np.where(normalized >= np.pi, normalized - 2 * np.pi, normalized)
 
 
 def wrap(value, lower_bound, upper_bound):
-    """Wrap a scalar into the closed interval used by the model."""
+    """Wrap a scalar into the half-open interval [lower_bound, upper_bound)."""
+    if (
+        not np.isfinite(value)
+        or not np.isfinite(lower_bound)
+        or not np.isfinite(upper_bound)
+        or lower_bound >= upper_bound
+    ):
+        raise ValueError("wrap requires finite bounds with lower_bound < upper_bound")
     difference = upper_bound - lower_bound
-    while value > upper_bound:
+    while value >= upper_bound:
         value -= difference
     while value < lower_bound:
         value += difference
     return value
 
 
+def _validate_index(name, value, size):
+    if isinstance(value, bool) or not isinstance(value, Integral):
+        raise ValueError(f"{name} must be an integer in [0, {size})")
+    value = int(value)
+    if not 0 <= value < size:
+        raise ValueError(f"{name} must be an integer in [0, {size})")
+    return value
+
+
+def _validate_sample_count(num_samples):
+    if (
+        isinstance(num_samples, bool)
+        or not isinstance(num_samples, Integral)
+        or num_samples < 3
+    ):
+        raise ValueError("num_samples must be an integer greater than or equal to 3")
+    return int(num_samples)
+
+
 def index_to_state(index, angle_bins, angular_velocity_bins):
+    index = _validate_index("index", index, angle_bins * angular_velocity_bins)
     angle_idx = index // angular_velocity_bins
     angular_velocity_idx = index % angular_velocity_bins
     return angle_idx, angular_velocity_idx
@@ -52,10 +84,26 @@ def index_to_continous_state(index, angle_bin_edges, angular_velocity_bin_edges)
 
 
 def state_to_index(angle_idx, angular_velocity_idx, angular_velocity_bins):
+    if (
+        isinstance(angular_velocity_bins, bool)
+        or not isinstance(angular_velocity_bins, Integral)
+        or angular_velocity_bins < 1
+    ):
+        raise ValueError("angular_velocity_bins must be a positive integer")
+    if (
+        isinstance(angle_idx, bool)
+        or not isinstance(angle_idx, Integral)
+        or angle_idx < 0
+    ):
+        raise ValueError("angle_idx must be a nonnegative integer")
+    angular_velocity_idx = _validate_index(
+        "angular_velocity_idx", angular_velocity_idx, angular_velocity_bins
+    )
     return angle_idx * angular_velocity_bins + angular_velocity_idx
 
 
 def get_torque_value(torque_bin_edges, action):
+    action = _validate_index("action", action, len(torque_bin_edges) - 1)
     return (torque_bin_edges[action] + torque_bin_edges[action + 1]) / 2.0
 
 
@@ -72,6 +120,13 @@ def compute_next_probable_states(
     m=1.0,
     dt=0.05,
 ):
+    num_samples = _validate_sample_count(num_samples)
+    angle_idx = _validate_index("angle_idx", angle_idx, len(angle_bin_edges) - 1)
+    angular_velocity_idx = _validate_index(
+        "angular_velocity_idx",
+        angular_velocity_idx,
+        len(angular_velocity_bin_edges) - 1,
+    )
     angle_low, angle_high = angle_bin_edges[angle_idx], angle_bin_edges[angle_idx + 1]
     angular_velocity_low, angular_velocity_high = (
         angular_velocity_bin_edges[angular_velocity_idx],
@@ -112,8 +167,7 @@ def compute_next_probable_states(
                 max_angular_velocity - 1e-6,
             )
 
-            new_angle = angle + new_angular_velocity * dt
-            new_angle = wrap(new_angle, -np.pi, np.pi)
+            new_angle = angle_normalize(angle + new_angular_velocity * dt)
 
             new_angle_idx = np.clip(
                 np.digitize(new_angle, angle_bin_edges) - 1,
@@ -203,11 +257,12 @@ class DiscretizedPendulum:
     torque_bins : int, optional (default=11)
         Number of bins to discretize the torque.
     n_workers : int, optional (default=4)
-        Number of worker processes to use for setting up transition probabilities.
+        Positive number of worker processes used to build transition probabilities.
     cache_dir : str, optional (default='./cached')
         Directory to cache the transition probabilities.
     dim_samples : int, optional (default=11)
-        Samples per dimension when setting up transition probabilities.
+        Samples per dimension when setting up transition probabilities. Must be
+        an integer of at least 3 and is part of the model cache identity.
     Attributes:
     -----------
     angle_bins : int
@@ -241,6 +296,14 @@ class DiscretizedPendulum:
         cache_dir="./cached",
         dim_samples=11,
     ):
+        dim_samples = _validate_sample_count(dim_samples)
+        if (
+            isinstance(n_workers, bool)
+            or not isinstance(n_workers, Integral)
+            or n_workers < 1
+        ):
+            raise ValueError("n_workers must be a positive integer")
+
         self.angle_bins = angle_bins
         self.angular_velocity_bins = angular_velocity_bins
         self.dim_samples = dim_samples
@@ -258,17 +321,18 @@ class DiscretizedPendulum:
             for state in range(self.state_space)
         }
 
-        self.n_workers = n_workers
+        self.n_workers = int(n_workers)
 
         cached_P_filepath = CACHED_P_PATH_FORMAT.format(
+            cache_version=CACHE_VERSION,
             angle_bins=angle_bins,
             angular_velocity_bins=angular_velocity_bins,
             action_bins=torque_bins,
+            dim_samples=dim_samples,
         )
         cached_P_filepath = os.path.join(cache_dir, cached_P_filepath)
 
-        if not os.path.exists(cache_dir):
-            os.makedirs(cache_dir)
+        os.makedirs(cache_dir, exist_ok=True)
 
         if os.path.exists(cached_P_filepath):
             with gzip.open(cached_P_filepath, "rb") as f:
@@ -279,6 +343,9 @@ class DiscretizedPendulum:
                 pickle.dump(self.P, f)
 
     def discretize_angle(self, angle):
+        if not np.isfinite(angle):
+            raise ValueError("angle must be finite")
+        angle = angle_normalize(angle)
         return int(
             np.clip(
                 np.digitize(angle, self.angle_bin_edges) - 1,
@@ -288,6 +355,8 @@ class DiscretizedPendulum:
         )
 
     def discretize_angular_velocity(self, angular_velocity):
+        if not np.isfinite(angular_velocity):
+            raise ValueError("angular_velocity must be finite")
         return int(
             np.clip(
                 np.digitize(angular_velocity, self.angular_velocity_bin_edges) - 1,
@@ -300,18 +369,24 @@ class DiscretizedPendulum:
         return index_to_state(index, self.angle_bins, self.angular_velocity_bins)
 
     def state_to_index(self, angle_idx, angular_velocity_idx):
+        angle_idx = _validate_index("angle_idx", angle_idx, self.angle_bins)
+        angular_velocity_idx = _validate_index(
+            "angular_velocity_idx",
+            angular_velocity_idx,
+            self.angular_velocity_bins,
+        )
         idx = state_to_index(
             angle_idx, angular_velocity_idx, self.angular_velocity_bins
         )
-        if idx < 0 or idx >= self.state_space:
-            raise ValueError(f"Invalid state index: {idx}")
         return int(idx)
 
     def transform_cont_obs(self, cont_obs):
+        cont_obs = np.asarray(cont_obs)
+        if cont_obs.shape != (3,) or not np.isfinite(cont_obs).all():
+            raise ValueError("Pendulum observations must contain three finite values")
         x = cont_obs[0]
         y = cont_obs[1]
-        theta = np.arctan2(y, x)
-        theta = wrap(theta, -np.pi, np.pi)
+        theta = angle_normalize(np.arctan2(y, x))
         theta_dot = cont_obs[2]
         theta_dot = np.clip(theta_dot, -8 + 1e-6, 8 - 1e-6)
 
