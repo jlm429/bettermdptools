@@ -236,12 +236,8 @@ class Planner:
             )
             V_track[i] = V
             pi = self.policy_improvement(V, gamma=gamma, dtype=dtype)
-            if old_pi == pi:
+            if old_pi == pi and evaluation_converged:
                 converged = True
-                if not evaluation_converged:
-                    warnings.warn(
-                        "Policy stabilized before policy evaluation converged."
-                    )
 
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")

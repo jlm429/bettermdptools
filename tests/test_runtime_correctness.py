@@ -111,11 +111,30 @@ def test_policy_evaluation_bounds_an_undiscounted_recurrent_policy():
     assert caught == []
 
     np.random.seed(0)
-    with pytest.warns(UserWarning, match="Policy stabilized"):
+    with pytest.warns(UserWarning, match="Max iterations reached"):
         policy_values = Planner(recurrent_model).policy_iteration(
             n_iters=2, eval_n_iters=3
         )[0]
     np.testing.assert_array_equal(policy_values, [-3.0])
+
+
+def test_policy_iteration_waits_for_stable_policy_evaluation(monkeypatch):
+    model = {
+        0: {
+            0: [(1.0, 0, -1.0, False)],
+            1: [(1.0, 0, -1002.0, True)],
+        }
+    }
+    monkeypatch.setattr(
+        np.random, "choice", lambda actions, size: np.zeros(size, dtype=int)
+    )
+
+    with warnings.catch_warnings(record=True) as caught:
+        values, _, policy = Planner(model).policy_iteration(n_iters=4)
+
+    np.testing.assert_array_equal(values, [-1002.0])
+    assert policy == {0: 1}
+    assert caught == []
 
 
 def test_taxi_policy_iteration_matches_value_iteration_without_hanging():
