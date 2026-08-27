@@ -22,7 +22,7 @@ class EnvBundle:
         Transition dictionary in Gymnasium-style discrete format.
     convert_state_obs:
         Function that maps an environment observation to an integer state index.
-        For most discrete Gym environments, this is the identity function.
+        For most discrete Gymnasium environments, this is the identity function.
     nS, nA:
         Number of states and actions for tabular methods.
     meta:

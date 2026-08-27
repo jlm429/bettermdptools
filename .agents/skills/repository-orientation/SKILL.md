@@ -37,13 +37,12 @@ tests, and construction cost before making a support claim.
 
 ## Configuration and documentation
 
-- `pyproject.toml` and `poetry.lock` define the Poetry environment, supported Python
-  and Gymnasium ranges, dev tools, formatting, lint, and build backend.
-- `setup.py` repeats legacy package metadata and runtime requirements. Inspect both
-  metadata surfaces when a packaging change is explicitly required.
+- `pyproject.toml` and `poetry.lock` are the authoritative packaging and dependency
+  configuration. They define supported Python and Gymnasium ranges, runtime and
+  optional dependencies, development and documentation tools, and the build backend.
 - `.circleci/config.yml` is the checked-in CI workflow.
 - `README.md` and `docs/api/*.md` are hand-authored docs. Python docstrings and
-  `docs-templates/` feed committed pdoc output under `docs/`. Read
+  the Poetry-managed pdoc tool feed committed output under `docs/`. Read
   [Generated documentation](../generated-documentation/SKILL.md) before changing
   either side.
 

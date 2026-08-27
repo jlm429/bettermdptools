@@ -13,6 +13,7 @@ from bettermdptools.envs.pendulum_discretized import (
     DiscretizedPendulum,
     angle_normalize,
     index_to_continous_state,
+    index_to_continuous_state,
     wrap,
 )
 from bettermdptools.envs.pendulum_wrapper import PendulumWrapper
@@ -406,7 +407,12 @@ def test_pendulum_midpoint_transitions_match_current_gymnasium(tmp_path):
         model = env.discretized_pendulum
         env.reset(seed=417)
         for state in range(model.state_space):
-            angle, angular_velocity = index_to_continous_state(
+            angle, angular_velocity = index_to_continuous_state(
+                state,
+                model.angle_bin_edges,
+                model.angular_velocity_bin_edges,
+            )
+            assert (angle, angular_velocity) == index_to_continous_state(
                 state,
                 model.angle_bin_edges,
                 model.angular_velocity_bin_edges,

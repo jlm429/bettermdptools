@@ -21,17 +21,21 @@ class Callbacks:
     def on_episode_begin(
         self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
     ) -> None:
+        """Run before an episode begins."""
         pass
 
     def on_episode_end(
         self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
     ) -> None:
+        """Run after an episode ends."""
         pass
 
     def on_episode(self, caller: Any, episode: int, **kwargs: Any) -> None:
+        """Run once for an episode after `on_episode_begin`."""
         pass
 
     def on_env_step(self, caller: Any, **kwargs: Any) -> None:
+        """Run after each environment step."""
         pass
 
 
@@ -58,6 +62,7 @@ class ExampleCallbacks(Callbacks):
     log_every: int = 100
 
     def on_episode(self, caller: Any, episode: int, **kwargs: Any) -> None:
+        """Print selected caller metrics at the configured interval."""
         if self.log_every and episode % self.log_every == 0:
             # Safe introspection - only print if attribute exists
             eps = getattr(caller, "epsilon", None)
@@ -75,6 +80,7 @@ class ExampleCallbacks(Callbacks):
     def on_episode_begin(
         self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
     ) -> None:
+        """Provide an example episode-start hook."""
         # Example: reset per-episode counters stored on the callback instance
         # self.steps_this_episode = 0
         pass
@@ -82,11 +88,13 @@ class ExampleCallbacks(Callbacks):
     def on_episode_end(
         self, caller: Any, *, episode: Optional[int] = None, **kwargs: Any
     ) -> None:
+        """Provide an example episode-end hook."""
         # Example: read metrics passed by the algorithm if available
         # total_reward = kwargs.get("episode_reward")
         pass
 
     def on_env_step(self, caller: Any, **kwargs: Any) -> None:
+        """Provide an example environment-step hook."""
         # Example: track steps, or inspect step-level info if passed in kwargs
         # r = kwargs.get("reward")
         # done = kwargs.get("done")

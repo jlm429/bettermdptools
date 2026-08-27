@@ -1,16 +1,11 @@
-"""
-Discretized CartPole transition and reward matrix with adaptive angle binning.
-created with chatGPT
-
-Example usage:
-dpole = DiscretizedCartPole(10, 10, 10, .5, .1, .5)
-
-"""
+"""Discretized CartPole transition model with adaptive angle binning."""
 
 import numpy as np
 
 
 class DiscretizedCartPole:
+    """Build a deterministic tabular approximation of CartPole dynamics."""
+
     def __init__(
         self,
         position_bins,

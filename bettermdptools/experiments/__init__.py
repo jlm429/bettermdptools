@@ -1,22 +1,20 @@
-"""High-level experiment workflows.
+"""High-level experiment and hyperparameter-search workflows.
 
-The primary entrypoint for new users is:
-
-- `run(...)` - run a single algorithm/environment experiment
-
-Optionally:
-- `ExperimentBuilder` - fluent configuration API
+`run` executes one algorithm and environment combination and returns a
+`RunResult`. `ExperimentBuilder` provides the same workflow through a fluent
+interface. `optimize` adds optional Optuna-based hyperparameter search and only
+imports Optuna when a search starts.
 """
 
+from .optuna import MissingOptunaDependency, OptunaResult, optimize
 from .run import ExperimentBuilder, run
+from .types import RunResult
 
-__all__ = ["run", "ExperimentBuilder"]
-
-# Optional Optuna add-on
-try:
-    from .optuna import MissingOptunaDependency, OptunaResult, optimize
-
-    __all__ += ["optimize", "OptunaResult", "MissingOptunaDependency"]
-except Exception:
-    # Optuna is optional; do not fail base imports
-    pass
+__all__ = [
+    "ExperimentBuilder",
+    "MissingOptunaDependency",
+    "OptunaResult",
+    "RunResult",
+    "optimize",
+    "run",
+]

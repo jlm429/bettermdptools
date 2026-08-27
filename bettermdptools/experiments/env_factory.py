@@ -7,11 +7,12 @@ an EnvBundle that includes a Gymnasium-style transition dictionary `P`, along wi
 metadata needed for planning and tabular reinforcement learning.
 
 Philosophy
-- bettermdptools targets environments that expose a transition dictionary `P`.
+- bettermdptools targets environments with discrete spaces and a transition
+  dictionary `P`.
 - Built-in models are read from `env.unwrapped.P`.
 - Explicit wrapper models are read from the wrapper's `env.P` property.
-- If not, an optional wrapper may be applied to provide `P` and tabular spaces.
-- If `P` cannot be obtained, an error is raised to keep behavior explicit.
+- A wrapper may be applied when the native model or spaces are not usable.
+- If a usable tabular model cannot be obtained, an error is raised.
 """
 
 from __future__ import annotations
@@ -100,7 +101,8 @@ class EnvFactory:
                 self,
                 "_registry",
                 {
-                    # Wrapper mappings used for environments that do not expose `P`
+                    # Wrapper mappings for environments without a usable
+                    # native model.
                     "CartPole": (
                         "bettermdptools.envs.cartpole_wrapper:CartpoleWrapper"
                     ),
@@ -127,9 +129,10 @@ class EnvFactory:
         env_id:
             Gymnasium environment id (for example, "FrozenLake8x8-v1", "CartPole-v1").
         gym_kwargs:
-            Keyword arguments forwarded to `gym.make`.
+            Keyword arguments forwarded to `gymnasium.make`.
         wrapper:
-            Optional wrapper to apply when the environment does not expose `P`.
+            Optional wrapper to apply when the environment does not expose a usable
+            tabular model and discrete observation and action spaces.
             Accepted forms:
             - callable: used directly
             - string: resolved via import ("pkg.mod:Class" or "pkg.mod.Class")

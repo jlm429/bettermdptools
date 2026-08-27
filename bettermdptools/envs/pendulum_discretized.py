@@ -65,13 +65,15 @@ def _validate_sample_count(num_samples):
 
 
 def index_to_state(index, angle_bins, angular_velocity_bins):
+    """Convert a flat state index into angle and velocity bin indices."""
     index = _validate_index("index", index, angle_bins * angular_velocity_bins)
     angle_idx = index // angular_velocity_bins
     angular_velocity_idx = index % angular_velocity_bins
     return angle_idx, angular_velocity_idx
 
 
-def index_to_continous_state(index, angle_bin_edges, angular_velocity_bin_edges):
+def index_to_continuous_state(index, angle_bin_edges, angular_velocity_bin_edges):
+    """Return midpoint angle and velocity values for a flat state index."""
     angle_idx, angular_velocity_idx = index_to_state(
         index, len(angle_bin_edges) - 1, len(angular_velocity_bin_edges) - 1
     )
@@ -83,7 +85,17 @@ def index_to_continous_state(index, angle_bin_edges, angular_velocity_bin_edges)
     return angle, angular_velocity
 
 
+def index_to_continous_state(index, angle_bin_edges, angular_velocity_bin_edges):
+    """Compatibility alias for the historically misspelled public function."""
+    return index_to_continuous_state(
+        index,
+        angle_bin_edges,
+        angular_velocity_bin_edges,
+    )
+
+
 def state_to_index(angle_idx, angular_velocity_idx, angular_velocity_bins):
+    """Convert angle and velocity bin indices into a flat state index."""
     if (
         isinstance(angular_velocity_bins, bool)
         or not isinstance(angular_velocity_bins, Integral)
@@ -103,6 +115,7 @@ def state_to_index(angle_idx, angular_velocity_idx, angular_velocity_bins):
 
 
 def get_torque_value(torque_bin_edges, action):
+    """Return the midpoint torque represented by a discrete action."""
     action = _validate_index("action", action, len(torque_bin_edges) - 1)
     return (torque_bin_edges[action] + torque_bin_edges[action + 1]) / 2.0
 
@@ -120,6 +133,7 @@ def compute_next_probable_states(
     m=1.0,
     dt=0.05,
 ):
+    """Approximate one-step transitions by sampling within a state bin."""
     num_samples = _validate_sample_count(num_samples)
     angle_idx = _validate_index("angle_idx", angle_idx, len(angle_bin_edges) - 1)
     angular_velocity_idx = _validate_index(
@@ -210,6 +224,7 @@ def compute_next_probable_states(
 
 
 def setup_transition_probabilities_for_state(args):
+    """Build all action transitions for one state from serialized arguments."""
     (
         state,
         angle_bin_edges,
@@ -343,6 +358,7 @@ class DiscretizedPendulum:
                 pickle.dump(self.P, f)
 
     def discretize_angle(self, angle):
+        """Map a finite angle to its discrete bin index."""
         if not np.isfinite(angle):
             raise ValueError("angle must be finite")
         angle = angle_normalize(angle)
@@ -355,6 +371,7 @@ class DiscretizedPendulum:
         )
 
     def discretize_angular_velocity(self, angular_velocity):
+        """Map a finite angular velocity to its discrete bin index."""
         if not np.isfinite(angular_velocity):
             raise ValueError("angular_velocity must be finite")
         return int(
@@ -366,9 +383,11 @@ class DiscretizedPendulum:
         )
 
     def index_to_state(self, index):
+        """Convert a flat state index into angle and velocity bin indices."""
         return index_to_state(index, self.angle_bins, self.angular_velocity_bins)
 
     def state_to_index(self, angle_idx, angular_velocity_idx):
+        """Convert angle and velocity bin indices into a flat state index."""
         angle_idx = _validate_index("angle_idx", angle_idx, self.angle_bins)
         angular_velocity_idx = _validate_index(
             "angular_velocity_idx",
@@ -381,6 +400,7 @@ class DiscretizedPendulum:
         return int(idx)
 
     def transform_cont_obs(self, cont_obs):
+        """Convert a Gymnasium Pendulum observation to a state index."""
         cont_obs = np.asarray(cont_obs)
         if cont_obs.shape != (3,) or not np.isfinite(cont_obs).all():
             raise ValueError("Pendulum observations must contain three finite values")
@@ -396,9 +416,11 @@ class DiscretizedPendulum:
         return self.state_to_index(angle_idx, angular_velocity_idx)
 
     def get_action_value(self, action):
+        """Return the midpoint torque represented by a discrete action."""
         return get_torque_value(self.torque_bin_edges, action)
 
     def setup_transition_probabilities(self):
+        """Build the sampled transition model serially or with worker processes."""
         state_space_values = list(range(self.state_space))
 
         args = [

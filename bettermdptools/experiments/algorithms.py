@@ -15,6 +15,7 @@ from .types import EnvBundle
 
 
 def normalize_algo_name(algo: str) -> str:
+    """Return the canonical name for a supported algorithm alias."""
     a = algo.strip().lower()
     aliases = {
         "value_iteration": "vi",

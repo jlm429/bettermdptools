@@ -2,9 +2,18 @@
 
 The experiments package provides an optional, high-level entry point for running Optuna-based hyperparameter search on top of `bettermdptools.experiments.run(...)`, returning a consistent result shape.
 
-This layer is provided on an **"as is" basis**. It is intended for quick tuning, demos, and light experimentation. It is not required for using bettermdptools algorithms directly, nor is it required for using Optuna directly.
+This layer is intended for quick tuning, demos, and light experimentation. It
+is not required for using bettermdptools algorithms or Optuna directly.
 
 Optuna is an **optional dependency**. If Optuna is not installed, calling the entrypoint raises `MissingOptunaDependency`.
+
+Install the packaged extra with:
+
+```bash
+pip install "bettermdptools[optuna]"
+```
+
+From a Poetry source checkout, use `poetry install --extras optuna`.
 
 ---
 
@@ -106,14 +115,17 @@ Number of Optuna trials to run.
 
 ### seed : Optional[int]
 
-Seed applied to `experiments.run(...)` environment resets and global random
-number generators, and used to seed the Optuna sampler.
+Seeds global random number generators through each `experiments.run(...)` call.
+It is also the default for the first model-free training reset and first
+evaluation reset, and it seeds the Optuna sampler. Explicit training or
+evaluation seeds suggested for a trial or supplied in the base mappings take
+precedence for that reset.
 
 ---
 
 ### base_env_kwargs : Optional[Dict[str, Any]]
 
-Keyword arguments forwarded to `gym.make(env_id, **base_env_kwargs)` for all trials.
+Keyword arguments forwarded to `gymnasium.make(env_id, **base_env_kwargs)` for all trials.
 
 ---
 
@@ -232,4 +244,4 @@ The most stable contract is:
 
 ## Examples
 
-[`../../examples/optuna_search_examples.ipynb](../../examples/optuna_search_examples.ipynb) 
+[`../../examples/optuna_search_examples.ipynb`](../../examples/optuna_search_examples.ipynb)

@@ -1,36 +1,53 @@
-[tool.poetry]
+[project]
 name = "bettermdptools"
 version = "0.8.6"
-description = "so much room for activities"
-authors = ["John Mansfield <jlm429@gmail.com>"]
+description = "Planning and tabular reinforcement learning tools for Gymnasium environments"
+authors = [
+    { name = "John Mansfield", email = "jlm429@gmail.com" },
+]
 license = "BSD-3-Clause"
 readme = "README.md"
-repository = "https://github.com/jlm429/bettermdptools"
-packages = [{ include = "bettermdptools" }]
+requires-python = ">=3.10,<3.13"
+keywords = ["gymnasium", "markov-decision-process", "reinforcement-learning"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "gymnasium>=1.3.0,<1.4",
+    "pygame>=2.6,<3",
+    "numpy>=1.26,<2",
+    "tqdm>=4.67,<5",
+    "pandas>=2.2,<3",
+    "seaborn>=0.13,<0.14",
+    "matplotlib>=3.8,<4",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10,<4.0"
-gymnasium = ">=1.3.0,<1.4"
-pygame = "*"
-numpy = "<2"
-tqdm = "*"
-pandas = "*"
-seaborn = "*"
-matplotlib = "*"
+[project.optional-dependencies]
+optuna = ["optuna>=4.6,<5"]
 
-[tool.poetry.group.optuna]
+[project.urls]
+Documentation = "https://jlm429.github.io/bettermdptools/bettermdptools.html"
+Repository = "https://github.com/jlm429/bettermdptools"
+
+[tool.poetry.group.docs]
 optional = true
 
-[tool.poetry.group.optuna.dependencies]
-optuna = "^4.6"
+[tool.poetry.group.docs.dependencies]
+pdoc = "16.0.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.0.0"
+black = "^26.3.1"
 pytest = "^9.0.0"
 ruff = "^0.14.8"
 
 [build-system]
-requires = ["poetry-core>=1.8.0"]
+requires = ["poetry-core>=2.2.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]

@@ -1,128 +1,87 @@
-![PyPI](https://img.shields.io/pypi/v/bettermdptools.svg)
-![Python Versions](https://img.shields.io/pypi/pyversions/bettermdptools.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+[![PyPI](https://img.shields.io/pypi/v/bettermdptools.svg)](https://pypi.org/project/bettermdptools/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/bettermdptools.svg)](https://pypi.org/project/bettermdptools/)
+[![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/jlm429/bettermdptools/blob/master/LICENSE)
 ![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![Linter: Ruff](https://img.shields.io/badge/lint-ruff-blue.svg)
 [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master)
+
 # bettermdptools
 
-Bettermdptools is a lightweight toolkit for working with Gymnasium environments using classic planning and tabular reinforcement learning methods.
+bettermdptools provides classic planning and tabular reinforcement learning
+algorithms for [Gymnasium](https://gymnasium.farama.org/) environments. It
+includes value iteration, policy iteration, Q-learning, SARSA, environment
+adapters, experiment entrypoints, and plotting utilities.
 
-It is designed to help users get up and running quickly, explore standard RL algorithms, and experiment with environments like FrozenLake, Taxi, Blackjack, and CartPole without heavy framework overhead.
+## Installation
 
----
+bettermdptools supports Python 3.10 through 3.12:
 
-## Getting started
-
-### Install
-
-Install from PyPI:
+Support for Python 3.13 with NumPy 2.1 or newer remains future work.
 
 ```bash
 pip install bettermdptools
 ```
-<details>
-<summary><strong>pygame installation issues (Python 3.11+)</strong></summary>
 
-If you encounter errors installing `pygame` on Python 3.11 or newer, try:
+Install the optional Optuna integration with:
 
 ```bash
-pip install pygame --pre
+pip install "bettermdptools[optuna]"
 ```
 
-- https://stackoverflow.com/questions/74188013/python-pygame-not-installing
+## Quick example
 
-</details>
-
-<details>
-<summary><strong>Google Colab notes (NumPy + Gymnasium)</strong></summary>
-
-Some Gymnasium-compatible environments may require a NumPy downgrade.
-
-When using **Google Colab** - after installing numpy<2 **you must restart the Colab session** for the change to take effect.
-
-Typical workflow:
-
-```bash
-pip install "numpy<2"
-```
-Then:
-
-Runtime → Restart session
-
-</details> 
-
----
-
-## Quick example (FrozenLake)
-
-Below is a minimal example using value iteration on FrozenLake:
+The transition model for Gymnasium's built-in discrete environments is stored
+on the unwrapped environment:
 
 ```python
 import gymnasium as gym
+
 from bettermdptools.algorithms.planner import Planner
 from bettermdptools.utils.plots import Plots
 
 env = gym.make("FrozenLake8x8-v1", render_mode=None)
+V, V_track, pi = Planner(env.unwrapped.P).value_iteration(gamma=0.99)
 
-V, V_track, pi = Planner(env.unwrapped.P).value_iteration()
-
-Plots.values_heat_map(
-    V,
-    title="State Values",
-    size=(8, 8),
-)
+Plots.values_heat_map(V, title="State Values", size=(8, 8))
+env.close()
 ```
 
-Gymnasium keeps built-in transition dictionaries on the unwrapped environment.
-Custom bettermdptools wrappers continue to expose their generated model as `.P`.
+bettermdptools wrappers expose generated tabular models through their own `.P`
+property. The Blackjack wrapper uses a context-aware exact representation.
+CartPole, Acrobot, and Pendulum use discretized models.
 
-![grid_state_values](https://user-images.githubusercontent.com/10093986/211906047-bc13956b-b8e6-411d-ae68-7a3eb5f2ad32.PNG)
----
+## Examples and API documentation
 
-## Example notebooks
+User-facing notebooks live in
+[`examples/`](https://github.com/jlm429/bettermdptools/tree/master/examples).
+The high-level
+experiment and optional Optuna APIs are documented in:
 
-The fastest way to explore the library is through the notebooks in [`/examples`](/examples) .
+- [`docs/api/experiments_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/experiments_api.md)
+- [`docs/api/optuna_search_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/optuna_search_api.md)
 
----
+The generated Python API reference starts at
+[`bettermdptools.html`](https://jlm429.github.io/bettermdptools/bettermdptools.html).
+Python docstrings are the source for that reference.
 
-## Entrypoint APIs (optional)
+## Development
 
-Bettermdptools provides optional high-level entrypoints for quick experimentation and hyperparameter search.
-
-See:
-- [docs/api/experiments_api.md](docs/api/experiments_api.md)
-- [docs/api/optuna_search_api.md](docs/api/optuna_search_api.md)
-
----
-
-## Documentation and Dependency Management
-
-The project supports standard `pip` workflows. For development, using Poetry is recommended to ensure reproducible environments.  API documentation is generated using **pdoc** (not pdoc3) and lives in the `docs/` directory.
-
-To regenerate documentation locally:
+Poetry is the source of truth for dependencies, builds, and documentation
+tooling:
 
 ```bash
-pdoc --include-undocumented -d numpy -t docs-templates --output-dir docs bettermdptools
+poetry install --with docs
+poetry run pytest -q
+poetry run ruff check .
+poetry run black --check .
+poetry run pdoc bettermdptools -o docs
 ```
 
----
+See
+[`CONTRIBUTING.md`](https://github.com/jlm429/bettermdptools/blob/master/CONTRIBUTING.md)
+for the complete contributor workflow.
 
-## Contributing
+## License
 
-Pull requests are welcome.
-
-Guidelines:
-- Use numpy-style docstrings
-- Add or update tests when introducing new functionality
-- Prefer explicit, readable code over clever or showy abstractions
-- Keep public APIs stable and avoid breaking changes unless clearly justified
-- Prefer small, focused pull requests with a limited number of file changes
-
-Basic workflow:
-1. Fork the repository
-2. Create a feature branch
-3. Commit changes
-4. Open a pull request
-
----
+bettermdptools is distributed under the BSD 3-Clause License. See
+[`LICENSE`](https://github.com/jlm429/bettermdptools/blob/master/LICENSE).
