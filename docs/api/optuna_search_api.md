@@ -115,8 +115,11 @@ Number of Optuna trials to run.
 
 ### seed : Optional[int]
 
-Seed applied to `experiments.run(...)` environment resets and global random
-number generators, and used to seed the Optuna sampler.
+Seeds global random number generators through each `experiments.run(...)` call.
+It is also the default for the first model-free training reset and first
+evaluation reset, and it seeds the Optuna sampler. Explicit training or
+evaluation seeds suggested for a trial or supplied in the base mappings take
+precedence for that reset.
 
 ---
 

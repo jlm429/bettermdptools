@@ -86,20 +86,22 @@ def run(
     env_id:
         Gymnasium environment id string.
     seed:
-        Seed applied to global random number generators and the first training
-        and evaluation environment resets.
+        Seed applied to global random number generators. It is also the default
+        for the first model-free training reset and the first evaluation reset;
+        explicit seeds in `algo_kwargs` or `eval_kwargs` take precedence.
     env_kwargs:
         Keyword arguments forwarded to `gymnasium.make(env_id, **env_kwargs)`.
     wrapper:
         Optional environment wrapper to apply when the environment does not
-        expose a P matrix. This may be a callable or a string import path such as
+        expose a usable tabular model and discrete spaces. This may be a callable
+        or a string import path such as
         "bettermdptools.envs.cartpole_wrapper:CartpoleWrapper".
     wrapper_kwargs:
         Keyword arguments forwarded to the wrapper constructor.
     algo_kwargs:
         Keyword arguments forwarded to the selected algorithm implementation.
     eval_kwargs:
-        If provided, the learned policy is evaluated using TestEnv.test_env.
+        If nonempty, the learned policy is evaluated using TestEnv.test_env.
 
     Returns
     -------
@@ -196,7 +198,7 @@ class ExperimentBuilder:
         return self
 
     def evaluate(self, **eval_kwargs: Any) -> "ExperimentBuilder":
-        """Enable policy evaluation with the supplied arguments."""
+        """Enable policy evaluation when at least one argument is supplied."""
         self._eval_kwargs = dict(eval_kwargs)
         return self
 

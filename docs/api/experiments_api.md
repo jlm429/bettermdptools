@@ -67,8 +67,9 @@ out = run(algo="q_learning", env_id="Taxi-v4")
   Gymnasium environment id string.
 
 - `seed: Optional[int]`  
-  Seeds global random number generators and the first training and evaluation
-  environment resets.
+  Seeds global random number generators. It is also the default for the first
+  model-free training reset and the first evaluation reset. Explicit seeds in
+  `algo_kwargs` or `eval_kwargs` take precedence.
 
 - `env_kwargs: Optional[Dict[str, Any]]`  
   Forwarded to `gymnasium.make`.
@@ -84,7 +85,7 @@ out = run(algo="q_learning", env_id="Taxi-v4")
   Forwarded to the selected algorithm call.
 
 - `eval_kwargs: Optional[Dict[str, Any]]`  
-  If provided, evaluates the learned policy.
+  If nonempty, evaluates the learned policy.
 
 #### Returns
 

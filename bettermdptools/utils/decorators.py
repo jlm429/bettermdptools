@@ -19,7 +19,7 @@ def print_runtime(func):
 
 # from https://wiki.python.org/moin/PythonDecoratorLibrary
 def add_to(func):
-    """Decorate a function to attach it to the class passed as `func`."""
+    """Attach the decorated function to the supplied class."""
 
     @functools.wraps(func)
     def decorator(*args, **kwargs):
