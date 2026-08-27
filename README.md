@@ -5,8 +5,6 @@
 ![Linter: Ruff](https://img.shields.io/badge/lint-ruff-blue.svg)
 [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master)
 
-# bettermdptools
-
 <p align="center">
   <img src="docs/assets/bettermdptools-banner.png"
        alt="bettermdptools reinforcement learning gridworld"
