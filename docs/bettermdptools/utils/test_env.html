@@ -75,167 +75,179 @@ Documentation added by: Gagandeep Randhawa</p>
 </span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>
 </span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_identity</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>    <span class="k">return</span> <span class="n">value</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_identity</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>    <span class="k">return</span> <span class="n">value</span>
 </span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TestEnv</span><span class="p">:</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="w">    </span><span class="sd">"""Simulate rollouts using a learned or user-driven policy."""</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>    <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_env</span><span class="p">(</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>        <span class="n">env</span><span class="p">,</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>        <span class="n">render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>        <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>        <span class="n">pi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>        <span class="n">user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>        <span class="n">convert_state_obs</span><span class="o">=</span><span class="n">_identity</span><span class="p">,</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>    <span class="p">):</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="sd">        Simulate episodes using a policy and return the total reward from each episode.</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">        Parameters</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">        ----------</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a><span class="sd">        env : gymnasium.Env</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">            Gymnasium environment instance.</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a><span class="sd">        desc : np.ndarray, optional</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">            Description used by environments such as custom FrozenLake maps.</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">            Only used when `render=True` causes the environment to be re-created.</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">        render : bool, default False</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="sd">            If True, use the supplied environment when it was created with</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="sd">            `render_mode="human"`. Otherwise, re-create an equivalent</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a><span class="sd">            environment in human render mode when its wrapper specification is</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="sd">            reproducible.</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="sd">        n_iters : int, default 10</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="sd">            Number of episodes to simulate.</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="sd">        pi : array-like or callable, optional</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="sd">            Policy mapping states to actions, commonly indexed as `pi[state]`.</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="sd">        user_input : bool, default False</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="sd">            Converts observations into discrete or transformed states.</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="sd">            If None, the observation is used directly.</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="sd">        seed : int, optional</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">            Seed passed to the first environment reset. Later resets continue</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="sd">            the environment's seeded random number sequence.</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">        Returns</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="sd">        -------</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">        np.ndarray</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a><span class="sd">            Array of length `n_iters` containing the total reward for each episode.</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="sd">        Notes</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="sd">        -----</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="sd">        - Internally created rendered environments are closed. A supplied</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">          human-rendering environment remains owned by the caller.</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="sd">        - A wrapped environment that cannot be re-created must be constructed</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">          with `render_mode="human"` before its wrappers are applied.</span>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a><span class="sd">        """</span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>            <span class="n">convert_state_obs</span> <span class="o">=</span> <span class="n">_identity</span>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="n">created_env</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="k">if</span> <span class="n">render</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s2">"render_mode"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"human"</span><span class="p">:</span>
-</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>            <span class="n">env_spec</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">spec</span>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>            <span class="k">if</span> <span class="n">env_spec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>                    <span class="s2">"render=True requires an environment with a Gymnasium spec or "</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>                    <span class="s2">"an environment created with render_mode='human'"</span>
-</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>                <span class="p">)</span>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>            <span class="n">make_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"render_mode"</span><span class="p">:</span> <span class="s2">"human"</span><span class="p">}</span>
-</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>                <span class="n">make_kwargs</span><span class="p">[</span><span class="s2">"desc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>                <span class="n">wrapper_spec</span><span class="o">.</span><span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>                <span class="k">for</span> <span class="n">wrapper_spec</span> <span class="ow">in</span> <span class="n">env_spec</span><span class="o">.</span><span class="n">additional_wrappers</span>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>            <span class="p">):</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>                    <span class="s2">"render=True cannot re-create this wrapper stack. Create "</span>
-</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>                    <span class="s2">"the base environment with render_mode='human', apply the "</span>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>                    <span class="s2">"same wrappers, and pass that wrapped environment."</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>                <span class="p">)</span>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>            <span class="k">try</span><span class="p">:</span>
-</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>                <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">env_spec</span><span class="p">,</span> <span class="o">**</span><span class="n">make_kwargs</span><span class="p">)</span>
-</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>                <span class="k">if</span> <span class="n">env_spec</span><span class="o">.</span><span class="n">additional_wrappers</span><span class="p">:</span>
-</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>                        <span class="s2">"render=True cannot re-create this wrapper stack. Create "</span>
-</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>                        <span class="s2">"the base environment with render_mode='human', apply the "</span>
-</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>                        <span class="s2">"same wrappers, and pass that wrapped environment."</span>
-</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>                <span class="k">raise</span>
-</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>            <span class="n">created_env</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
-</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>        <span class="k">try</span><span class="p">:</span>
-</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>            <span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
-</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>            <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_iters</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iters</span><span class="p">):</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>
-</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>                <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>                <span class="n">total_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>                <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>                    <span class="k">if</span> <span class="n">user_input</span><span class="p">:</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">TestEnv</span><span class="o">.</span><span class="n">_prompt_for_action</span><span class="p">(</span>
-</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>                            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>                            <span class="n">n_actions</span><span class="o">=</span><span class="n">n_actions</span><span class="p">,</span>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>                            <span class="n">pi</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>                        <span class="p">)</span>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>                    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>                    <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>                    <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
-</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>                    <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>                <span class="n">test_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_reward</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>            <span class="k">return</span> <span class="n">test_scores</span>
-</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>        <span class="k">finally</span><span class="p">:</span>
-</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>            <span class="k">if</span> <span class="n">created_env</span><span class="p">:</span>
-</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>                <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>
-</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_prompt_for_action</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pi</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a><span class="sd">        Prompt the user to select an action and return the chosen value.</span>
-</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a><span class="sd">        """</span>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"state is </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>        <span class="k">if</span> <span class="n">pi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"policy output is </span><span class="si">{</span><span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>
-</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>            <span class="n">raw</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Please select 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> then hit enter:</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>            <span class="k">try</span><span class="p">:</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>                <span class="n">action</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>                <span class="nb">print</span><span class="p">(</span><span class="s2">"Please enter a number"</span><span class="p">)</span>
-</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>                <span class="k">continue</span>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>
-</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">action</span> <span class="o">&lt;</span> <span class="n">n_actions</span><span class="p">:</span>
-</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>                <span class="k">return</span> <span class="n">action</span>
-</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>
-</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"please enter a valid action, 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_copy_for_rendering</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="w">    </span><span class="sd">"""Return an isolated copy that renders without changing rollout semantics."""</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>        <span class="n">render_env</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>            <span class="s2">"render=True could not copy this environment while preserving its "</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>            <span class="s2">"wrapper stack. Create the base environment with render_mode='human', "</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>            <span class="s2">"apply the same wrappers, and pass that wrapped environment."</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>        <span class="n">render_modes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">render_env</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"render_modes"</span><span class="p">,</span> <span class="p">()))</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>        <span class="k">if</span> <span class="s2">"human"</span> <span class="ow">in</span> <span class="n">render_modes</span><span class="p">:</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>            <span class="n">render_env</span><span class="o">.</span><span class="n">unwrapped</span><span class="o">.</span><span class="n">render_mode</span> <span class="o">=</span> <span class="s2">"human"</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">render_env</span><span class="p">,</span> <span class="s2">"render_mode"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"human"</span><span class="p">:</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>                    <span class="s2">"render=True could not enable human rendering through this "</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>                    <span class="s2">"environment's wrapper stack. Create the base environment with "</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>                    <span class="s2">"render_mode='human', apply the same wrappers, and pass that "</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>                    <span class="s2">"wrapped environment."</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>                <span class="p">)</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>            <span class="k">return</span> <span class="n">render_env</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>        <span class="k">for</span> <span class="n">render_mode</span> <span class="ow">in</span> <span class="n">gym</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">HumanRendering</span><span class="o">.</span><span class="n">ACCEPTED_RENDER_MODES</span><span class="p">:</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>            <span class="k">if</span> <span class="n">render_mode</span> <span class="ow">in</span> <span class="n">render_modes</span><span class="p">:</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>                <span class="n">render_env</span><span class="o">.</span><span class="n">unwrapped</span><span class="o">.</span><span class="n">render_mode</span> <span class="o">=</span> <span class="n">render_mode</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>                <span class="k">return</span> <span class="n">gym</span><span class="o">.</span><span class="n">wrappers</span><span class="o">.</span><span class="n">HumanRendering</span><span class="p">(</span><span class="n">render_env</span><span class="p">)</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>            <span class="s2">"render=True requires an environment that supports human or array "</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>            <span class="s2">"rendering."</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>        <span class="p">)</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>        <span class="n">render_env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>        <span class="k">raise</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TestEnv</span><span class="p">:</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="w">    </span><span class="sd">"""Simulate rollouts using a learned or user-driven policy."""</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>    <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>    <span class="nd">@staticmethod</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_env</span><span class="p">(</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>        <span class="n">env</span><span class="p">,</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>        <span class="n">render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>        <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>        <span class="n">pi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>        <span class="n">user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>        <span class="n">convert_state_obs</span><span class="o">=</span><span class="n">_identity</span><span class="p">,</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>    <span class="p">):</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a><span class="sd">        Simulate episodes using a policy and return the total reward from each episode.</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a><span class="sd">        Parameters</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a><span class="sd">        ----------</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a><span class="sd">        env : gymnasium.Env</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a><span class="sd">            Gymnasium environment instance.</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a><span class="sd">        desc : np.ndarray, optional</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="sd">            Retained for backward compatibility. Rendering preserves the supplied</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="sd">            environment's existing description and other construction settings.</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="sd">        render : bool, default False</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="sd">            If True, use the supplied environment when it was created with</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">            `render_mode="human"`. Otherwise, evaluate an isolated rendering copy</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="sd">            of the complete environment and wrapper stack.</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        n_iters : int, default 10</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">            Number of episodes to simulate.</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">        pi : array-like or callable, optional</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="sd">            Policy mapping states to actions, commonly indexed as `pi[state]`.</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a><span class="sd">        user_input : bool, default False</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">            Converts observations into discrete or transformed states.</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">            If None, the observation is used directly.</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">        seed : int, optional</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="sd">            Seed passed to the first environment reset. Later resets continue</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="sd">            the environment's seeded random number sequence.</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">        Returns</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a><span class="sd">        -------</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="sd">        np.ndarray</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="sd">            Array of length `n_iters` containing the total reward for each episode.</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="sd">        Notes</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="sd">        -----</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="sd">        - Internally copied rendering environments are closed. A supplied</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a><span class="sd">          human-rendering environment remains owned by the caller.</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="sd">        - A non-human-rendering environment must support copying and declare a</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a><span class="sd">          human or array render mode. Otherwise, construct the base environment</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="sd">          with `render_mode="human"` before applying its wrappers.</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">        """</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>            <span class="n">convert_state_obs</span> <span class="o">=</span> <span class="n">_identity</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>        <span class="n">created_env</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>        <span class="k">if</span> <span class="n">render</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s2">"render_mode"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"human"</span><span class="p">:</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>            <span class="n">env</span> <span class="o">=</span> <span class="n">_copy_for_rendering</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>            <span class="n">created_env</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>            <span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>            <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_iters</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iters</span><span class="p">):</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>                <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>                <span class="n">total_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>                <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>                    <span class="k">if</span> <span class="n">user_input</span><span class="p">:</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">TestEnv</span><span class="o">.</span><span class="n">_prompt_for_action</span><span class="p">(</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>                            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>                            <span class="n">n_actions</span><span class="o">=</span><span class="n">n_actions</span><span class="p">,</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>                            <span class="n">pi</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>                        <span class="p">)</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>                    <span class="k">else</span><span class="p">:</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>                    <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>                    <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>                    <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>                <span class="n">test_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_reward</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>            <span class="k">return</span> <span class="n">test_scores</span>
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>        <span class="k">finally</span><span class="p">:</span>
+</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>            <span class="k">if</span> <span class="n">created_env</span><span class="p">:</span>
+</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>                <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>    <span class="nd">@staticmethod</span>
+</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_prompt_for_action</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pi</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a><span class="sd">        Prompt the user to select an action and return the chosen value.</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a><span class="sd">        """</span>
+</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"state is </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>        <span class="k">if</span> <span class="n">pi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"policy output is </span><span class="si">{</span><span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>
+</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a>            <span class="n">raw</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Please select 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> then hit enter:</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>                <span class="n">action</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>                <span class="nb">print</span><span class="p">(</span><span class="s2">"Please enter a number"</span><span class="p">)</span>
+</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a>                <span class="k">continue</span>
+</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>
+</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">action</span> <span class="o">&lt;</span> <span class="n">n_actions</span><span class="p">:</span>
+</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>                <span class="k">return</span> <span class="n">action</span>
+</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>
+</span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"please enter a valid action, 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -251,157 +263,130 @@ Documentation added by: Gagandeep Randhawa</p>
 
     </div>
     <a class="headerlink" href="#TestEnv"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TestEnv-22"><a href="#TestEnv-22"><span class="linenos"> 22</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TestEnv</span><span class="p">:</span>
-</span><span id="TestEnv-23"><a href="#TestEnv-23"><span class="linenos"> 23</span></a><span class="w">    </span><span class="sd">"""Simulate rollouts using a learned or user-driven policy."""</span>
-</span><span id="TestEnv-24"><a href="#TestEnv-24"><span class="linenos"> 24</span></a>
-</span><span id="TestEnv-25"><a href="#TestEnv-25"><span class="linenos"> 25</span></a>    <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="TestEnv-26"><a href="#TestEnv-26"><span class="linenos"> 26</span></a>
-</span><span id="TestEnv-27"><a href="#TestEnv-27"><span class="linenos"> 27</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="TestEnv-28"><a href="#TestEnv-28"><span class="linenos"> 28</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_env</span><span class="p">(</span>
-</span><span id="TestEnv-29"><a href="#TestEnv-29"><span class="linenos"> 29</span></a>        <span class="n">env</span><span class="p">,</span>
-</span><span id="TestEnv-30"><a href="#TestEnv-30"><span class="linenos"> 30</span></a>        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="TestEnv-31"><a href="#TestEnv-31"><span class="linenos"> 31</span></a>        <span class="n">render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="TestEnv-32"><a href="#TestEnv-32"><span class="linenos"> 32</span></a>        <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span id="TestEnv-33"><a href="#TestEnv-33"><span class="linenos"> 33</span></a>        <span class="n">pi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="TestEnv-34"><a href="#TestEnv-34"><span class="linenos"> 34</span></a>        <span class="n">user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="TestEnv-35"><a href="#TestEnv-35"><span class="linenos"> 35</span></a>        <span class="n">convert_state_obs</span><span class="o">=</span><span class="n">_identity</span><span class="p">,</span>
-</span><span id="TestEnv-36"><a href="#TestEnv-36"><span class="linenos"> 36</span></a>        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="TestEnv-37"><a href="#TestEnv-37"><span class="linenos"> 37</span></a>    <span class="p">):</span>
-</span><span id="TestEnv-38"><a href="#TestEnv-38"><span class="linenos"> 38</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="TestEnv-39"><a href="#TestEnv-39"><span class="linenos"> 39</span></a><span class="sd">        Simulate episodes using a policy and return the total reward from each episode.</span>
-</span><span id="TestEnv-40"><a href="#TestEnv-40"><span class="linenos"> 40</span></a>
-</span><span id="TestEnv-41"><a href="#TestEnv-41"><span class="linenos"> 41</span></a><span class="sd">        Parameters</span>
-</span><span id="TestEnv-42"><a href="#TestEnv-42"><span class="linenos"> 42</span></a><span class="sd">        ----------</span>
-</span><span id="TestEnv-43"><a href="#TestEnv-43"><span class="linenos"> 43</span></a><span class="sd">        env : gymnasium.Env</span>
-</span><span id="TestEnv-44"><a href="#TestEnv-44"><span class="linenos"> 44</span></a><span class="sd">            Gymnasium environment instance.</span>
-</span><span id="TestEnv-45"><a href="#TestEnv-45"><span class="linenos"> 45</span></a><span class="sd">        desc : np.ndarray, optional</span>
-</span><span id="TestEnv-46"><a href="#TestEnv-46"><span class="linenos"> 46</span></a><span class="sd">            Description used by environments such as custom FrozenLake maps.</span>
-</span><span id="TestEnv-47"><a href="#TestEnv-47"><span class="linenos"> 47</span></a><span class="sd">            Only used when `render=True` causes the environment to be re-created.</span>
-</span><span id="TestEnv-48"><a href="#TestEnv-48"><span class="linenos"> 48</span></a><span class="sd">        render : bool, default False</span>
-</span><span id="TestEnv-49"><a href="#TestEnv-49"><span class="linenos"> 49</span></a><span class="sd">            If True, use the supplied environment when it was created with</span>
-</span><span id="TestEnv-50"><a href="#TestEnv-50"><span class="linenos"> 50</span></a><span class="sd">            `render_mode="human"`. Otherwise, re-create an equivalent</span>
-</span><span id="TestEnv-51"><a href="#TestEnv-51"><span class="linenos"> 51</span></a><span class="sd">            environment in human render mode when its wrapper specification is</span>
-</span><span id="TestEnv-52"><a href="#TestEnv-52"><span class="linenos"> 52</span></a><span class="sd">            reproducible.</span>
-</span><span id="TestEnv-53"><a href="#TestEnv-53"><span class="linenos"> 53</span></a><span class="sd">        n_iters : int, default 10</span>
-</span><span id="TestEnv-54"><a href="#TestEnv-54"><span class="linenos"> 54</span></a><span class="sd">            Number of episodes to simulate.</span>
-</span><span id="TestEnv-55"><a href="#TestEnv-55"><span class="linenos"> 55</span></a><span class="sd">        pi : array-like or callable, optional</span>
-</span><span id="TestEnv-56"><a href="#TestEnv-56"><span class="linenos"> 56</span></a><span class="sd">            Policy mapping states to actions, commonly indexed as `pi[state]`.</span>
-</span><span id="TestEnv-57"><a href="#TestEnv-57"><span class="linenos"> 57</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
-</span><span id="TestEnv-58"><a href="#TestEnv-58"><span class="linenos"> 58</span></a><span class="sd">        user_input : bool, default False</span>
-</span><span id="TestEnv-59"><a href="#TestEnv-59"><span class="linenos"> 59</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
-</span><span id="TestEnv-60"><a href="#TestEnv-60"><span class="linenos"> 60</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
-</span><span id="TestEnv-61"><a href="#TestEnv-61"><span class="linenos"> 61</span></a><span class="sd">            Converts observations into discrete or transformed states.</span>
-</span><span id="TestEnv-62"><a href="#TestEnv-62"><span class="linenos"> 62</span></a><span class="sd">            If None, the observation is used directly.</span>
-</span><span id="TestEnv-63"><a href="#TestEnv-63"><span class="linenos"> 63</span></a><span class="sd">        seed : int, optional</span>
-</span><span id="TestEnv-64"><a href="#TestEnv-64"><span class="linenos"> 64</span></a><span class="sd">            Seed passed to the first environment reset. Later resets continue</span>
-</span><span id="TestEnv-65"><a href="#TestEnv-65"><span class="linenos"> 65</span></a><span class="sd">            the environment's seeded random number sequence.</span>
-</span><span id="TestEnv-66"><a href="#TestEnv-66"><span class="linenos"> 66</span></a>
-</span><span id="TestEnv-67"><a href="#TestEnv-67"><span class="linenos"> 67</span></a><span class="sd">        Returns</span>
-</span><span id="TestEnv-68"><a href="#TestEnv-68"><span class="linenos"> 68</span></a><span class="sd">        -------</span>
-</span><span id="TestEnv-69"><a href="#TestEnv-69"><span class="linenos"> 69</span></a><span class="sd">        np.ndarray</span>
-</span><span id="TestEnv-70"><a href="#TestEnv-70"><span class="linenos"> 70</span></a><span class="sd">            Array of length `n_iters` containing the total reward for each episode.</span>
-</span><span id="TestEnv-71"><a href="#TestEnv-71"><span class="linenos"> 71</span></a>
-</span><span id="TestEnv-72"><a href="#TestEnv-72"><span class="linenos"> 72</span></a><span class="sd">        Notes</span>
-</span><span id="TestEnv-73"><a href="#TestEnv-73"><span class="linenos"> 73</span></a><span class="sd">        -----</span>
-</span><span id="TestEnv-74"><a href="#TestEnv-74"><span class="linenos"> 74</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
-</span><span id="TestEnv-75"><a href="#TestEnv-75"><span class="linenos"> 75</span></a><span class="sd">        - Internally created rendered environments are closed. A supplied</span>
-</span><span id="TestEnv-76"><a href="#TestEnv-76"><span class="linenos"> 76</span></a><span class="sd">          human-rendering environment remains owned by the caller.</span>
-</span><span id="TestEnv-77"><a href="#TestEnv-77"><span class="linenos"> 77</span></a><span class="sd">        - A wrapped environment that cannot be re-created must be constructed</span>
-</span><span id="TestEnv-78"><a href="#TestEnv-78"><span class="linenos"> 78</span></a><span class="sd">          with `render_mode="human"` before its wrappers are applied.</span>
-</span><span id="TestEnv-79"><a href="#TestEnv-79"><span class="linenos"> 79</span></a><span class="sd">        """</span>
-</span><span id="TestEnv-80"><a href="#TestEnv-80"><span class="linenos"> 80</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv-81"><a href="#TestEnv-81"><span class="linenos"> 81</span></a>            <span class="n">convert_state_obs</span> <span class="o">=</span> <span class="n">_identity</span>
-</span><span id="TestEnv-82"><a href="#TestEnv-82"><span class="linenos"> 82</span></a>
-</span><span id="TestEnv-83"><a href="#TestEnv-83"><span class="linenos"> 83</span></a>        <span class="n">created_env</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="TestEnv-84"><a href="#TestEnv-84"><span class="linenos"> 84</span></a>        <span class="k">if</span> <span class="n">render</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s2">"render_mode"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"human"</span><span class="p">:</span>
-</span><span id="TestEnv-85"><a href="#TestEnv-85"><span class="linenos"> 85</span></a>            <span class="n">env_spec</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">spec</span>
-</span><span id="TestEnv-86"><a href="#TestEnv-86"><span class="linenos"> 86</span></a>            <span class="k">if</span> <span class="n">env_spec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv-87"><a href="#TestEnv-87"><span class="linenos"> 87</span></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="TestEnv-88"><a href="#TestEnv-88"><span class="linenos"> 88</span></a>                    <span class="s2">"render=True requires an environment with a Gymnasium spec or "</span>
-</span><span id="TestEnv-89"><a href="#TestEnv-89"><span class="linenos"> 89</span></a>                    <span class="s2">"an environment created with render_mode='human'"</span>
-</span><span id="TestEnv-90"><a href="#TestEnv-90"><span class="linenos"> 90</span></a>                <span class="p">)</span>
-</span><span id="TestEnv-91"><a href="#TestEnv-91"><span class="linenos"> 91</span></a>            <span class="n">make_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"render_mode"</span><span class="p">:</span> <span class="s2">"human"</span><span class="p">}</span>
-</span><span id="TestEnv-92"><a href="#TestEnv-92"><span class="linenos"> 92</span></a>            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv-93"><a href="#TestEnv-93"><span class="linenos"> 93</span></a>                <span class="n">make_kwargs</span><span class="p">[</span><span class="s2">"desc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
-</span><span id="TestEnv-94"><a href="#TestEnv-94"><span class="linenos"> 94</span></a>            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-</span><span id="TestEnv-95"><a href="#TestEnv-95"><span class="linenos"> 95</span></a>                <span class="n">wrapper_spec</span><span class="o">.</span><span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span>
-</span><span id="TestEnv-96"><a href="#TestEnv-96"><span class="linenos"> 96</span></a>                <span class="k">for</span> <span class="n">wrapper_spec</span> <span class="ow">in</span> <span class="n">env_spec</span><span class="o">.</span><span class="n">additional_wrappers</span>
-</span><span id="TestEnv-97"><a href="#TestEnv-97"><span class="linenos"> 97</span></a>            <span class="p">):</span>
-</span><span id="TestEnv-98"><a href="#TestEnv-98"><span class="linenos"> 98</span></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="TestEnv-99"><a href="#TestEnv-99"><span class="linenos"> 99</span></a>                    <span class="s2">"render=True cannot re-create this wrapper stack. Create "</span>
-</span><span id="TestEnv-100"><a href="#TestEnv-100"><span class="linenos">100</span></a>                    <span class="s2">"the base environment with render_mode='human', apply the "</span>
-</span><span id="TestEnv-101"><a href="#TestEnv-101"><span class="linenos">101</span></a>                    <span class="s2">"same wrappers, and pass that wrapped environment."</span>
-</span><span id="TestEnv-102"><a href="#TestEnv-102"><span class="linenos">102</span></a>                <span class="p">)</span>
-</span><span id="TestEnv-103"><a href="#TestEnv-103"><span class="linenos">103</span></a>            <span class="k">try</span><span class="p">:</span>
-</span><span id="TestEnv-104"><a href="#TestEnv-104"><span class="linenos">104</span></a>                <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">env_spec</span><span class="p">,</span> <span class="o">**</span><span class="n">make_kwargs</span><span class="p">)</span>
-</span><span id="TestEnv-105"><a href="#TestEnv-105"><span class="linenos">105</span></a>            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-</span><span id="TestEnv-106"><a href="#TestEnv-106"><span class="linenos">106</span></a>                <span class="k">if</span> <span class="n">env_spec</span><span class="o">.</span><span class="n">additional_wrappers</span><span class="p">:</span>
-</span><span id="TestEnv-107"><a href="#TestEnv-107"><span class="linenos">107</span></a>                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="TestEnv-108"><a href="#TestEnv-108"><span class="linenos">108</span></a>                        <span class="s2">"render=True cannot re-create this wrapper stack. Create "</span>
-</span><span id="TestEnv-109"><a href="#TestEnv-109"><span class="linenos">109</span></a>                        <span class="s2">"the base environment with render_mode='human', apply the "</span>
-</span><span id="TestEnv-110"><a href="#TestEnv-110"><span class="linenos">110</span></a>                        <span class="s2">"same wrappers, and pass that wrapped environment."</span>
-</span><span id="TestEnv-111"><a href="#TestEnv-111"><span class="linenos">111</span></a>                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-</span><span id="TestEnv-112"><a href="#TestEnv-112"><span class="linenos">112</span></a>                <span class="k">raise</span>
-</span><span id="TestEnv-113"><a href="#TestEnv-113"><span class="linenos">113</span></a>            <span class="n">created_env</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="TestEnv-114"><a href="#TestEnv-114"><span class="linenos">114</span></a>
-</span><span id="TestEnv-115"><a href="#TestEnv-115"><span class="linenos">115</span></a>        <span class="k">try</span><span class="p">:</span>
-</span><span id="TestEnv-116"><a href="#TestEnv-116"><span class="linenos">116</span></a>            <span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
-</span><span id="TestEnv-117"><a href="#TestEnv-117"><span class="linenos">117</span></a>            <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_iters</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span id="TestEnv-118"><a href="#TestEnv-118"><span class="linenos">118</span></a>
-</span><span id="TestEnv-119"><a href="#TestEnv-119"><span class="linenos">119</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iters</span><span class="p">):</span>
-</span><span id="TestEnv-120"><a href="#TestEnv-120"><span class="linenos">120</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv-121"><a href="#TestEnv-121"><span class="linenos">121</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-</span><span id="TestEnv-122"><a href="#TestEnv-122"><span class="linenos">122</span></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="TestEnv-123"><a href="#TestEnv-123"><span class="linenos">123</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-</span><span id="TestEnv-124"><a href="#TestEnv-124"><span class="linenos">124</span></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-</span><span id="TestEnv-125"><a href="#TestEnv-125"><span class="linenos">125</span></a>
-</span><span id="TestEnv-126"><a href="#TestEnv-126"><span class="linenos">126</span></a>                <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="TestEnv-127"><a href="#TestEnv-127"><span class="linenos">127</span></a>                <span class="n">total_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span id="TestEnv-128"><a href="#TestEnv-128"><span class="linenos">128</span></a>
-</span><span id="TestEnv-129"><a href="#TestEnv-129"><span class="linenos">129</span></a>                <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-</span><span id="TestEnv-130"><a href="#TestEnv-130"><span class="linenos">130</span></a>                    <span class="k">if</span> <span class="n">user_input</span><span class="p">:</span>
-</span><span id="TestEnv-131"><a href="#TestEnv-131"><span class="linenos">131</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">TestEnv</span><span class="o">.</span><span class="n">_prompt_for_action</span><span class="p">(</span>
-</span><span id="TestEnv-132"><a href="#TestEnv-132"><span class="linenos">132</span></a>                            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-</span><span id="TestEnv-133"><a href="#TestEnv-133"><span class="linenos">133</span></a>                            <span class="n">n_actions</span><span class="o">=</span><span class="n">n_actions</span><span class="p">,</span>
-</span><span id="TestEnv-134"><a href="#TestEnv-134"><span class="linenos">134</span></a>                            <span class="n">pi</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span>
-</span><span id="TestEnv-135"><a href="#TestEnv-135"><span class="linenos">135</span></a>                        <span class="p">)</span>
-</span><span id="TestEnv-136"><a href="#TestEnv-136"><span class="linenos">136</span></a>                    <span class="k">else</span><span class="p">:</span>
-</span><span id="TestEnv-137"><a href="#TestEnv-137"><span class="linenos">137</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
-</span><span id="TestEnv-138"><a href="#TestEnv-138"><span class="linenos">138</span></a>
-</span><span id="TestEnv-139"><a href="#TestEnv-139"><span class="linenos">139</span></a>                    <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-</span><span id="TestEnv-140"><a href="#TestEnv-140"><span class="linenos">140</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
-</span><span id="TestEnv-141"><a href="#TestEnv-141"><span class="linenos">141</span></a>
-</span><span id="TestEnv-142"><a href="#TestEnv-142"><span class="linenos">142</span></a>                    <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
-</span><span id="TestEnv-143"><a href="#TestEnv-143"><span class="linenos">143</span></a>                    <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
-</span><span id="TestEnv-144"><a href="#TestEnv-144"><span class="linenos">144</span></a>
-</span><span id="TestEnv-145"><a href="#TestEnv-145"><span class="linenos">145</span></a>                <span class="n">test_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_reward</span>
-</span><span id="TestEnv-146"><a href="#TestEnv-146"><span class="linenos">146</span></a>
-</span><span id="TestEnv-147"><a href="#TestEnv-147"><span class="linenos">147</span></a>            <span class="k">return</span> <span class="n">test_scores</span>
-</span><span id="TestEnv-148"><a href="#TestEnv-148"><span class="linenos">148</span></a>        <span class="k">finally</span><span class="p">:</span>
-</span><span id="TestEnv-149"><a href="#TestEnv-149"><span class="linenos">149</span></a>            <span class="k">if</span> <span class="n">created_env</span><span class="p">:</span>
-</span><span id="TestEnv-150"><a href="#TestEnv-150"><span class="linenos">150</span></a>                <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span id="TestEnv-151"><a href="#TestEnv-151"><span class="linenos">151</span></a>
-</span><span id="TestEnv-152"><a href="#TestEnv-152"><span class="linenos">152</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="TestEnv-153"><a href="#TestEnv-153"><span class="linenos">153</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_prompt_for_action</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pi</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="TestEnv-154"><a href="#TestEnv-154"><span class="linenos">154</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="TestEnv-155"><a href="#TestEnv-155"><span class="linenos">155</span></a><span class="sd">        Prompt the user to select an action and return the chosen value.</span>
-</span><span id="TestEnv-156"><a href="#TestEnv-156"><span class="linenos">156</span></a><span class="sd">        """</span>
-</span><span id="TestEnv-157"><a href="#TestEnv-157"><span class="linenos">157</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"state is </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="TestEnv-158"><a href="#TestEnv-158"><span class="linenos">158</span></a>        <span class="k">if</span> <span class="n">pi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv-159"><a href="#TestEnv-159"><span class="linenos">159</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"policy output is </span><span class="si">{</span><span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="TestEnv-160"><a href="#TestEnv-160"><span class="linenos">160</span></a>
-</span><span id="TestEnv-161"><a href="#TestEnv-161"><span class="linenos">161</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span id="TestEnv-162"><a href="#TestEnv-162"><span class="linenos">162</span></a>            <span class="n">raw</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Please select 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> then hit enter:</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="TestEnv-163"><a href="#TestEnv-163"><span class="linenos">163</span></a>            <span class="k">try</span><span class="p">:</span>
-</span><span id="TestEnv-164"><a href="#TestEnv-164"><span class="linenos">164</span></a>                <span class="n">action</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-</span><span id="TestEnv-165"><a href="#TestEnv-165"><span class="linenos">165</span></a>            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span id="TestEnv-166"><a href="#TestEnv-166"><span class="linenos">166</span></a>                <span class="nb">print</span><span class="p">(</span><span class="s2">"Please enter a number"</span><span class="p">)</span>
-</span><span id="TestEnv-167"><a href="#TestEnv-167"><span class="linenos">167</span></a>                <span class="k">continue</span>
-</span><span id="TestEnv-168"><a href="#TestEnv-168"><span class="linenos">168</span></a>
-</span><span id="TestEnv-169"><a href="#TestEnv-169"><span class="linenos">169</span></a>            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">action</span> <span class="o">&lt;</span> <span class="n">n_actions</span><span class="p">:</span>
-</span><span id="TestEnv-170"><a href="#TestEnv-170"><span class="linenos">170</span></a>                <span class="k">return</span> <span class="n">action</span>
-</span><span id="TestEnv-171"><a href="#TestEnv-171"><span class="linenos">171</span></a>
-</span><span id="TestEnv-172"><a href="#TestEnv-172"><span class="linenos">172</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"please enter a valid action, 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TestEnv-61"><a href="#TestEnv-61"><span class="linenos"> 61</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TestEnv</span><span class="p">:</span>
+</span><span id="TestEnv-62"><a href="#TestEnv-62"><span class="linenos"> 62</span></a><span class="w">    </span><span class="sd">"""Simulate rollouts using a learned or user-driven policy."""</span>
+</span><span id="TestEnv-63"><a href="#TestEnv-63"><span class="linenos"> 63</span></a>
+</span><span id="TestEnv-64"><a href="#TestEnv-64"><span class="linenos"> 64</span></a>    <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="TestEnv-65"><a href="#TestEnv-65"><span class="linenos"> 65</span></a>
+</span><span id="TestEnv-66"><a href="#TestEnv-66"><span class="linenos"> 66</span></a>    <span class="nd">@staticmethod</span>
+</span><span id="TestEnv-67"><a href="#TestEnv-67"><span class="linenos"> 67</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_env</span><span class="p">(</span>
+</span><span id="TestEnv-68"><a href="#TestEnv-68"><span class="linenos"> 68</span></a>        <span class="n">env</span><span class="p">,</span>
+</span><span id="TestEnv-69"><a href="#TestEnv-69"><span class="linenos"> 69</span></a>        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TestEnv-70"><a href="#TestEnv-70"><span class="linenos"> 70</span></a>        <span class="n">render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TestEnv-71"><a href="#TestEnv-71"><span class="linenos"> 71</span></a>        <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span id="TestEnv-72"><a href="#TestEnv-72"><span class="linenos"> 72</span></a>        <span class="n">pi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TestEnv-73"><a href="#TestEnv-73"><span class="linenos"> 73</span></a>        <span class="n">user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TestEnv-74"><a href="#TestEnv-74"><span class="linenos"> 74</span></a>        <span class="n">convert_state_obs</span><span class="o">=</span><span class="n">_identity</span><span class="p">,</span>
+</span><span id="TestEnv-75"><a href="#TestEnv-75"><span class="linenos"> 75</span></a>        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TestEnv-76"><a href="#TestEnv-76"><span class="linenos"> 76</span></a>    <span class="p">):</span>
+</span><span id="TestEnv-77"><a href="#TestEnv-77"><span class="linenos"> 77</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="TestEnv-78"><a href="#TestEnv-78"><span class="linenos"> 78</span></a><span class="sd">        Simulate episodes using a policy and return the total reward from each episode.</span>
+</span><span id="TestEnv-79"><a href="#TestEnv-79"><span class="linenos"> 79</span></a>
+</span><span id="TestEnv-80"><a href="#TestEnv-80"><span class="linenos"> 80</span></a><span class="sd">        Parameters</span>
+</span><span id="TestEnv-81"><a href="#TestEnv-81"><span class="linenos"> 81</span></a><span class="sd">        ----------</span>
+</span><span id="TestEnv-82"><a href="#TestEnv-82"><span class="linenos"> 82</span></a><span class="sd">        env : gymnasium.Env</span>
+</span><span id="TestEnv-83"><a href="#TestEnv-83"><span class="linenos"> 83</span></a><span class="sd">            Gymnasium environment instance.</span>
+</span><span id="TestEnv-84"><a href="#TestEnv-84"><span class="linenos"> 84</span></a><span class="sd">        desc : np.ndarray, optional</span>
+</span><span id="TestEnv-85"><a href="#TestEnv-85"><span class="linenos"> 85</span></a><span class="sd">            Retained for backward compatibility. Rendering preserves the supplied</span>
+</span><span id="TestEnv-86"><a href="#TestEnv-86"><span class="linenos"> 86</span></a><span class="sd">            environment's existing description and other construction settings.</span>
+</span><span id="TestEnv-87"><a href="#TestEnv-87"><span class="linenos"> 87</span></a><span class="sd">        render : bool, default False</span>
+</span><span id="TestEnv-88"><a href="#TestEnv-88"><span class="linenos"> 88</span></a><span class="sd">            If True, use the supplied environment when it was created with</span>
+</span><span id="TestEnv-89"><a href="#TestEnv-89"><span class="linenos"> 89</span></a><span class="sd">            `render_mode="human"`. Otherwise, evaluate an isolated rendering copy</span>
+</span><span id="TestEnv-90"><a href="#TestEnv-90"><span class="linenos"> 90</span></a><span class="sd">            of the complete environment and wrapper stack.</span>
+</span><span id="TestEnv-91"><a href="#TestEnv-91"><span class="linenos"> 91</span></a><span class="sd">        n_iters : int, default 10</span>
+</span><span id="TestEnv-92"><a href="#TestEnv-92"><span class="linenos"> 92</span></a><span class="sd">            Number of episodes to simulate.</span>
+</span><span id="TestEnv-93"><a href="#TestEnv-93"><span class="linenos"> 93</span></a><span class="sd">        pi : array-like or callable, optional</span>
+</span><span id="TestEnv-94"><a href="#TestEnv-94"><span class="linenos"> 94</span></a><span class="sd">            Policy mapping states to actions, commonly indexed as `pi[state]`.</span>
+</span><span id="TestEnv-95"><a href="#TestEnv-95"><span class="linenos"> 95</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
+</span><span id="TestEnv-96"><a href="#TestEnv-96"><span class="linenos"> 96</span></a><span class="sd">        user_input : bool, default False</span>
+</span><span id="TestEnv-97"><a href="#TestEnv-97"><span class="linenos"> 97</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
+</span><span id="TestEnv-98"><a href="#TestEnv-98"><span class="linenos"> 98</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
+</span><span id="TestEnv-99"><a href="#TestEnv-99"><span class="linenos"> 99</span></a><span class="sd">            Converts observations into discrete or transformed states.</span>
+</span><span id="TestEnv-100"><a href="#TestEnv-100"><span class="linenos">100</span></a><span class="sd">            If None, the observation is used directly.</span>
+</span><span id="TestEnv-101"><a href="#TestEnv-101"><span class="linenos">101</span></a><span class="sd">        seed : int, optional</span>
+</span><span id="TestEnv-102"><a href="#TestEnv-102"><span class="linenos">102</span></a><span class="sd">            Seed passed to the first environment reset. Later resets continue</span>
+</span><span id="TestEnv-103"><a href="#TestEnv-103"><span class="linenos">103</span></a><span class="sd">            the environment's seeded random number sequence.</span>
+</span><span id="TestEnv-104"><a href="#TestEnv-104"><span class="linenos">104</span></a>
+</span><span id="TestEnv-105"><a href="#TestEnv-105"><span class="linenos">105</span></a><span class="sd">        Returns</span>
+</span><span id="TestEnv-106"><a href="#TestEnv-106"><span class="linenos">106</span></a><span class="sd">        -------</span>
+</span><span id="TestEnv-107"><a href="#TestEnv-107"><span class="linenos">107</span></a><span class="sd">        np.ndarray</span>
+</span><span id="TestEnv-108"><a href="#TestEnv-108"><span class="linenos">108</span></a><span class="sd">            Array of length `n_iters` containing the total reward for each episode.</span>
+</span><span id="TestEnv-109"><a href="#TestEnv-109"><span class="linenos">109</span></a>
+</span><span id="TestEnv-110"><a href="#TestEnv-110"><span class="linenos">110</span></a><span class="sd">        Notes</span>
+</span><span id="TestEnv-111"><a href="#TestEnv-111"><span class="linenos">111</span></a><span class="sd">        -----</span>
+</span><span id="TestEnv-112"><a href="#TestEnv-112"><span class="linenos">112</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
+</span><span id="TestEnv-113"><a href="#TestEnv-113"><span class="linenos">113</span></a><span class="sd">        - Internally copied rendering environments are closed. A supplied</span>
+</span><span id="TestEnv-114"><a href="#TestEnv-114"><span class="linenos">114</span></a><span class="sd">          human-rendering environment remains owned by the caller.</span>
+</span><span id="TestEnv-115"><a href="#TestEnv-115"><span class="linenos">115</span></a><span class="sd">        - A non-human-rendering environment must support copying and declare a</span>
+</span><span id="TestEnv-116"><a href="#TestEnv-116"><span class="linenos">116</span></a><span class="sd">          human or array render mode. Otherwise, construct the base environment</span>
+</span><span id="TestEnv-117"><a href="#TestEnv-117"><span class="linenos">117</span></a><span class="sd">          with `render_mode="human"` before applying its wrappers.</span>
+</span><span id="TestEnv-118"><a href="#TestEnv-118"><span class="linenos">118</span></a><span class="sd">        """</span>
+</span><span id="TestEnv-119"><a href="#TestEnv-119"><span class="linenos">119</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TestEnv-120"><a href="#TestEnv-120"><span class="linenos">120</span></a>            <span class="n">convert_state_obs</span> <span class="o">=</span> <span class="n">_identity</span>
+</span><span id="TestEnv-121"><a href="#TestEnv-121"><span class="linenos">121</span></a>
+</span><span id="TestEnv-122"><a href="#TestEnv-122"><span class="linenos">122</span></a>        <span class="n">created_env</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="TestEnv-123"><a href="#TestEnv-123"><span class="linenos">123</span></a>        <span class="k">if</span> <span class="n">render</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s2">"render_mode"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"human"</span><span class="p">:</span>
+</span><span id="TestEnv-124"><a href="#TestEnv-124"><span class="linenos">124</span></a>            <span class="n">env</span> <span class="o">=</span> <span class="n">_copy_for_rendering</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span id="TestEnv-125"><a href="#TestEnv-125"><span class="linenos">125</span></a>            <span class="n">created_env</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="TestEnv-126"><a href="#TestEnv-126"><span class="linenos">126</span></a>
+</span><span id="TestEnv-127"><a href="#TestEnv-127"><span class="linenos">127</span></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="TestEnv-128"><a href="#TestEnv-128"><span class="linenos">128</span></a>            <span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
+</span><span id="TestEnv-129"><a href="#TestEnv-129"><span class="linenos">129</span></a>            <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_iters</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span id="TestEnv-130"><a href="#TestEnv-130"><span class="linenos">130</span></a>
+</span><span id="TestEnv-131"><a href="#TestEnv-131"><span class="linenos">131</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iters</span><span class="p">):</span>
+</span><span id="TestEnv-132"><a href="#TestEnv-132"><span class="linenos">132</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TestEnv-133"><a href="#TestEnv-133"><span class="linenos">133</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+</span><span id="TestEnv-134"><a href="#TestEnv-134"><span class="linenos">134</span></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="TestEnv-135"><a href="#TestEnv-135"><span class="linenos">135</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span id="TestEnv-136"><a href="#TestEnv-136"><span class="linenos">136</span></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span><span id="TestEnv-137"><a href="#TestEnv-137"><span class="linenos">137</span></a>
+</span><span id="TestEnv-138"><a href="#TestEnv-138"><span class="linenos">138</span></a>                <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="TestEnv-139"><a href="#TestEnv-139"><span class="linenos">139</span></a>                <span class="n">total_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="TestEnv-140"><a href="#TestEnv-140"><span class="linenos">140</span></a>
+</span><span id="TestEnv-141"><a href="#TestEnv-141"><span class="linenos">141</span></a>                <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+</span><span id="TestEnv-142"><a href="#TestEnv-142"><span class="linenos">142</span></a>                    <span class="k">if</span> <span class="n">user_input</span><span class="p">:</span>
+</span><span id="TestEnv-143"><a href="#TestEnv-143"><span class="linenos">143</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">TestEnv</span><span class="o">.</span><span class="n">_prompt_for_action</span><span class="p">(</span>
+</span><span id="TestEnv-144"><a href="#TestEnv-144"><span class="linenos">144</span></a>                            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+</span><span id="TestEnv-145"><a href="#TestEnv-145"><span class="linenos">145</span></a>                            <span class="n">n_actions</span><span class="o">=</span><span class="n">n_actions</span><span class="p">,</span>
+</span><span id="TestEnv-146"><a href="#TestEnv-146"><span class="linenos">146</span></a>                            <span class="n">pi</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span>
+</span><span id="TestEnv-147"><a href="#TestEnv-147"><span class="linenos">147</span></a>                        <span class="p">)</span>
+</span><span id="TestEnv-148"><a href="#TestEnv-148"><span class="linenos">148</span></a>                    <span class="k">else</span><span class="p">:</span>
+</span><span id="TestEnv-149"><a href="#TestEnv-149"><span class="linenos">149</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+</span><span id="TestEnv-150"><a href="#TestEnv-150"><span class="linenos">150</span></a>
+</span><span id="TestEnv-151"><a href="#TestEnv-151"><span class="linenos">151</span></a>                    <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</span><span id="TestEnv-152"><a href="#TestEnv-152"><span class="linenos">152</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
+</span><span id="TestEnv-153"><a href="#TestEnv-153"><span class="linenos">153</span></a>
+</span><span id="TestEnv-154"><a href="#TestEnv-154"><span class="linenos">154</span></a>                    <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+</span><span id="TestEnv-155"><a href="#TestEnv-155"><span class="linenos">155</span></a>                    <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
+</span><span id="TestEnv-156"><a href="#TestEnv-156"><span class="linenos">156</span></a>
+</span><span id="TestEnv-157"><a href="#TestEnv-157"><span class="linenos">157</span></a>                <span class="n">test_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_reward</span>
+</span><span id="TestEnv-158"><a href="#TestEnv-158"><span class="linenos">158</span></a>
+</span><span id="TestEnv-159"><a href="#TestEnv-159"><span class="linenos">159</span></a>            <span class="k">return</span> <span class="n">test_scores</span>
+</span><span id="TestEnv-160"><a href="#TestEnv-160"><span class="linenos">160</span></a>        <span class="k">finally</span><span class="p">:</span>
+</span><span id="TestEnv-161"><a href="#TestEnv-161"><span class="linenos">161</span></a>            <span class="k">if</span> <span class="n">created_env</span><span class="p">:</span>
+</span><span id="TestEnv-162"><a href="#TestEnv-162"><span class="linenos">162</span></a>                <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="TestEnv-163"><a href="#TestEnv-163"><span class="linenos">163</span></a>
+</span><span id="TestEnv-164"><a href="#TestEnv-164"><span class="linenos">164</span></a>    <span class="nd">@staticmethod</span>
+</span><span id="TestEnv-165"><a href="#TestEnv-165"><span class="linenos">165</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_prompt_for_action</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pi</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="TestEnv-166"><a href="#TestEnv-166"><span class="linenos">166</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="TestEnv-167"><a href="#TestEnv-167"><span class="linenos">167</span></a><span class="sd">        Prompt the user to select an action and return the chosen value.</span>
+</span><span id="TestEnv-168"><a href="#TestEnv-168"><span class="linenos">168</span></a><span class="sd">        """</span>
+</span><span id="TestEnv-169"><a href="#TestEnv-169"><span class="linenos">169</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"state is </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="TestEnv-170"><a href="#TestEnv-170"><span class="linenos">170</span></a>        <span class="k">if</span> <span class="n">pi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TestEnv-171"><a href="#TestEnv-171"><span class="linenos">171</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"policy output is </span><span class="si">{</span><span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="TestEnv-172"><a href="#TestEnv-172"><span class="linenos">172</span></a>
+</span><span id="TestEnv-173"><a href="#TestEnv-173"><span class="linenos">173</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span id="TestEnv-174"><a href="#TestEnv-174"><span class="linenos">174</span></a>            <span class="n">raw</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Please select 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> then hit enter:</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="TestEnv-175"><a href="#TestEnv-175"><span class="linenos">175</span></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="TestEnv-176"><a href="#TestEnv-176"><span class="linenos">176</span></a>                <span class="n">action</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+</span><span id="TestEnv-177"><a href="#TestEnv-177"><span class="linenos">177</span></a>            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span id="TestEnv-178"><a href="#TestEnv-178"><span class="linenos">178</span></a>                <span class="nb">print</span><span class="p">(</span><span class="s2">"Please enter a number"</span><span class="p">)</span>
+</span><span id="TestEnv-179"><a href="#TestEnv-179"><span class="linenos">179</span></a>                <span class="k">continue</span>
+</span><span id="TestEnv-180"><a href="#TestEnv-180"><span class="linenos">180</span></a>
+</span><span id="TestEnv-181"><a href="#TestEnv-181"><span class="linenos">181</span></a>            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">action</span> <span class="o">&lt;</span> <span class="n">n_actions</span><span class="p">:</span>
+</span><span id="TestEnv-182"><a href="#TestEnv-182"><span class="linenos">182</span></a>                <span class="k">return</span> <span class="n">action</span>
+</span><span id="TestEnv-183"><a href="#TestEnv-183"><span class="linenos">183</span></a>
+</span><span id="TestEnv-184"><a href="#TestEnv-184"><span class="linenos">184</span></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"please enter a valid action, 0 - </span><span class="si">{</span><span class="n">n_actions</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -421,130 +406,103 @@ Documentation added by: Gagandeep Randhawa</p>
 
     </div>
     <a class="headerlink" href="#TestEnv.test_env"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TestEnv.test_env-27"><a href="#TestEnv.test_env-27"><span class="linenos"> 27</span></a>    <span class="nd">@staticmethod</span>
-</span><span id="TestEnv.test_env-28"><a href="#TestEnv.test_env-28"><span class="linenos"> 28</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_env</span><span class="p">(</span>
-</span><span id="TestEnv.test_env-29"><a href="#TestEnv.test_env-29"><span class="linenos"> 29</span></a>        <span class="n">env</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-30"><a href="#TestEnv.test_env-30"><span class="linenos"> 30</span></a>        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-31"><a href="#TestEnv.test_env-31"><span class="linenos"> 31</span></a>        <span class="n">render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-32"><a href="#TestEnv.test_env-32"><span class="linenos"> 32</span></a>        <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-33"><a href="#TestEnv.test_env-33"><span class="linenos"> 33</span></a>        <span class="n">pi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-34"><a href="#TestEnv.test_env-34"><span class="linenos"> 34</span></a>        <span class="n">user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-35"><a href="#TestEnv.test_env-35"><span class="linenos"> 35</span></a>        <span class="n">convert_state_obs</span><span class="o">=</span><span class="n">_identity</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-36"><a href="#TestEnv.test_env-36"><span class="linenos"> 36</span></a>        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-37"><a href="#TestEnv.test_env-37"><span class="linenos"> 37</span></a>    <span class="p">):</span>
-</span><span id="TestEnv.test_env-38"><a href="#TestEnv.test_env-38"><span class="linenos"> 38</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="TestEnv.test_env-39"><a href="#TestEnv.test_env-39"><span class="linenos"> 39</span></a><span class="sd">        Simulate episodes using a policy and return the total reward from each episode.</span>
-</span><span id="TestEnv.test_env-40"><a href="#TestEnv.test_env-40"><span class="linenos"> 40</span></a>
-</span><span id="TestEnv.test_env-41"><a href="#TestEnv.test_env-41"><span class="linenos"> 41</span></a><span class="sd">        Parameters</span>
-</span><span id="TestEnv.test_env-42"><a href="#TestEnv.test_env-42"><span class="linenos"> 42</span></a><span class="sd">        ----------</span>
-</span><span id="TestEnv.test_env-43"><a href="#TestEnv.test_env-43"><span class="linenos"> 43</span></a><span class="sd">        env : gymnasium.Env</span>
-</span><span id="TestEnv.test_env-44"><a href="#TestEnv.test_env-44"><span class="linenos"> 44</span></a><span class="sd">            Gymnasium environment instance.</span>
-</span><span id="TestEnv.test_env-45"><a href="#TestEnv.test_env-45"><span class="linenos"> 45</span></a><span class="sd">        desc : np.ndarray, optional</span>
-</span><span id="TestEnv.test_env-46"><a href="#TestEnv.test_env-46"><span class="linenos"> 46</span></a><span class="sd">            Description used by environments such as custom FrozenLake maps.</span>
-</span><span id="TestEnv.test_env-47"><a href="#TestEnv.test_env-47"><span class="linenos"> 47</span></a><span class="sd">            Only used when `render=True` causes the environment to be re-created.</span>
-</span><span id="TestEnv.test_env-48"><a href="#TestEnv.test_env-48"><span class="linenos"> 48</span></a><span class="sd">        render : bool, default False</span>
-</span><span id="TestEnv.test_env-49"><a href="#TestEnv.test_env-49"><span class="linenos"> 49</span></a><span class="sd">            If True, use the supplied environment when it was created with</span>
-</span><span id="TestEnv.test_env-50"><a href="#TestEnv.test_env-50"><span class="linenos"> 50</span></a><span class="sd">            `render_mode="human"`. Otherwise, re-create an equivalent</span>
-</span><span id="TestEnv.test_env-51"><a href="#TestEnv.test_env-51"><span class="linenos"> 51</span></a><span class="sd">            environment in human render mode when its wrapper specification is</span>
-</span><span id="TestEnv.test_env-52"><a href="#TestEnv.test_env-52"><span class="linenos"> 52</span></a><span class="sd">            reproducible.</span>
-</span><span id="TestEnv.test_env-53"><a href="#TestEnv.test_env-53"><span class="linenos"> 53</span></a><span class="sd">        n_iters : int, default 10</span>
-</span><span id="TestEnv.test_env-54"><a href="#TestEnv.test_env-54"><span class="linenos"> 54</span></a><span class="sd">            Number of episodes to simulate.</span>
-</span><span id="TestEnv.test_env-55"><a href="#TestEnv.test_env-55"><span class="linenos"> 55</span></a><span class="sd">        pi : array-like or callable, optional</span>
-</span><span id="TestEnv.test_env-56"><a href="#TestEnv.test_env-56"><span class="linenos"> 56</span></a><span class="sd">            Policy mapping states to actions, commonly indexed as `pi[state]`.</span>
-</span><span id="TestEnv.test_env-57"><a href="#TestEnv.test_env-57"><span class="linenos"> 57</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
-</span><span id="TestEnv.test_env-58"><a href="#TestEnv.test_env-58"><span class="linenos"> 58</span></a><span class="sd">        user_input : bool, default False</span>
-</span><span id="TestEnv.test_env-59"><a href="#TestEnv.test_env-59"><span class="linenos"> 59</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
-</span><span id="TestEnv.test_env-60"><a href="#TestEnv.test_env-60"><span class="linenos"> 60</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
-</span><span id="TestEnv.test_env-61"><a href="#TestEnv.test_env-61"><span class="linenos"> 61</span></a><span class="sd">            Converts observations into discrete or transformed states.</span>
-</span><span id="TestEnv.test_env-62"><a href="#TestEnv.test_env-62"><span class="linenos"> 62</span></a><span class="sd">            If None, the observation is used directly.</span>
-</span><span id="TestEnv.test_env-63"><a href="#TestEnv.test_env-63"><span class="linenos"> 63</span></a><span class="sd">        seed : int, optional</span>
-</span><span id="TestEnv.test_env-64"><a href="#TestEnv.test_env-64"><span class="linenos"> 64</span></a><span class="sd">            Seed passed to the first environment reset. Later resets continue</span>
-</span><span id="TestEnv.test_env-65"><a href="#TestEnv.test_env-65"><span class="linenos"> 65</span></a><span class="sd">            the environment's seeded random number sequence.</span>
-</span><span id="TestEnv.test_env-66"><a href="#TestEnv.test_env-66"><span class="linenos"> 66</span></a>
-</span><span id="TestEnv.test_env-67"><a href="#TestEnv.test_env-67"><span class="linenos"> 67</span></a><span class="sd">        Returns</span>
-</span><span id="TestEnv.test_env-68"><a href="#TestEnv.test_env-68"><span class="linenos"> 68</span></a><span class="sd">        -------</span>
-</span><span id="TestEnv.test_env-69"><a href="#TestEnv.test_env-69"><span class="linenos"> 69</span></a><span class="sd">        np.ndarray</span>
-</span><span id="TestEnv.test_env-70"><a href="#TestEnv.test_env-70"><span class="linenos"> 70</span></a><span class="sd">            Array of length `n_iters` containing the total reward for each episode.</span>
-</span><span id="TestEnv.test_env-71"><a href="#TestEnv.test_env-71"><span class="linenos"> 71</span></a>
-</span><span id="TestEnv.test_env-72"><a href="#TestEnv.test_env-72"><span class="linenos"> 72</span></a><span class="sd">        Notes</span>
-</span><span id="TestEnv.test_env-73"><a href="#TestEnv.test_env-73"><span class="linenos"> 73</span></a><span class="sd">        -----</span>
-</span><span id="TestEnv.test_env-74"><a href="#TestEnv.test_env-74"><span class="linenos"> 74</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
-</span><span id="TestEnv.test_env-75"><a href="#TestEnv.test_env-75"><span class="linenos"> 75</span></a><span class="sd">        - Internally created rendered environments are closed. A supplied</span>
-</span><span id="TestEnv.test_env-76"><a href="#TestEnv.test_env-76"><span class="linenos"> 76</span></a><span class="sd">          human-rendering environment remains owned by the caller.</span>
-</span><span id="TestEnv.test_env-77"><a href="#TestEnv.test_env-77"><span class="linenos"> 77</span></a><span class="sd">        - A wrapped environment that cannot be re-created must be constructed</span>
-</span><span id="TestEnv.test_env-78"><a href="#TestEnv.test_env-78"><span class="linenos"> 78</span></a><span class="sd">          with `render_mode="human"` before its wrappers are applied.</span>
-</span><span id="TestEnv.test_env-79"><a href="#TestEnv.test_env-79"><span class="linenos"> 79</span></a><span class="sd">        """</span>
-</span><span id="TestEnv.test_env-80"><a href="#TestEnv.test_env-80"><span class="linenos"> 80</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-81"><a href="#TestEnv.test_env-81"><span class="linenos"> 81</span></a>            <span class="n">convert_state_obs</span> <span class="o">=</span> <span class="n">_identity</span>
-</span><span id="TestEnv.test_env-82"><a href="#TestEnv.test_env-82"><span class="linenos"> 82</span></a>
-</span><span id="TestEnv.test_env-83"><a href="#TestEnv.test_env-83"><span class="linenos"> 83</span></a>        <span class="n">created_env</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="TestEnv.test_env-84"><a href="#TestEnv.test_env-84"><span class="linenos"> 84</span></a>        <span class="k">if</span> <span class="n">render</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s2">"render_mode"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"human"</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-85"><a href="#TestEnv.test_env-85"><span class="linenos"> 85</span></a>            <span class="n">env_spec</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">spec</span>
-</span><span id="TestEnv.test_env-86"><a href="#TestEnv.test_env-86"><span class="linenos"> 86</span></a>            <span class="k">if</span> <span class="n">env_spec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-87"><a href="#TestEnv.test_env-87"><span class="linenos"> 87</span></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="TestEnv.test_env-88"><a href="#TestEnv.test_env-88"><span class="linenos"> 88</span></a>                    <span class="s2">"render=True requires an environment with a Gymnasium spec or "</span>
-</span><span id="TestEnv.test_env-89"><a href="#TestEnv.test_env-89"><span class="linenos"> 89</span></a>                    <span class="s2">"an environment created with render_mode='human'"</span>
-</span><span id="TestEnv.test_env-90"><a href="#TestEnv.test_env-90"><span class="linenos"> 90</span></a>                <span class="p">)</span>
-</span><span id="TestEnv.test_env-91"><a href="#TestEnv.test_env-91"><span class="linenos"> 91</span></a>            <span class="n">make_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"render_mode"</span><span class="p">:</span> <span class="s2">"human"</span><span class="p">}</span>
-</span><span id="TestEnv.test_env-92"><a href="#TestEnv.test_env-92"><span class="linenos"> 92</span></a>            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-93"><a href="#TestEnv.test_env-93"><span class="linenos"> 93</span></a>                <span class="n">make_kwargs</span><span class="p">[</span><span class="s2">"desc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
-</span><span id="TestEnv.test_env-94"><a href="#TestEnv.test_env-94"><span class="linenos"> 94</span></a>            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-</span><span id="TestEnv.test_env-95"><a href="#TestEnv.test_env-95"><span class="linenos"> 95</span></a>                <span class="n">wrapper_spec</span><span class="o">.</span><span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span>
-</span><span id="TestEnv.test_env-96"><a href="#TestEnv.test_env-96"><span class="linenos"> 96</span></a>                <span class="k">for</span> <span class="n">wrapper_spec</span> <span class="ow">in</span> <span class="n">env_spec</span><span class="o">.</span><span class="n">additional_wrappers</span>
-</span><span id="TestEnv.test_env-97"><a href="#TestEnv.test_env-97"><span class="linenos"> 97</span></a>            <span class="p">):</span>
-</span><span id="TestEnv.test_env-98"><a href="#TestEnv.test_env-98"><span class="linenos"> 98</span></a>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="TestEnv.test_env-99"><a href="#TestEnv.test_env-99"><span class="linenos"> 99</span></a>                    <span class="s2">"render=True cannot re-create this wrapper stack. Create "</span>
-</span><span id="TestEnv.test_env-100"><a href="#TestEnv.test_env-100"><span class="linenos">100</span></a>                    <span class="s2">"the base environment with render_mode='human', apply the "</span>
-</span><span id="TestEnv.test_env-101"><a href="#TestEnv.test_env-101"><span class="linenos">101</span></a>                    <span class="s2">"same wrappers, and pass that wrapped environment."</span>
-</span><span id="TestEnv.test_env-102"><a href="#TestEnv.test_env-102"><span class="linenos">102</span></a>                <span class="p">)</span>
-</span><span id="TestEnv.test_env-103"><a href="#TestEnv.test_env-103"><span class="linenos">103</span></a>            <span class="k">try</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-104"><a href="#TestEnv.test_env-104"><span class="linenos">104</span></a>                <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">env_spec</span><span class="p">,</span> <span class="o">**</span><span class="n">make_kwargs</span><span class="p">)</span>
-</span><span id="TestEnv.test_env-105"><a href="#TestEnv.test_env-105"><span class="linenos">105</span></a>            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-106"><a href="#TestEnv.test_env-106"><span class="linenos">106</span></a>                <span class="k">if</span> <span class="n">env_spec</span><span class="o">.</span><span class="n">additional_wrappers</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-107"><a href="#TestEnv.test_env-107"><span class="linenos">107</span></a>                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="TestEnv.test_env-108"><a href="#TestEnv.test_env-108"><span class="linenos">108</span></a>                        <span class="s2">"render=True cannot re-create this wrapper stack. Create "</span>
-</span><span id="TestEnv.test_env-109"><a href="#TestEnv.test_env-109"><span class="linenos">109</span></a>                        <span class="s2">"the base environment with render_mode='human', apply the "</span>
-</span><span id="TestEnv.test_env-110"><a href="#TestEnv.test_env-110"><span class="linenos">110</span></a>                        <span class="s2">"same wrappers, and pass that wrapped environment."</span>
-</span><span id="TestEnv.test_env-111"><a href="#TestEnv.test_env-111"><span class="linenos">111</span></a>                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-</span><span id="TestEnv.test_env-112"><a href="#TestEnv.test_env-112"><span class="linenos">112</span></a>                <span class="k">raise</span>
-</span><span id="TestEnv.test_env-113"><a href="#TestEnv.test_env-113"><span class="linenos">113</span></a>            <span class="n">created_env</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="TestEnv.test_env-114"><a href="#TestEnv.test_env-114"><span class="linenos">114</span></a>
-</span><span id="TestEnv.test_env-115"><a href="#TestEnv.test_env-115"><span class="linenos">115</span></a>        <span class="k">try</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-116"><a href="#TestEnv.test_env-116"><span class="linenos">116</span></a>            <span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
-</span><span id="TestEnv.test_env-117"><a href="#TestEnv.test_env-117"><span class="linenos">117</span></a>            <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_iters</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span id="TestEnv.test_env-118"><a href="#TestEnv.test_env-118"><span class="linenos">118</span></a>
-</span><span id="TestEnv.test_env-119"><a href="#TestEnv.test_env-119"><span class="linenos">119</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iters</span><span class="p">):</span>
-</span><span id="TestEnv.test_env-120"><a href="#TestEnv.test_env-120"><span class="linenos">120</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-121"><a href="#TestEnv.test_env-121"><span class="linenos">121</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-</span><span id="TestEnv.test_env-122"><a href="#TestEnv.test_env-122"><span class="linenos">122</span></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-123"><a href="#TestEnv.test_env-123"><span class="linenos">123</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-</span><span id="TestEnv.test_env-124"><a href="#TestEnv.test_env-124"><span class="linenos">124</span></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-</span><span id="TestEnv.test_env-125"><a href="#TestEnv.test_env-125"><span class="linenos">125</span></a>
-</span><span id="TestEnv.test_env-126"><a href="#TestEnv.test_env-126"><span class="linenos">126</span></a>                <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="TestEnv.test_env-127"><a href="#TestEnv.test_env-127"><span class="linenos">127</span></a>                <span class="n">total_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span id="TestEnv.test_env-128"><a href="#TestEnv.test_env-128"><span class="linenos">128</span></a>
-</span><span id="TestEnv.test_env-129"><a href="#TestEnv.test_env-129"><span class="linenos">129</span></a>                <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-130"><a href="#TestEnv.test_env-130"><span class="linenos">130</span></a>                    <span class="k">if</span> <span class="n">user_input</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-131"><a href="#TestEnv.test_env-131"><span class="linenos">131</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">TestEnv</span><span class="o">.</span><span class="n">_prompt_for_action</span><span class="p">(</span>
-</span><span id="TestEnv.test_env-132"><a href="#TestEnv.test_env-132"><span class="linenos">132</span></a>                            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-133"><a href="#TestEnv.test_env-133"><span class="linenos">133</span></a>                            <span class="n">n_actions</span><span class="o">=</span><span class="n">n_actions</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-134"><a href="#TestEnv.test_env-134"><span class="linenos">134</span></a>                            <span class="n">pi</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span>
-</span><span id="TestEnv.test_env-135"><a href="#TestEnv.test_env-135"><span class="linenos">135</span></a>                        <span class="p">)</span>
-</span><span id="TestEnv.test_env-136"><a href="#TestEnv.test_env-136"><span class="linenos">136</span></a>                    <span class="k">else</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-137"><a href="#TestEnv.test_env-137"><span class="linenos">137</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
-</span><span id="TestEnv.test_env-138"><a href="#TestEnv.test_env-138"><span class="linenos">138</span></a>
-</span><span id="TestEnv.test_env-139"><a href="#TestEnv.test_env-139"><span class="linenos">139</span></a>                    <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-</span><span id="TestEnv.test_env-140"><a href="#TestEnv.test_env-140"><span class="linenos">140</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
-</span><span id="TestEnv.test_env-141"><a href="#TestEnv.test_env-141"><span class="linenos">141</span></a>
-</span><span id="TestEnv.test_env-142"><a href="#TestEnv.test_env-142"><span class="linenos">142</span></a>                    <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
-</span><span id="TestEnv.test_env-143"><a href="#TestEnv.test_env-143"><span class="linenos">143</span></a>                    <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
-</span><span id="TestEnv.test_env-144"><a href="#TestEnv.test_env-144"><span class="linenos">144</span></a>
-</span><span id="TestEnv.test_env-145"><a href="#TestEnv.test_env-145"><span class="linenos">145</span></a>                <span class="n">test_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_reward</span>
-</span><span id="TestEnv.test_env-146"><a href="#TestEnv.test_env-146"><span class="linenos">146</span></a>
-</span><span id="TestEnv.test_env-147"><a href="#TestEnv.test_env-147"><span class="linenos">147</span></a>            <span class="k">return</span> <span class="n">test_scores</span>
-</span><span id="TestEnv.test_env-148"><a href="#TestEnv.test_env-148"><span class="linenos">148</span></a>        <span class="k">finally</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-149"><a href="#TestEnv.test_env-149"><span class="linenos">149</span></a>            <span class="k">if</span> <span class="n">created_env</span><span class="p">:</span>
-</span><span id="TestEnv.test_env-150"><a href="#TestEnv.test_env-150"><span class="linenos">150</span></a>                <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TestEnv.test_env-66"><a href="#TestEnv.test_env-66"><span class="linenos"> 66</span></a>    <span class="nd">@staticmethod</span>
+</span><span id="TestEnv.test_env-67"><a href="#TestEnv.test_env-67"><span class="linenos"> 67</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_env</span><span class="p">(</span>
+</span><span id="TestEnv.test_env-68"><a href="#TestEnv.test_env-68"><span class="linenos"> 68</span></a>        <span class="n">env</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-69"><a href="#TestEnv.test_env-69"><span class="linenos"> 69</span></a>        <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-70"><a href="#TestEnv.test_env-70"><span class="linenos"> 70</span></a>        <span class="n">render</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-71"><a href="#TestEnv.test_env-71"><span class="linenos"> 71</span></a>        <span class="n">n_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-72"><a href="#TestEnv.test_env-72"><span class="linenos"> 72</span></a>        <span class="n">pi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-73"><a href="#TestEnv.test_env-73"><span class="linenos"> 73</span></a>        <span class="n">user_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-74"><a href="#TestEnv.test_env-74"><span class="linenos"> 74</span></a>        <span class="n">convert_state_obs</span><span class="o">=</span><span class="n">_identity</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-75"><a href="#TestEnv.test_env-75"><span class="linenos"> 75</span></a>        <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-76"><a href="#TestEnv.test_env-76"><span class="linenos"> 76</span></a>    <span class="p">):</span>
+</span><span id="TestEnv.test_env-77"><a href="#TestEnv.test_env-77"><span class="linenos"> 77</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="TestEnv.test_env-78"><a href="#TestEnv.test_env-78"><span class="linenos"> 78</span></a><span class="sd">        Simulate episodes using a policy and return the total reward from each episode.</span>
+</span><span id="TestEnv.test_env-79"><a href="#TestEnv.test_env-79"><span class="linenos"> 79</span></a>
+</span><span id="TestEnv.test_env-80"><a href="#TestEnv.test_env-80"><span class="linenos"> 80</span></a><span class="sd">        Parameters</span>
+</span><span id="TestEnv.test_env-81"><a href="#TestEnv.test_env-81"><span class="linenos"> 81</span></a><span class="sd">        ----------</span>
+</span><span id="TestEnv.test_env-82"><a href="#TestEnv.test_env-82"><span class="linenos"> 82</span></a><span class="sd">        env : gymnasium.Env</span>
+</span><span id="TestEnv.test_env-83"><a href="#TestEnv.test_env-83"><span class="linenos"> 83</span></a><span class="sd">            Gymnasium environment instance.</span>
+</span><span id="TestEnv.test_env-84"><a href="#TestEnv.test_env-84"><span class="linenos"> 84</span></a><span class="sd">        desc : np.ndarray, optional</span>
+</span><span id="TestEnv.test_env-85"><a href="#TestEnv.test_env-85"><span class="linenos"> 85</span></a><span class="sd">            Retained for backward compatibility. Rendering preserves the supplied</span>
+</span><span id="TestEnv.test_env-86"><a href="#TestEnv.test_env-86"><span class="linenos"> 86</span></a><span class="sd">            environment's existing description and other construction settings.</span>
+</span><span id="TestEnv.test_env-87"><a href="#TestEnv.test_env-87"><span class="linenos"> 87</span></a><span class="sd">        render : bool, default False</span>
+</span><span id="TestEnv.test_env-88"><a href="#TestEnv.test_env-88"><span class="linenos"> 88</span></a><span class="sd">            If True, use the supplied environment when it was created with</span>
+</span><span id="TestEnv.test_env-89"><a href="#TestEnv.test_env-89"><span class="linenos"> 89</span></a><span class="sd">            `render_mode="human"`. Otherwise, evaluate an isolated rendering copy</span>
+</span><span id="TestEnv.test_env-90"><a href="#TestEnv.test_env-90"><span class="linenos"> 90</span></a><span class="sd">            of the complete environment and wrapper stack.</span>
+</span><span id="TestEnv.test_env-91"><a href="#TestEnv.test_env-91"><span class="linenos"> 91</span></a><span class="sd">        n_iters : int, default 10</span>
+</span><span id="TestEnv.test_env-92"><a href="#TestEnv.test_env-92"><span class="linenos"> 92</span></a><span class="sd">            Number of episodes to simulate.</span>
+</span><span id="TestEnv.test_env-93"><a href="#TestEnv.test_env-93"><span class="linenos"> 93</span></a><span class="sd">        pi : array-like or callable, optional</span>
+</span><span id="TestEnv.test_env-94"><a href="#TestEnv.test_env-94"><span class="linenos"> 94</span></a><span class="sd">            Policy mapping states to actions, commonly indexed as `pi[state]`.</span>
+</span><span id="TestEnv.test_env-95"><a href="#TestEnv.test_env-95"><span class="linenos"> 95</span></a><span class="sd">            If `user_input=True`, this is shown as a suggested action.</span>
+</span><span id="TestEnv.test_env-96"><a href="#TestEnv.test_env-96"><span class="linenos"> 96</span></a><span class="sd">        user_input : bool, default False</span>
+</span><span id="TestEnv.test_env-97"><a href="#TestEnv.test_env-97"><span class="linenos"> 97</span></a><span class="sd">            If True, prompt the user to select each action interactively.</span>
+</span><span id="TestEnv.test_env-98"><a href="#TestEnv.test_env-98"><span class="linenos"> 98</span></a><span class="sd">        convert_state_obs : callable or None, default identity</span>
+</span><span id="TestEnv.test_env-99"><a href="#TestEnv.test_env-99"><span class="linenos"> 99</span></a><span class="sd">            Converts observations into discrete or transformed states.</span>
+</span><span id="TestEnv.test_env-100"><a href="#TestEnv.test_env-100"><span class="linenos">100</span></a><span class="sd">            If None, the observation is used directly.</span>
+</span><span id="TestEnv.test_env-101"><a href="#TestEnv.test_env-101"><span class="linenos">101</span></a><span class="sd">        seed : int, optional</span>
+</span><span id="TestEnv.test_env-102"><a href="#TestEnv.test_env-102"><span class="linenos">102</span></a><span class="sd">            Seed passed to the first environment reset. Later resets continue</span>
+</span><span id="TestEnv.test_env-103"><a href="#TestEnv.test_env-103"><span class="linenos">103</span></a><span class="sd">            the environment's seeded random number sequence.</span>
+</span><span id="TestEnv.test_env-104"><a href="#TestEnv.test_env-104"><span class="linenos">104</span></a>
+</span><span id="TestEnv.test_env-105"><a href="#TestEnv.test_env-105"><span class="linenos">105</span></a><span class="sd">        Returns</span>
+</span><span id="TestEnv.test_env-106"><a href="#TestEnv.test_env-106"><span class="linenos">106</span></a><span class="sd">        -------</span>
+</span><span id="TestEnv.test_env-107"><a href="#TestEnv.test_env-107"><span class="linenos">107</span></a><span class="sd">        np.ndarray</span>
+</span><span id="TestEnv.test_env-108"><a href="#TestEnv.test_env-108"><span class="linenos">108</span></a><span class="sd">            Array of length `n_iters` containing the total reward for each episode.</span>
+</span><span id="TestEnv.test_env-109"><a href="#TestEnv.test_env-109"><span class="linenos">109</span></a>
+</span><span id="TestEnv.test_env-110"><a href="#TestEnv.test_env-110"><span class="linenos">110</span></a><span class="sd">        Notes</span>
+</span><span id="TestEnv.test_env-111"><a href="#TestEnv.test_env-111"><span class="linenos">111</span></a><span class="sd">        -----</span>
+</span><span id="TestEnv.test_env-112"><a href="#TestEnv.test_env-112"><span class="linenos">112</span></a><span class="sd">        - This function assumes a discrete action space with `env.action_space.n`.</span>
+</span><span id="TestEnv.test_env-113"><a href="#TestEnv.test_env-113"><span class="linenos">113</span></a><span class="sd">        - Internally copied rendering environments are closed. A supplied</span>
+</span><span id="TestEnv.test_env-114"><a href="#TestEnv.test_env-114"><span class="linenos">114</span></a><span class="sd">          human-rendering environment remains owned by the caller.</span>
+</span><span id="TestEnv.test_env-115"><a href="#TestEnv.test_env-115"><span class="linenos">115</span></a><span class="sd">        - A non-human-rendering environment must support copying and declare a</span>
+</span><span id="TestEnv.test_env-116"><a href="#TestEnv.test_env-116"><span class="linenos">116</span></a><span class="sd">          human or array render mode. Otherwise, construct the base environment</span>
+</span><span id="TestEnv.test_env-117"><a href="#TestEnv.test_env-117"><span class="linenos">117</span></a><span class="sd">          with `render_mode="human"` before applying its wrappers.</span>
+</span><span id="TestEnv.test_env-118"><a href="#TestEnv.test_env-118"><span class="linenos">118</span></a><span class="sd">        """</span>
+</span><span id="TestEnv.test_env-119"><a href="#TestEnv.test_env-119"><span class="linenos">119</span></a>        <span class="k">if</span> <span class="n">convert_state_obs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-120"><a href="#TestEnv.test_env-120"><span class="linenos">120</span></a>            <span class="n">convert_state_obs</span> <span class="o">=</span> <span class="n">_identity</span>
+</span><span id="TestEnv.test_env-121"><a href="#TestEnv.test_env-121"><span class="linenos">121</span></a>
+</span><span id="TestEnv.test_env-122"><a href="#TestEnv.test_env-122"><span class="linenos">122</span></a>        <span class="n">created_env</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="TestEnv.test_env-123"><a href="#TestEnv.test_env-123"><span class="linenos">123</span></a>        <span class="k">if</span> <span class="n">render</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s2">"render_mode"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"human"</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-124"><a href="#TestEnv.test_env-124"><span class="linenos">124</span></a>            <span class="n">env</span> <span class="o">=</span> <span class="n">_copy_for_rendering</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span id="TestEnv.test_env-125"><a href="#TestEnv.test_env-125"><span class="linenos">125</span></a>            <span class="n">created_env</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="TestEnv.test_env-126"><a href="#TestEnv.test_env-126"><span class="linenos">126</span></a>
+</span><span id="TestEnv.test_env-127"><a href="#TestEnv.test_env-127"><span class="linenos">127</span></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-128"><a href="#TestEnv.test_env-128"><span class="linenos">128</span></a>            <span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
+</span><span id="TestEnv.test_env-129"><a href="#TestEnv.test_env-129"><span class="linenos">129</span></a>            <span class="n">test_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_iters</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span id="TestEnv.test_env-130"><a href="#TestEnv.test_env-130"><span class="linenos">130</span></a>
+</span><span id="TestEnv.test_env-131"><a href="#TestEnv.test_env-131"><span class="linenos">131</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iters</span><span class="p">):</span>
+</span><span id="TestEnv.test_env-132"><a href="#TestEnv.test_env-132"><span class="linenos">132</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-133"><a href="#TestEnv.test_env-133"><span class="linenos">133</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+</span><span id="TestEnv.test_env-134"><a href="#TestEnv.test_env-134"><span class="linenos">134</span></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-135"><a href="#TestEnv.test_env-135"><span class="linenos">135</span></a>                    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span id="TestEnv.test_env-136"><a href="#TestEnv.test_env-136"><span class="linenos">136</span></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span><span id="TestEnv.test_env-137"><a href="#TestEnv.test_env-137"><span class="linenos">137</span></a>
+</span><span id="TestEnv.test_env-138"><a href="#TestEnv.test_env-138"><span class="linenos">138</span></a>                <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="TestEnv.test_env-139"><a href="#TestEnv.test_env-139"><span class="linenos">139</span></a>                <span class="n">total_reward</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="TestEnv.test_env-140"><a href="#TestEnv.test_env-140"><span class="linenos">140</span></a>
+</span><span id="TestEnv.test_env-141"><a href="#TestEnv.test_env-141"><span class="linenos">141</span></a>                <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-142"><a href="#TestEnv.test_env-142"><span class="linenos">142</span></a>                    <span class="k">if</span> <span class="n">user_input</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-143"><a href="#TestEnv.test_env-143"><span class="linenos">143</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">TestEnv</span><span class="o">.</span><span class="n">_prompt_for_action</span><span class="p">(</span>
+</span><span id="TestEnv.test_env-144"><a href="#TestEnv.test_env-144"><span class="linenos">144</span></a>                            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-145"><a href="#TestEnv.test_env-145"><span class="linenos">145</span></a>                            <span class="n">n_actions</span><span class="o">=</span><span class="n">n_actions</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-146"><a href="#TestEnv.test_env-146"><span class="linenos">146</span></a>                            <span class="n">pi</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span>
+</span><span id="TestEnv.test_env-147"><a href="#TestEnv.test_env-147"><span class="linenos">147</span></a>                        <span class="p">)</span>
+</span><span id="TestEnv.test_env-148"><a href="#TestEnv.test_env-148"><span class="linenos">148</span></a>                    <span class="k">else</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-149"><a href="#TestEnv.test_env-149"><span class="linenos">149</span></a>                        <span class="n">action</span> <span class="o">=</span> <span class="n">pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+</span><span id="TestEnv.test_env-150"><a href="#TestEnv.test_env-150"><span class="linenos">150</span></a>
+</span><span id="TestEnv.test_env-151"><a href="#TestEnv.test_env-151"><span class="linenos">151</span></a>                    <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</span><span id="TestEnv.test_env-152"><a href="#TestEnv.test_env-152"><span class="linenos">152</span></a>                    <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
+</span><span id="TestEnv.test_env-153"><a href="#TestEnv.test_env-153"><span class="linenos">153</span></a>
+</span><span id="TestEnv.test_env-154"><a href="#TestEnv.test_env-154"><span class="linenos">154</span></a>                    <span class="n">state</span> <span class="o">=</span> <span class="n">convert_state_obs</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+</span><span id="TestEnv.test_env-155"><a href="#TestEnv.test_env-155"><span class="linenos">155</span></a>                    <span class="n">total_reward</span> <span class="o">+=</span> <span class="n">reward</span>
+</span><span id="TestEnv.test_env-156"><a href="#TestEnv.test_env-156"><span class="linenos">156</span></a>
+</span><span id="TestEnv.test_env-157"><a href="#TestEnv.test_env-157"><span class="linenos">157</span></a>                <span class="n">test_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_reward</span>
+</span><span id="TestEnv.test_env-158"><a href="#TestEnv.test_env-158"><span class="linenos">158</span></a>
+</span><span id="TestEnv.test_env-159"><a href="#TestEnv.test_env-159"><span class="linenos">159</span></a>            <span class="k">return</span> <span class="n">test_scores</span>
+</span><span id="TestEnv.test_env-160"><a href="#TestEnv.test_env-160"><span class="linenos">160</span></a>        <span class="k">finally</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-161"><a href="#TestEnv.test_env-161"><span class="linenos">161</span></a>            <span class="k">if</span> <span class="n">created_env</span><span class="p">:</span>
+</span><span id="TestEnv.test_env-162"><a href="#TestEnv.test_env-162"><span class="linenos">162</span></a>                <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -555,13 +513,12 @@ Documentation added by: Gagandeep Randhawa</p>
 <p>env : gymnasium.Env
     Gymnasium environment instance.
 desc : np.ndarray, optional
-    Description used by environments such as custom FrozenLake maps.
-    Only used when <code>render=True</code> causes the environment to be re-created.
+    Retained for backward compatibility. Rendering preserves the supplied
+    environment's existing description and other construction settings.
 render : bool, default False
     If True, use the supplied environment when it was created with
-    <code>render_mode="human"</code>. Otherwise, re-create an equivalent
-    environment in human render mode when its wrapper specification is
-    reproducible.
+    <code>render_mode="human"</code>. Otherwise, evaluate an isolated rendering copy
+    of the complete environment and wrapper stack.
 n_iters : int, default 10
     Number of episodes to simulate.
 pi : array-like or callable, optional
@@ -585,10 +542,11 @@ seed : int, optional
 
 <ul>
 <li>This function assumes a discrete action space with <code>env.action_space.n</code>.</li>
-<li>Internally created rendered environments are closed. A supplied
+<li>Internally copied rendering environments are closed. A supplied
 human-rendering environment remains owned by the caller.</li>
-<li>A wrapped environment that cannot be re-created must be constructed
-with <code>render_mode="human"</code> before its wrappers are applied.</li>
+<li>A non-human-rendering environment must support copying and declare a
+human or array render mode. Otherwise, construct the base environment
+with <code>render_mode="human"</code> before applying its wrappers.</li>
 </ul>
 </div>
 

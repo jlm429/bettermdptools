@@ -8,6 +8,7 @@ Documentation added by: Gagandeep Randhawa
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 import gymnasium as gym
@@ -16,6 +17,44 @@ import numpy as np
 
 def _identity(value):
     return value
+
+
+def _copy_for_rendering(env):
+    """Return an isolated copy that renders without changing rollout semantics."""
+    try:
+        render_env = deepcopy(env)
+    except Exception as exc:
+        raise ValueError(
+            "render=True could not copy this environment while preserving its "
+            "wrapper stack. Create the base environment with render_mode='human', "
+            "apply the same wrappers, and pass that wrapped environment."
+        ) from exc
+
+    try:
+        render_modes = tuple(render_env.metadata.get("render_modes", ()))
+        if "human" in render_modes:
+            render_env.unwrapped.render_mode = "human"
+            if getattr(render_env, "render_mode", None) != "human":
+                raise ValueError(
+                    "render=True could not enable human rendering through this "
+                    "environment's wrapper stack. Create the base environment with "
+                    "render_mode='human', apply the same wrappers, and pass that "
+                    "wrapped environment."
+                )
+            return render_env
+
+        for render_mode in gym.wrappers.HumanRendering.ACCEPTED_RENDER_MODES:
+            if render_mode in render_modes:
+                render_env.unwrapped.render_mode = render_mode
+                return gym.wrappers.HumanRendering(render_env)
+
+        raise ValueError(
+            "render=True requires an environment that supports human or array "
+            "rendering."
+        )
+    except Exception:
+        render_env.close()
+        raise
 
 
 class TestEnv:
@@ -42,13 +81,12 @@ class TestEnv:
         env : gymnasium.Env
             Gymnasium environment instance.
         desc : np.ndarray, optional
-            Description used by environments such as custom FrozenLake maps.
-            Only used when `render=True` causes the environment to be re-created.
+            Retained for backward compatibility. Rendering preserves the supplied
+            environment's existing description and other construction settings.
         render : bool, default False
             If True, use the supplied environment when it was created with
-            `render_mode="human"`. Otherwise, re-create an equivalent
-            environment in human render mode when its wrapper specification is
-            reproducible.
+            `render_mode="human"`. Otherwise, evaluate an isolated rendering copy
+            of the complete environment and wrapper stack.
         n_iters : int, default 10
             Number of episodes to simulate.
         pi : array-like or callable, optional
@@ -71,44 +109,18 @@ class TestEnv:
         Notes
         -----
         - This function assumes a discrete action space with `env.action_space.n`.
-        - Internally created rendered environments are closed. A supplied
+        - Internally copied rendering environments are closed. A supplied
           human-rendering environment remains owned by the caller.
-        - A wrapped environment that cannot be re-created must be constructed
-          with `render_mode="human"` before its wrappers are applied.
+        - A non-human-rendering environment must support copying and declare a
+          human or array render mode. Otherwise, construct the base environment
+          with `render_mode="human"` before applying its wrappers.
         """
         if convert_state_obs is None:
             convert_state_obs = _identity
 
         created_env = False
         if render and getattr(env, "render_mode", None) != "human":
-            env_spec = env.spec
-            if env_spec is None:
-                raise ValueError(
-                    "render=True requires an environment with a Gymnasium spec or "
-                    "an environment created with render_mode='human'"
-                )
-            make_kwargs = {"render_mode": "human"}
-            if desc is not None:
-                make_kwargs["desc"] = desc
-            if any(
-                wrapper_spec.kwargs is None
-                for wrapper_spec in env_spec.additional_wrappers
-            ):
-                raise ValueError(
-                    "render=True cannot re-create this wrapper stack. Create "
-                    "the base environment with render_mode='human', apply the "
-                    "same wrappers, and pass that wrapped environment."
-                )
-            try:
-                env = gym.make(env_spec, **make_kwargs)
-            except ValueError as exc:
-                if env_spec.additional_wrappers:
-                    raise ValueError(
-                        "render=True cannot re-create this wrapper stack. Create "
-                        "the base environment with render_mode='human', apply the "
-                        "same wrappers, and pass that wrapped environment."
-                    ) from exc
-                raise
+            env = _copy_for_rendering(env)
             created_env = True
 
         try:
