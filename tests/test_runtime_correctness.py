@@ -1,5 +1,6 @@
 import warnings
 from pathlib import Path
+from types import MethodType
 
 import gymnasium as gym
 import numpy as np
@@ -7,8 +8,10 @@ import pytest
 
 from bettermdptools.algorithms.planner import Planner
 from bettermdptools.algorithms.rl import RL
+from bettermdptools.envs.acrobot_wrapper import AcrobotWrapper
 from bettermdptools.envs.binning import generate_bin_edges
 from bettermdptools.envs.blackjack_wrapper import BlackjackWrapper
+from bettermdptools.envs.cartpole_wrapper import CartpoleWrapper
 from bettermdptools.envs.pendulum_discretized import (
     DiscretizedPendulum,
     angle_normalize,
@@ -28,6 +31,7 @@ class RenderTrackingEnv(gym.Env):
     observation_space = gym.spaces.Discrete(1)
     action_space = gym.spaces.Discrete(1)
     instances = []
+    events = []
 
     def __init__(self, render_mode=None):
         self.render_mode = render_mode
@@ -47,9 +51,11 @@ class RenderTrackingEnv(gym.Env):
 
     def render(self):
         self.render_calls += 1
+        type(self).events.append(("render", id(self)))
 
     def close(self):
         self.closed = True
+        type(self).events.append(("close", id(self)))
 
 
 class OffsetObservation(gym.ObservationWrapper):
@@ -59,6 +65,30 @@ class OffsetObservation(gym.ObservationWrapper):
 
     def observation(self, observation):
         return int(observation) + 1
+
+
+class ArrayRenderingWithoutFpsEnv(gym.Env):
+    metadata = {"render_modes": ["rgb_array"]}
+    observation_space = gym.spaces.Discrete(1)
+    action_space = gym.spaces.Discrete(1)
+
+    def __init__(self):
+        self.render_mode = None
+        self.closed = False
+
+    def reset(self, *, seed=None, options=None):
+        super().reset(seed=seed)
+        return 0, {}
+
+    def step(self, action):
+        assert self.action_space.contains(action)
+        return 0, 0.0, True, False, {}
+
+    def render(self):
+        return np.zeros((1, 1, 3), dtype=np.uint8)
+
+    def close(self):
+        self.closed = True
 
 
 class LifecycleEnv(gym.Env):
@@ -92,6 +122,32 @@ class ModelLessLifecycleEnv(LifecycleEnv):
 def register_test_env(env_id, entry_point):
     if env_id not in gym.registry:
         gym.register(env_id, entry_point=entry_point)
+
+
+def track_render_lifecycle(env):
+    events = []
+    raw_env = env.unwrapped
+    caller_id = id(raw_env)
+
+    def render(instance):
+        events.append(("render", id(instance)))
+
+    def close(instance):
+        events.append(("close", id(instance)))
+
+    raw_env.render = MethodType(render, raw_env)
+    raw_env.close = MethodType(close, raw_env)
+    return events, caller_id
+
+
+class FixedPolicy:
+    def __init__(self, action):
+        self.action = action
+        self.states = []
+
+    def __getitem__(self, state):
+        self.states.append(state)
+        return self.action
 
 
 def test_policy_evaluation_bounds_an_undiscounted_recurrent_policy():
@@ -430,6 +486,104 @@ def test_pendulum_midpoint_transitions_match_current_gymnasium(tmp_path):
         env.close()
 
 
+def test_rendering_preserves_a_native_p_environment_and_caller_ownership():
+    env = gym.make("FrozenLake-v1", is_slippery=False, max_episode_steps=1)
+    events, caller_id = track_render_lifecycle(env)
+    try:
+        policy = FixedPolicy(0)
+
+        scores = TestEnv.test_env(
+            env,
+            render=True,
+            n_iters=1,
+            pi=policy,
+            seed=417,
+        )
+
+        np.testing.assert_array_equal(scores, [0.0])
+        assert policy.states == [0]
+        rendered_ids = {
+            instance_id for event, instance_id in events if event == "render"
+        }
+        assert len(rendered_ids) == 1
+        rendered_id = rendered_ids.pop()
+        assert rendered_id != caller_id
+        assert ("close", rendered_id) in events
+        assert ("close", caller_id) not in events
+        observation, _ = env.reset(seed=417)
+        assert env.observation_space.contains(observation)
+    finally:
+        env.close()
+
+    assert ("close", caller_id) in events
+
+
+@pytest.mark.parametrize(
+    "env_name",
+    ["blackjack", "cartpole", "acrobot", "pendulum"],
+)
+def test_rendering_preserves_supported_modeled_wrappers_and_closes_copy(
+    env_name, tmp_path
+):
+    base_env = gym.make(
+        {
+            "blackjack": "Blackjack-v1",
+            "cartpole": "CartPole-v1",
+            "acrobot": "Acrobot-v1",
+            "pendulum": "Pendulum-v1",
+        }[env_name],
+        max_episode_steps=1,
+    )
+    events, caller_id = track_render_lifecycle(base_env)
+    if env_name == "blackjack":
+        env = BlackjackWrapper(base_env)
+    elif env_name == "cartpole":
+        env = CartpoleWrapper(base_env, position_bins=2, velocity_bins=2)
+    elif env_name == "acrobot":
+        env = AcrobotWrapper(base_env, angle_bins=2, velocity_bins=2)
+    else:
+        env = PendulumWrapper(
+            base_env,
+            angle_bins=3,
+            angular_velocity_bins=3,
+            torque_bins=3,
+            n_workers=1,
+            cache_dir=tmp_path / "pendulum-cache",
+            dim_samples=3,
+        )
+
+    try:
+        policy = FixedPolicy(0)
+        expected_action_count = env.action_space.n
+
+        scores = TestEnv.test_env(
+            env,
+            render=True,
+            n_iters=1,
+            pi=policy,
+            seed=417,
+        )
+
+        assert np.isfinite(scores).all()
+        assert env.action_space.n == expected_action_count
+        assert policy.states
+        assert all(env.observation_space.contains(state) for state in policy.states)
+        rendered_ids = {
+            instance_id for event, instance_id in events if event == "render"
+        }
+        assert len(rendered_ids) == 1
+        rendered_id = rendered_ids.pop()
+        assert rendered_id != caller_id
+        assert ("close", rendered_id) in events
+        assert ("close", caller_id) not in events
+        observation, _ = env.reset(seed=417)
+        assert env.observation_space.contains(observation)
+    finally:
+        env.close()
+
+    assert ("close", caller_id) in events
+
+
 def test_rendering_uses_a_supplied_human_mode_wrapper_without_closing_it():
     env_id = "BetterMDPTools-RenderTracking-v0"
     register_test_env(env_id, RenderTrackingEnv)
@@ -448,35 +602,73 @@ def test_rendering_uses_a_supplied_human_mode_wrapper_without_closing_it():
     assert RenderTrackingEnv.instances[-1].closed
 
 
-def test_rendering_rejects_an_unreproducible_non_rendering_wrapper():
+def test_rendering_preserves_an_unreproducible_wrapper_and_state_conversion():
     env_id = "BetterMDPTools-RenderTracking-v0"
     register_test_env(env_id, RenderTrackingEnv)
     RenderTrackingEnv.instances = []
+    RenderTrackingEnv.events = []
     env = OffsetObservation(gym.make(env_id))
+    caller_id = id(env.unwrapped)
     try:
-        with pytest.raises(ValueError, match="cannot re-create this wrapper stack"):
-            TestEnv.test_env(env, render=True, n_iters=1, pi={1: 0})
+        scores = TestEnv.test_env(
+            env,
+            render=True,
+            n_iters=1,
+            pi={11: 0},
+            convert_state_obs=lambda state: state + 10,
+        )
 
+        np.testing.assert_array_equal(scores, [1.0])
         assert len(RenderTrackingEnv.instances) == 1
         assert not RenderTrackingEnv.instances[-1].closed
+        rendered_ids = {
+            instance_id
+            for event, instance_id in RenderTrackingEnv.events
+            if event == "render"
+        }
+        assert len(rendered_ids) == 1
+        rendered_id = rendered_ids.pop()
+        assert rendered_id != caller_id
+        assert ("close", rendered_id) in RenderTrackingEnv.events
+        assert ("close", caller_id) not in RenderTrackingEnv.events
     finally:
         env.close()
 
 
-def test_rendering_closes_an_internally_recreated_environment_after_failure():
+def test_rendering_closes_an_internally_copied_environment_after_failure():
     env_id = "BetterMDPTools-RenderTracking-v0"
     register_test_env(env_id, RenderTrackingEnv)
     RenderTrackingEnv.instances = []
+    RenderTrackingEnv.events = []
     env = gym.make(env_id)
+    caller_id = id(env.unwrapped)
     try:
         with pytest.raises(KeyError):
             TestEnv.test_env(env, render=True, n_iters=1, pi={})
 
-        assert len(RenderTrackingEnv.instances) == 2
-        assert RenderTrackingEnv.instances[-1].closed
+        assert len(RenderTrackingEnv.instances) == 1
         assert not RenderTrackingEnv.instances[0].closed
+        closed_ids = {
+            instance_id
+            for event, instance_id in RenderTrackingEnv.events
+            if event == "close"
+        }
+        assert len(closed_ids) == 1
+        assert caller_id not in closed_ids
     finally:
         env.close()
+
+
+def test_array_only_rendering_requires_render_fps_metadata():
+    env = ArrayRenderingWithoutFpsEnv()
+
+    with pytest.raises(
+        ValueError,
+        match=r"requires metadata\['render_fps'\] for array-only rendering",
+    ):
+        TestEnv.test_env(env, render=True, n_iters=1, pi={0: 0})
+
+    assert not env.closed
 
 
 def test_experiment_run_closes_its_environment_on_success_and_failure():
