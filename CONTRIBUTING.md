@@ -7,7 +7,7 @@ correctness-critical.
 
 ## Set up the Poetry environment
 
-Install Python 3.10 or newer and
+Install Python 3.10 through 3.12 and
 [Poetry](https://python-poetry.org/docs/#installation), then run:
 
 ```bash

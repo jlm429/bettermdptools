@@ -14,7 +14,7 @@ adapters, experiment entrypoints, and plotting utilities.
 
 ## Installation
 
-bettermdptools supports Python 3.10 and newer:
+bettermdptools supports Python 3.10 through 3.12:
 
 ```bash
 pip install bettermdptools
