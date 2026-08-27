@@ -206,6 +206,7 @@ class BlackjackWrapper(gym.Wrapper):
         )
 
     def reset(self, *, seed=None, options=None):
+        """Reset Blackjack and return its context-aware discrete observation."""
         observation, info = self.env.reset(seed=seed, options=options)
         self._player_natural = bool(observation[0] == 21 and observation[2])
         return (
@@ -217,6 +218,7 @@ class BlackjackWrapper(gym.Wrapper):
         )
 
     def step(self, action):
+        """Step Blackjack and return its context-aware discrete observation."""
         observation, reward, terminated, truncated, info = self.env.step(action)
         if action == 1:
             self._player_natural = False

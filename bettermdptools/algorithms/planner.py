@@ -31,6 +31,8 @@ def _validate_iteration_count(name, value, minimum):
 
 
 class Planner:
+    """Solve finite tabular MDPs with value or policy iteration."""
+
     def __init__(self, P):
         """
         Initializes the Planner class.

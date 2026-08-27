@@ -8,10 +8,12 @@ import numpy as np
 
 from bettermdptools.envs.pendulum_discretized import (
     DiscretizedPendulum,
-)  # Ensure this path is correct
+)
 
 
 class CustomTransformObservation(gym.wrappers.TransformObservation):
+    """Transform observations while declaring the transformed space."""
+
     def __init__(self, env, func, observation_space):
         """
         Transform observations while declaring the transformed observation space.
@@ -29,6 +31,8 @@ class CustomTransformObservation(gym.wrappers.TransformObservation):
 
 
 class PendulumWrapper(gym.Wrapper):
+    """Expose discrete Pendulum observations, actions, and a tabular model."""
+
     def __init__(
         self,
         env,
@@ -112,6 +116,8 @@ class PendulumWrapper(gym.Wrapper):
 
     @property
     def get_action_value(self):
+        """Return a callable that maps an action index to Gymnasium's action shape."""
+
         def action_value(action):
             return [self._get_action_value(action)]
 

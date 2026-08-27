@@ -1,14 +1,14 @@
 r"""
 This module contains reinforcement learning environment wrappers and models.
 
-## Overview
-
-These wrappers and models integrate Gymnasium environments with
-bettermdptools algorithms.
+These wrappers and models expose discrete observations, actions, and transition
+dictionaries for bettermdptools algorithms. Blackjack uses an exact model that
+distinguishes natural blackjack from later soft 21 states. CartPole, Acrobot,
+and Pendulum use discretized models.
 
 ## Key Components
 
 - **Environment Wrappers**: Classes that adapt existing environments.
-- **Environment Models**: Models for popular environments, including
-  discretized versions for tabular algorithms.
+- **Environment Models**: Exact or discretized transition and reward models for
+  tabular algorithms.
 """

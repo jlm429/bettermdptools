@@ -12,8 +12,8 @@ model, wrapper, adapter, or discretizer changes.
 
 ## Use the current contract
 
-- Confirm the supported version range in both `pyproject.toml` and `setup.py`.
-  The current range is Gymnasium `>=1.3.0,<1.4`.
+- Confirm the supported version range in `pyproject.toml`. The current range is
+  Gymnasium `>=1.3.0,<1.4`.
 - `reset()` returns `(observation, info)`. Wrappers must forward supported reset
   arguments such as `seed` and `options`, preserve the info mapping, and emit an
   observation contained by their declared observation space.

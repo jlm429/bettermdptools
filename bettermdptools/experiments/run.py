@@ -89,7 +89,7 @@ def run(
         Seed applied to global random number generators and the first training
         and evaluation environment resets.
     env_kwargs:
-        Keyword arguments forwarded to gym.make(env_id, **env_kwargs).
+        Keyword arguments forwarded to `gymnasium.make(env_id, **env_kwargs)`.
     wrapper:
         Optional environment wrapper to apply when the environment does not
         expose a P matrix. This may be a callable or a string import path such as
@@ -157,7 +157,7 @@ def run(
 
 
 class ExperimentBuilder:
-    """builder for configuring and running an experiment.
+    """Builder for configuring and running an experiment.
 
     This class provides a convenience interface on top of `run(...)`.
     """
@@ -173,29 +173,35 @@ class ExperimentBuilder:
         self._eval_kwargs: Optional[Dict[str, Any]] = None
 
     def seed(self, seed: Optional[int]) -> "ExperimentBuilder":
+        """Set the experiment seed."""
         self._seed = seed
         return self
 
     def env(self, env_id: str, **env_kwargs: Any) -> "ExperimentBuilder":
+        """Set the Gymnasium environment ID and construction arguments."""
         self._env_id = env_id
         self._env_kwargs = dict(env_kwargs)
         return self
 
     def wrapper(self, wrapper: Any, **wrapper_kwargs: Any) -> "ExperimentBuilder":
+        """Set an explicit environment wrapper and its arguments."""
         self._wrapper = wrapper
         self._wrapper_kwargs = dict(wrapper_kwargs)
         return self
 
     def algorithm(self, algo: str, **algo_kwargs: Any) -> "ExperimentBuilder":
+        """Set the algorithm name and training arguments."""
         self._algo = algo
         self._algo_kwargs = dict(algo_kwargs)
         return self
 
     def evaluate(self, **eval_kwargs: Any) -> "ExperimentBuilder":
+        """Enable policy evaluation with the supplied arguments."""
         self._eval_kwargs = dict(eval_kwargs)
         return self
 
     def run(self) -> RunResult:
+        """Execute the configured experiment."""
         if self._algo is None:
             raise ValueError("ExperimentBuilder requires algorithm(...) to be set.")
         if self._env_id is None:

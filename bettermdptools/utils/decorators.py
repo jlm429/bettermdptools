@@ -3,6 +3,8 @@ import time
 
 
 def print_runtime(func):
+    """Decorate a function to print its wall-clock runtime."""
+
     @functools.wraps(func)
     def wrapper_print_runtime(*args, **kwargs):
         start = time.time()
@@ -17,6 +19,8 @@ def print_runtime(func):
 
 # from https://wiki.python.org/moin/PythonDecoratorLibrary
 def add_to(func):
+    """Decorate a function to attach it to the class passed as `func`."""
+
     @functools.wraps(func)
     def decorator(*args, **kwargs):
         setattr(func, args[0].__name__, args[0])

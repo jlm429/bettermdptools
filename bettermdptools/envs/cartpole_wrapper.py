@@ -9,6 +9,8 @@ from bettermdptools.envs.cartpole_model import DiscretizedCartPole
 
 
 class CustomTransformObservation(gym.wrappers.TransformObservation):
+    """Transform observations while declaring the transformed space."""
+
     def __init__(self, env, func, observation_space):
         """
         Transform observations while declaring the transformed observation space.
@@ -26,6 +28,8 @@ class CustomTransformObservation(gym.wrappers.TransformObservation):
 
 
 class CartpoleWrapper(gym.Wrapper):
+    """Expose discretized CartPole observations and a tabular model."""
+
     def __init__(
         self,
         env,

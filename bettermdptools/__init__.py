@@ -17,9 +17,10 @@ The library also provides model-based planning algorithms such as Value
 Iteration and Policy Iteration for MDPs with known transitions and rewards.
 
 ### Environment Models
-bettermdptools includes environment models for Blackjack, CartPole, and
-Pendulum. Discretized models allow tabular learning and planning algorithms to
-work with continuous environments.
+bettermdptools includes an exact context-aware Blackjack model and discretized
+models for CartPole, Acrobot, and Pendulum. These adapters allow tabular
+learning and planning algorithms to work with Gymnasium environments that do
+not expose a native tabular transition model.
 
 ### Visualization Tools
 Plotting utilities generate heatmaps, line plots, and other visualizations for
@@ -29,7 +30,13 @@ analyzing learning progress and performance.
 
 ### Installation
 
-You can install bettermdptools via pip or by cloning the GitHub repository:
+Install bettermdptools from PyPI:
+
+```bash
+pip install bettermdptools
+```
+
+Source and contributor documentation are available in the GitHub repository:
 
 https://github.com/jlm429/bettermdptools
 
@@ -39,4 +46,6 @@ https://github.com/jlm429/bettermdptools
 - [Envs](./bettermdptools/envs.html): Environment wrappers and models.
 - [Algorithms](./bettermdptools/algorithms.html): Learning and planning
   algorithms.
+- [Experiments](./bettermdptools/experiments.html): High-level experiment and
+  optional Optuna entrypoints.
 """

@@ -27,6 +27,8 @@ from bettermdptools.utils.callbacks import MyCallbacks
 
 
 class RL:
+    """Train tabular policies by interacting with a Gymnasium environment."""
+
     def __init__(self, env):
         self.env = env
         self.callbacks = MyCallbacks()

@@ -1,8 +1,10 @@
 # Experiments Entrypoint API
 
-The experiments package provides an optional, high-level entry point for running a single environment and algorithm experiment with a consistent return shape.
+The experiments package provides a high-level entry point for running one
+environment and algorithm experiment with a consistent return shape.
 
-This layer is provided on an "as is" basis. It is intended for quick iteration, demos, and light experimentation. It is not required for using bettermdptools algorithms directly.
+This layer is intended for quick iteration, demos, and light experimentation.
+It is not required when using bettermdptools algorithms directly.
 
 Primary entry point:
 - `bettermdptools.experiments.run(...)`
@@ -11,10 +13,10 @@ Primary entry point:
 
 A complete run usually follows this pattern:
 
-1) Choose an environment id  
-2) Choose an algorithm name  
-3) Optionally provide algorithm and environment kwargs  
-4) Optionally evaluate the learned policy  
+1. Choose an environment ID.
+2. Choose an algorithm name.
+3. Optionally provide algorithm and environment keyword arguments.
+4. Optionally evaluate the learned policy.
 
 Example:
 
@@ -39,10 +41,10 @@ print(out.eval["scores"][:5])
 
 ### What this layer handles
 
-- Environment creation via `gym.make`
+- Environment creation via `gymnasium.make`
 - Obtaining a Gymnasium-style transition dictionary `P` as described in
   [Notes on wrappers and `P`](#notes-on-wrappers-and-p)
-  - Applies a wrapper when needed (explicit or registry-based)
+  - Applies a wrapper when a usable native tabular model is unavailable
 - Dispatching to Planner algorithms (`vi`, `pi`) or tabular RL algorithms (`q_learning`, `sarsa`)
 - Returning a consistent `RunResult` object
 - Optional evaluation via `TestEnv.test_env` when `eval_kwargs` is provided
@@ -69,10 +71,11 @@ out = run(algo="q_learning", env_id="Taxi-v4")
   environment resets.
 
 - `env_kwargs: Optional[Dict[str, Any]]`  
-  Forwarded to `gym.make`.
+  Forwarded to `gymnasium.make`.
 
 - `wrapper: Optional[Callable | str]`  
-  Optional environment wrapper applied when `P` is not exposed.
+  Optional environment wrapper applied when a usable native tabular model is
+  not exposed.
 
 - `wrapper_kwargs: Optional[Dict[str, Any]]`  
   Forwarded to the wrapper constructor.
@@ -85,7 +88,7 @@ out = run(algo="q_learning", env_id="Taxi-v4")
 
 #### Returns
 
-`RunResult` containing:
+`RunResult`, exported from `bettermdptools.experiments`, containing:
 
 - `algo`
 - `env_id`
@@ -107,10 +110,11 @@ Common training keys:
 Many planning and tabular RL methods require a Gymnasium-style transition
 dictionary `P` and discrete state and action spaces.
 
-- Built-in discrete models are read from `env.unwrapped.P`.
+- Built-in discrete models are read from `env.unwrapped.P` when both spaces are
+  discrete.
 - Explicit wrapper models are read from the wrapper's `env.P` property.
 - Otherwise, a wrapper can be provided to adapt the environment.
-- Some environments may be supported by a small internal wrapper registry.
+- The internal registry includes Blackjack, CartPole, Acrobot, and Pendulum.
 
 If `P` cannot be obtained, `run(...)` raises an error.
 
@@ -126,4 +130,4 @@ The most stable contract is:
 
 ## Examples
 
-[`../../examples/experiments_demo.ipynb`](../../examples/experiments_demo.ipynb) 
+[`../../examples/experiments_demo.ipynb`](../../examples/experiments_demo.ipynb)

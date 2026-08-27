@@ -1,9 +1,13 @@
+"""Discretized deterministic model of Gymnasium Acrobot dynamics."""
+
 from math import cos, sin
 
 import numpy as np
 
 
 class DiscretizedAcrobot:
+    """Build a tabular approximation of Acrobot with configurable bin counts."""
+
     LINK_LENGTH_1 = 1.0  # [m]
     LINK_LENGTH_2 = 1.0  # [m]
     LINK_MASS_1 = 1.0  #: [kg] mass of link 1
@@ -171,8 +175,9 @@ class DiscretizedAcrobot:
         components = [int((index // multipliers[i]) % totals[i]) for i in range(4)]
         return components
 
-    # Modified from original implementation of Gym Acrobot
+    # Modified from the Gymnasium Acrobot implementation.
     def dsdt(self, state):
+        """Return Acrobot state derivatives for numerical integration."""
         m1 = self.LINK_MASS_1
         m2 = self.LINK_MASS_2
         l1 = self.LINK_LENGTH_1
@@ -206,7 +211,7 @@ class DiscretizedAcrobot:
         ddtheta1 = -(d2 * ddtheta2 + phi1) / d1
         return dtheta1, dtheta2, ddtheta1, ddtheta2, 0.0
 
-    # Modified from original implementation of Gym Acrobot
+    # Modified from the Gymnasium Acrobot implementation.
     def rk4(self, derivs, y0, t):
         """
         Integrate 1-D or N-D system of ODEs using 4-th order Runge-Kutta.
@@ -258,6 +263,7 @@ class DiscretizedAcrobot:
     def compute_next_state(
         self, angle_1_idx, angle_2_idx, vel_1_idx, vel_2_idx, action
     ):
+        """Return the modeled next state, reward, and termination flag."""
         angle_space = np.linspace(*self.angle_range, self.angle_1_bins)
         velocity_1_space = np.linspace(*self.velocity_1_range, self.angular_vel_1_bins)
         velocity_2_space = np.linspace(*self.velocity_2_range, self.angular_vel_2_bins)

@@ -127,7 +127,7 @@ class EnvFactory:
         env_id:
             Gymnasium environment id (for example, "FrozenLake8x8-v1", "CartPole-v1").
         gym_kwargs:
-            Keyword arguments forwarded to `gym.make`.
+            Keyword arguments forwarded to `gymnasium.make`.
         wrapper:
             Optional wrapper to apply when the environment does not expose `P`.
             Accepted forms:

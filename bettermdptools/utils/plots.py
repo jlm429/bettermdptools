@@ -7,8 +7,11 @@ import seaborn as sns
 
 
 class Plots:
+    """Static helpers for visualizing values, policies, and training traces."""
+
     @staticmethod
     def values_heat_map(data, title, size, show=True):
+        """Plot state values as an annotated heat map."""
         data = np.around(np.array(data).reshape(size), 2)
         df = pd.DataFrame(data=data)
         sns.heatmap(df, annot=True).set_title(title)
@@ -18,6 +21,7 @@ class Plots:
 
     @staticmethod
     def v_iters_plot(data, title, show=True):
+        """Plot one or more value traces across iterations."""
         df = pd.DataFrame(data=data)
         sns.set_theme(style="whitegrid")
         sns.lineplot(data=df, legend=None).set_title(title)

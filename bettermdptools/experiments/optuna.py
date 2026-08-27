@@ -16,16 +16,16 @@ def _lazy_import_optuna():
         import optuna  # type: ignore
 
         return optuna
-    except Exception as e:  # pragma: no cover
+    except ImportError as e:  # pragma: no cover
         raise MissingOptunaDependency(
-            "Optuna is not installed. Install with `poetry install --with optuna` "
-            "or an equivalent optional dependency install."
+            "Optuna is not installed. Install the `bettermdptools[optuna]` extra "
+            "or run `poetry install --extras optuna` in a source checkout."
         ) from e
 
 
 @dataclass
 class OptunaResult:
-    """Convenience wrapper for Optuna study results."""
+    """Results returned by `optimize`."""
 
     best_params: Dict[str, Any]
     best_value: float
@@ -50,13 +50,11 @@ def optimize(
     storage: Optional[str] = None,
     load_if_exists: bool = False,
 ) -> OptunaResult:
-    """Optimize hyperparameters using Optuna, calling `experiments.run(...)` per trial.
+    """Optimize hyperparameters by calling `experiments.run` for each trial.
 
-    The `suggest(trial)` callable should return a dict with any of:
-        - env_kwargs
-        - wrapper_kwargs
-        - algo_kwargs
-        - eval_kwargs
+    The `suggest(trial)` callable may return `env_kwargs`, `wrapper_kwargs`,
+    `algo_kwargs`, and `eval_kwargs` mappings. Suggested values override the
+    corresponding base mappings.
     """
     optuna = _lazy_import_optuna()
 
