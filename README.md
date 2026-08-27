@@ -7,16 +7,23 @@
 
 # bettermdptools
 
+<p align="center">
+  <img src="docs/assets/bettermdptools-banner.png"
+       alt="bettermdptools reinforcement learning gridworld"
+       width="100%">
+</p>
+
 bettermdptools provides classic planning and tabular reinforcement learning
-algorithms for [Gymnasium](https://gymnasium.farama.org/) environments. It
-includes value iteration, policy iteration, Q-learning, SARSA, environment
-adapters, experiment entrypoints, and plotting utilities.
+algorithms for [Gymnasium](https://gymnasium.farama.org/) environments.
+
+- **Planning:** value iteration and policy iteration
+- **Reinforcement learning:** Q-learning and SARSA
+- **Environments:** discrete and discretized Gymnasium environments
+- **Experimentation:** reusable experiment, plotting, and optional Optuna utilities
 
 ## Installation
 
-bettermdptools supports Python 3.10 through 3.12:
-
-Support for Python 3.13 with NumPy 2.1 or newer remains future work.
+bettermdptools supports Python 3.10 through 3.12.
 
 ```bash
 pip install bettermdptools
@@ -28,7 +35,7 @@ Install the optional Optuna integration with:
 pip install "bettermdptools[optuna]"
 ```
 
-## Quick example
+## Quick Start
 
 The transition model for Gymnasium's built-in discrete environments is stored
 on the unwrapped environment:
@@ -40,9 +47,11 @@ from bettermdptools.algorithms.planner import Planner
 from bettermdptools.utils.plots import Plots
 
 env = gym.make("FrozenLake8x8-v1", render_mode=None)
+
 V, V_track, pi = Planner(env.unwrapped.P).value_iteration(gamma=0.99)
 
 Plots.values_heat_map(V, title="State Values", size=(8, 8))
+
 env.close()
 ```
 
@@ -50,19 +59,19 @@ bettermdptools wrappers expose generated tabular models through their own `.P`
 property. The Blackjack wrapper uses a context-aware exact representation.
 CartPole, Acrobot, and Pendulum use discretized models.
 
-## Examples and API documentation
+## Documentation
 
-User-facing notebooks live in
-[`examples/`](https://github.com/jlm429/bettermdptools/tree/master/examples).
-The high-level
-experiment and optional Optuna APIs are documented in:
+User-facing examples and tutorials are available in the
+[`examples/`](https://github.com/jlm429/bettermdptools/tree/master/examples)
+directory.
+
+High-level experiment and optional Optuna APIs are documented in:
 
 - [`docs/api/experiments_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/experiments_api.md)
 - [`docs/api/optuna_search_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/optuna_search_api.md)
 
-The generated Python API reference starts at
-[`bettermdptools.html`](https://jlm429.github.io/bettermdptools/bettermdptools.html).
-Python docstrings are the source for that reference.
+The generated [Python API reference](https://jlm429.github.io/bettermdptools/bettermdptools.html)
+is built from the package docstrings.
 
 ## Development
 
@@ -77,8 +86,7 @@ poetry run black --check .
 poetry run pdoc bettermdptools -o docs
 ```
 
-See
-[`CONTRIBUTING.md`](https://github.com/jlm429/bettermdptools/blob/master/CONTRIBUTING.md)
+See [`CONTRIBUTING.md`](https://github.com/jlm429/bettermdptools/blob/master/CONTRIBUTING.md)
 for the complete contributor workflow.
 
 ## License
