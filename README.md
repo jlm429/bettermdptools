@@ -16,6 +16,8 @@ adapters, experiment entrypoints, and plotting utilities.
 
 bettermdptools supports Python 3.10 through 3.12:
 
+Support for Python 3.13 with NumPy 2.1 or newer remains future work.
+
 ```bash
 pip install bettermdptools
 ```
