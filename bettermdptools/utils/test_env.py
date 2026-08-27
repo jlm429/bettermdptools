@@ -45,6 +45,11 @@ def _copy_for_rendering(env):
 
         for render_mode in gym.wrappers.HumanRendering.ACCEPTED_RENDER_MODES:
             if render_mode in render_modes:
+                if "render_fps" not in render_env.metadata:
+                    raise ValueError(
+                        "render=True requires metadata['render_fps'] for "
+                        "array-only rendering with Gymnasium HumanRendering."
+                    )
                 render_env.unwrapped.render_mode = render_mode
                 return gym.wrappers.HumanRendering(render_env)
 
@@ -112,8 +117,10 @@ class TestEnv:
         - Internally copied rendering environments are closed. A supplied
           human-rendering environment remains owned by the caller.
         - A non-human-rendering environment must support copying and declare a
-          human or array render mode. Otherwise, construct the base environment
-          with `render_mode="human"` before applying its wrappers.
+          human or array render mode. Array-only rendering also requires
+          `metadata["render_fps"]` for Gymnasium HumanRendering. Otherwise,
+          construct the base environment with `render_mode="human"` before
+          applying its wrappers.
         """
         if convert_state_obs is None:
             convert_state_obs = _identity

@@ -67,6 +67,30 @@ class OffsetObservation(gym.ObservationWrapper):
         return int(observation) + 1
 
 
+class ArrayRenderingWithoutFpsEnv(gym.Env):
+    metadata = {"render_modes": ["rgb_array"]}
+    observation_space = gym.spaces.Discrete(1)
+    action_space = gym.spaces.Discrete(1)
+
+    def __init__(self):
+        self.render_mode = None
+        self.closed = False
+
+    def reset(self, *, seed=None, options=None):
+        super().reset(seed=seed)
+        return 0, {}
+
+    def step(self, action):
+        assert self.action_space.contains(action)
+        return 0, 0.0, True, False, {}
+
+    def render(self):
+        return np.zeros((1, 1, 3), dtype=np.uint8)
+
+    def close(self):
+        self.closed = True
+
+
 class LifecycleEnv(gym.Env):
     metadata = {"render_modes": []}
     observation_space = gym.spaces.Discrete(1)
@@ -633,6 +657,18 @@ def test_rendering_closes_an_internally_copied_environment_after_failure():
         assert caller_id not in closed_ids
     finally:
         env.close()
+
+
+def test_array_only_rendering_requires_render_fps_metadata():
+    env = ArrayRenderingWithoutFpsEnv()
+
+    with pytest.raises(
+        ValueError,
+        match=r"requires metadata\['render_fps'\] for array-only rendering",
+    ):
+        TestEnv.test_env(env, render=True, n_iters=1, pi={0: 0})
+
+    assert not env.closed
 
 
 def test_experiment_run_closes_its_environment_on_success_and_failure():
