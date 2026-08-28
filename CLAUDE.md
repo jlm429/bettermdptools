@@ -1,3 +1,2 @@
+<!-- Points Claude at AGENTS.md via import; edit AGENTS.md, not this file. -->
 @AGENTS.md
-
-Task-specific workflows are in [`.agents/skills/`](.agents/skills/).

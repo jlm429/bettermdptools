@@ -14,8 +14,13 @@ utilities. Transition and reward representations are core library behavior.
   make a change pass.
 - Treat state and action indexing, transition probabilities, rewards, terminal
   handling, and Gymnasium API semantics as correctness-critical.
+- Make resource ownership explicit. Close environments and other resources an API
+  retains on success and failure, and never close caller-owned resources.
 - Change dependencies, packaging, CI, and release configuration only when the task
   requires it.
+- Treat `[project]` in `pyproject.toml` as the package metadata and version owner,
+  with `poetry.lock` as the resolved dependency record. Do not add parallel
+  packaging metadata.
 - Edit documentation sources before generated output. Never manually edit committed
   pdoc HTML.
 - Do not use em dashes in repository prose, comments, commit messages, or PR text.
@@ -39,3 +44,10 @@ Detailed workflows live in `.agents/skills/`:
 Before handoff, inspect the complete diff for unrelated changes, generated
 artifacts, weakened tests, dependency drift, and local files. Report the exact
 validation performed and anything skipped or unavailable.
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.

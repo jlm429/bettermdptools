@@ -17,10 +17,13 @@ Read the repository [agent guide](../../../AGENTS.md) first. Use
   and action transforms, and Gymnasium wrappers.
 - `bettermdptools/experiments/env_factory.py` creates environments, obtains built-in
   models from `env.unwrapped.P`, applies explicit or registered wrappers, and returns
-  `EnvBundle`. `experiments/run.py` dispatches training and optional evaluation.
+  `EnvBundle`. Callers of `EnvFactory.make` own the returned environment.
+  `experiments/run.py` dispatches training and optional evaluation, and closes its
+  internally created environment on every exit path.
 - `bettermdptools/utils/test_env.py` evaluates policies through environment steps.
-  `utils/seed.py` supplies best-effort global seeding. Other utilities own callbacks,
-  decorators, and plots.
+  It preserves caller ownership, including when it creates an isolated rendering
+  copy. `utils/seed.py` supplies best-effort global seeding. Other utilities own
+  callbacks, decorators, and plots.
 
 Trace changes through these public integration points. Do not infer environment
 support from a filename or notebook. Inspect the current factory registry, wrapper,
@@ -31,15 +34,19 @@ tests, and construction cost before making a support claim.
 - `tests/test_gymnasium_compat.py` covers current reset and step contracts, wrapper
   spaces, truncation, model access, model invariants, and TD boundaries.
 - `tests/test_envs.py` provides algorithm and wrapper integration smoke coverage.
+- `tests/test_runtime_correctness.py` covers algorithm edge cases, model cache
+  recovery, rendering, and environment lifecycle ownership.
+- `tests/test_public_api.py` owns the documented experiment exports.
 - `tests/test_plots.py` covers plotting utilities.
 - `examples/*.ipynb` are user-facing workflows, but saved notebook output is not a
   substitute for a test.
 
 ## Configuration and documentation
 
-- `pyproject.toml` and `poetry.lock` are the authoritative packaging and dependency
-  configuration. They define supported Python and Gymnasium ranges, runtime and
-  optional dependencies, development and documentation tools, and the build backend.
+- `[project]` in `pyproject.toml` owns package metadata and the version;
+  `pyproject.toml` and `poetry.lock` own dependency configuration and resolution.
+  They define supported Python and Gymnasium ranges, runtime and optional
+  dependencies, development and documentation tools, and the build backend.
 - `.circleci/config.yml` is the checked-in CI workflow.
 - `README.md` and `docs/api/*.md` are hand-authored docs. Python docstrings and
   the Poetry-managed pdoc tool feed committed output under `docs/`. Read

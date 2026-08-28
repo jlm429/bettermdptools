@@ -21,9 +21,17 @@ focused commands include:
 ```bash
 poetry run python -m pytest -q tests/test_gymnasium_compat.py
 poetry run python -m pytest -q tests/test_envs.py
+poetry run python -m pytest -q tests/test_runtime_correctness.py
+poetry run python -m pytest -q tests/test_public_api.py
 poetry run python -m pytest -q tests/test_plots.py
 poetry run python -m pytest -q path/to/test_file.py -k test_name
 ```
+
+Use `tests/test_runtime_correctness.py` for planning and decay edge cases,
+Pendulum cache failure recovery and atomic publication, rendering, and lifecycle
+ownership. Use `tests/test_public_api.py` when changing documented exports. These
+focused suites complement, rather than replace, the Gymnasium contract and
+environment integration suites.
 
 Then run the full local suite:
 
@@ -49,6 +57,12 @@ poetry build
 Remove or leave ignored build output out of the commit. Documentation generation is
 conditional. Follow [Generated documentation](../generated-documentation/SKILL.md)
 instead of regenerating docs as a routine validation step.
+
+When package metadata, dependency groups, or `README.md` changes, inspect both
+artifacts and exercise clean wheel and source-distribution installs through a
+representative public workflow. If the Optuna extra changes, validate both the base
+install without Optuna and the extra-enabled path. Validate package-index-compatible
+README rendering and remote assets when their presentation changes.
 
 ## Classify and report results
 
