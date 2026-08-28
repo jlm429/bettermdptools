@@ -311,9 +311,12 @@ class DiscretizedPendulum:
     torque_bins : int, optional (default=11)
         Number of bins to discretize the torque.
     n_workers : int, optional (default=4)
-        Positive number of worker processes used to build transition probabilities.
+        Maximum worker processes used to build transition probabilities. Model
+        construction falls back to the current process when workers cannot safely
+        import the main module.
     cache_dir : str, optional (default='./cached')
-        Directory to cache the transition probabilities.
+        Directory for completed transition models. Missing, unreadable, or
+        incomplete models are rebuilt, and failed builds are not published.
     dim_samples : int, optional (default=11)
         Samples per dimension when setting up transition probabilities. Must be
         an integer of at least 3 and is part of the model cache identity.
@@ -338,7 +341,7 @@ class DiscretizedPendulum:
     P : dict
         Transition probability matrix.
     n_workers : int
-        Number of worker processes to use for setting up transition probabilities.
+        Maximum worker processes requested for setting up transition probabilities.
     """
 
     def __init__(

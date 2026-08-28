@@ -156,9 +156,9 @@ BSD 3-Clause License</p>
 </span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="sd">        torque_bins : int</span>
 </span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">            Number of discrete bins for the torque action.</span>
 </span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="sd">        n_workers : int</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="sd">            Number of workers used to generate the transition model.</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="sd">            Passed to :class:`DiscretizedPendulum`, which owns model construction.</span>
 </span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="sd">        cache_dir : str</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">            Directory used to cache the generated transition model.</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">            Passed to :class:`DiscretizedPendulum`, which owns model caching.</span>
 </span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="sd">        dim_samples : int</span>
 </span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="sd">            Samples per modeled state dimension.</span>
 </span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">        """</span>
@@ -370,9 +370,9 @@ BSD 3-Clause License</p>
 </span><span id="PendulumWrapper-59"><a href="#PendulumWrapper-59"><span class="linenos"> 59</span></a><span class="sd">        torque_bins : int</span>
 </span><span id="PendulumWrapper-60"><a href="#PendulumWrapper-60"><span class="linenos"> 60</span></a><span class="sd">            Number of discrete bins for the torque action.</span>
 </span><span id="PendulumWrapper-61"><a href="#PendulumWrapper-61"><span class="linenos"> 61</span></a><span class="sd">        n_workers : int</span>
-</span><span id="PendulumWrapper-62"><a href="#PendulumWrapper-62"><span class="linenos"> 62</span></a><span class="sd">            Number of workers used to generate the transition model.</span>
+</span><span id="PendulumWrapper-62"><a href="#PendulumWrapper-62"><span class="linenos"> 62</span></a><span class="sd">            Passed to :class:`DiscretizedPendulum`, which owns model construction.</span>
 </span><span id="PendulumWrapper-63"><a href="#PendulumWrapper-63"><span class="linenos"> 63</span></a><span class="sd">        cache_dir : str</span>
-</span><span id="PendulumWrapper-64"><a href="#PendulumWrapper-64"><span class="linenos"> 64</span></a><span class="sd">            Directory used to cache the generated transition model.</span>
+</span><span id="PendulumWrapper-64"><a href="#PendulumWrapper-64"><span class="linenos"> 64</span></a><span class="sd">            Passed to :class:`DiscretizedPendulum`, which owns model caching.</span>
 </span><span id="PendulumWrapper-65"><a href="#PendulumWrapper-65"><span class="linenos"> 65</span></a><span class="sd">        dim_samples : int</span>
 </span><span id="PendulumWrapper-66"><a href="#PendulumWrapper-66"><span class="linenos"> 66</span></a><span class="sd">            Samples per modeled state dimension.</span>
 </span><span id="PendulumWrapper-67"><a href="#PendulumWrapper-67"><span class="linenos"> 67</span></a><span class="sd">        """</span>
@@ -496,9 +496,9 @@ BSD 3-Clause License</p>
 </span><span id="PendulumWrapper.__init__-59"><a href="#PendulumWrapper.__init__-59"><span class="linenos">59</span></a><span class="sd">        torque_bins : int</span>
 </span><span id="PendulumWrapper.__init__-60"><a href="#PendulumWrapper.__init__-60"><span class="linenos">60</span></a><span class="sd">            Number of discrete bins for the torque action.</span>
 </span><span id="PendulumWrapper.__init__-61"><a href="#PendulumWrapper.__init__-61"><span class="linenos">61</span></a><span class="sd">        n_workers : int</span>
-</span><span id="PendulumWrapper.__init__-62"><a href="#PendulumWrapper.__init__-62"><span class="linenos">62</span></a><span class="sd">            Number of workers used to generate the transition model.</span>
+</span><span id="PendulumWrapper.__init__-62"><a href="#PendulumWrapper.__init__-62"><span class="linenos">62</span></a><span class="sd">            Passed to :class:`DiscretizedPendulum`, which owns model construction.</span>
 </span><span id="PendulumWrapper.__init__-63"><a href="#PendulumWrapper.__init__-63"><span class="linenos">63</span></a><span class="sd">        cache_dir : str</span>
-</span><span id="PendulumWrapper.__init__-64"><a href="#PendulumWrapper.__init__-64"><span class="linenos">64</span></a><span class="sd">            Directory used to cache the generated transition model.</span>
+</span><span id="PendulumWrapper.__init__-64"><a href="#PendulumWrapper.__init__-64"><span class="linenos">64</span></a><span class="sd">            Passed to :class:`DiscretizedPendulum`, which owns model caching.</span>
 </span><span id="PendulumWrapper.__init__-65"><a href="#PendulumWrapper.__init__-65"><span class="linenos">65</span></a><span class="sd">        dim_samples : int</span>
 </span><span id="PendulumWrapper.__init__-66"><a href="#PendulumWrapper.__init__-66"><span class="linenos">66</span></a><span class="sd">            Samples per modeled state dimension.</span>
 </span><span id="PendulumWrapper.__init__-67"><a href="#PendulumWrapper.__init__-67"><span class="linenos">67</span></a><span class="sd">        """</span>
@@ -546,9 +546,9 @@ angular_velocity_bins : int
 torque_bins : int
     Number of discrete bins for the torque action.
 n_workers : int
-    Number of workers used to generate the transition model.
+    Passed to <code>DiscretizedPendulum</code>, which owns model construction.
 cache_dir : str
-    Directory used to cache the generated transition model.
+    Passed to <code>DiscretizedPendulum</code>, which owns model caching.
 dim_samples : int
     Samples per modeled state dimension.</p>
 </div>
