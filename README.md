@@ -6,7 +6,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/WH9eaoZnQRJ8SGFDrvqQAd/HURrQDZ2vzVYyU2QhPL29y/tree/master)
 
 <p align="center">
-  <img src="docs/assets/bettermdptools-banner.png"
+  <img src="https://raw.githubusercontent.com/jlm429/bettermdptools/master/docs/assets/bettermdptools-banner.png"
        alt="bettermdptools reinforcement learning gridworld"
        width="100%">
 </p>

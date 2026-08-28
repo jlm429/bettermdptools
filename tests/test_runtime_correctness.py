@@ -1,3 +1,6 @@
+import gzip
+import pickle
+import sys
 import warnings
 from pathlib import Path
 from types import MethodType
@@ -8,6 +11,7 @@ import pytest
 
 from bettermdptools.algorithms.planner import Planner
 from bettermdptools.algorithms.rl import RL
+from bettermdptools.envs import pendulum_discretized
 from bettermdptools.envs.acrobot_wrapper import AcrobotWrapper
 from bettermdptools.envs.binning import generate_bin_edges
 from bettermdptools.envs.blackjack_wrapper import BlackjackWrapper
@@ -389,6 +393,121 @@ def test_pendulum_parallel_and_serial_construction_are_identical(tmp_path):
     )
 
     assert parallel.P == serial.P
+
+
+def test_pendulum_interactive_context_falls_back_to_serial_workers(
+    tmp_path, monkeypatch
+):
+    class UnexpectedExecutor:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("an interactive main module cannot start workers")
+
+    monkeypatch.setattr(pendulum_discretized, "get_start_method", lambda: "spawn")
+    monkeypatch.setattr(sys.modules["__main__"], "__file__", "<stdin>")
+    monkeypatch.setattr(pendulum_discretized, "ProcessPoolExecutor", UnexpectedExecutor)
+
+    model = DiscretizedPendulum(3, 3, 3, n_workers=2, cache_dir=tmp_path, dim_samples=3)
+
+    assert set(model.P) == set(range(model.state_space))
+    assert all(
+        model.P[state][action]
+        for state in range(model.state_space)
+        for action in range(model.action_space)
+    )
+
+
+def test_pendulum_worker_failure_is_not_cached_and_later_call_retries(
+    tmp_path, monkeypatch
+):
+    real_builder = pendulum_discretized.setup_transition_probabilities_for_state
+
+    class Future:
+        def __init__(self, args):
+            self.args = args
+
+        def result(self):
+            if self.args[0] == 1:
+                raise RuntimeError("worker failed")
+            return real_builder(self.args)
+
+    class FailingExecutor:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def submit(self, function, args):
+            return Future(args)
+
+    monkeypatch.setattr(pendulum_discretized, "get_start_method", lambda: "fork")
+    monkeypatch.setattr(pendulum_discretized, "ProcessPoolExecutor", FailingExecutor)
+    monkeypatch.setattr(pendulum_discretized, "as_completed", lambda futures: futures)
+
+    failed_env = gym.make("Pendulum-v1")
+    try:
+        with pytest.raises(RuntimeError, match="worker failed"):
+            PendulumWrapper(
+                failed_env,
+                angle_bins=3,
+                angular_velocity_bins=3,
+                torque_bins=3,
+                n_workers=2,
+                cache_dir=tmp_path,
+                dim_samples=3,
+            )
+    finally:
+        failed_env.close()
+
+    assert list(tmp_path.glob("*.pkl.gz")) == []
+
+    rebuilt = PendulumWrapper(
+        gym.make("Pendulum-v1"),
+        angle_bins=3,
+        angular_velocity_bins=3,
+        torque_bins=3,
+        n_workers=1,
+        cache_dir=tmp_path,
+        dim_samples=3,
+    )
+    try:
+        assert set(rebuilt.P) == set(range(rebuilt.observation_space.n))
+        assert all(
+            rebuilt.P[state][action]
+            for state in rebuilt.P
+            for action in range(rebuilt.action_space.n)
+        )
+    finally:
+        rebuilt.close()
+
+
+def test_pendulum_rebuilds_an_incomplete_cached_model(tmp_path):
+    model = DiscretizedPendulum(3, 3, 3, n_workers=1, cache_dir=tmp_path, dim_samples=3)
+    cache_file = next(tmp_path.glob("*.pkl.gz"))
+    with gzip.open(cache_file, "wb") as file:
+        pickle.dump({}, file)
+
+    rebuilt = DiscretizedPendulum(
+        3, 3, 3, n_workers=1, cache_dir=tmp_path, dim_samples=3
+    )
+
+    assert rebuilt.P == model.P
+
+
+def test_pendulum_publishes_cache_atomically(tmp_path, monkeypatch):
+    def fail_during_serialization(model, file):
+        file.write(b"incomplete")
+        raise RuntimeError("serialization failed")
+
+    monkeypatch.setattr(pendulum_discretized.pickle, "dump", fail_during_serialization)
+
+    with pytest.raises(RuntimeError, match="serialization failed"):
+        DiscretizedPendulum(3, 3, 3, n_workers=1, cache_dir=tmp_path, dim_samples=3)
+
+    assert list(tmp_path.iterdir()) == []
 
 
 def test_pendulum_boundaries_wrap_and_indices_reject_aliases(tmp_path):

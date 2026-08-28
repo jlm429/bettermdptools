@@ -6,8 +6,11 @@ BSD 3-Clause License
 import gzip
 import os
 import pickle
+import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from multiprocessing import get_start_method
 from numbers import Integral
+from tempfile import NamedTemporaryFile
 
 import numpy as np
 
@@ -18,6 +21,46 @@ CACHED_P_PATH_FORMAT = (
     "cached_P_discretized_pendulum_v{cache_version}_{angle_bins}_"
     "{angular_velocity_bins}_{action_bins}_{dim_samples}.pkl.gz"
 )
+
+
+def _can_start_worker_processes():
+    """Return whether the current main module can be imported by workers."""
+    if get_start_method() == "fork":
+        return True
+
+    main_file = getattr(sys.modules.get("__main__"), "__file__", None)
+    return main_file is not None and os.path.exists(main_file)
+
+
+def _is_complete_transition_model(model, state_space, action_space):
+    """Return whether a model contains every expected state and action."""
+    if not isinstance(model, dict) or set(model) != set(range(state_space)):
+        return False
+
+    expected_actions = set(range(action_space))
+    return all(
+        isinstance(model[state], dict)
+        and set(model[state]) == expected_actions
+        and all(model[state][action] for action in expected_actions)
+        for state in range(state_space)
+    )
+
+
+def _write_cached_transition_model(model, cached_model_path):
+    """Atomically publish a completed transition model."""
+    cache_dir = os.path.dirname(cached_model_path)
+    with NamedTemporaryFile(dir=cache_dir, delete=False) as temporary_file:
+        temporary_path = temporary_file.name
+
+    try:
+        with gzip.open(temporary_path, "wb") as file:
+            pickle.dump(model, file)
+        os.replace(temporary_path, cached_model_path)
+    finally:
+        try:
+            os.unlink(temporary_path)
+        except FileNotFoundError:
+            pass
 
 
 def angle_normalize(angle):
@@ -253,11 +296,7 @@ def setup_transition_probabilities_for_state(args):
             num_samples=dim_samples,
         )
 
-    try:
-        return (state, P_state)
-    except Exception as e:
-        print(f"Error in state {state}: {e}")
-        return None
+    return state, P_state
 
 
 class DiscretizedPendulum:
@@ -272,9 +311,12 @@ class DiscretizedPendulum:
     torque_bins : int, optional (default=11)
         Number of bins to discretize the torque.
     n_workers : int, optional (default=4)
-        Positive number of worker processes used to build transition probabilities.
+        Maximum worker processes used to build transition probabilities. Model
+        construction falls back to the current process when workers cannot safely
+        import the main module.
     cache_dir : str, optional (default='./cached')
-        Directory to cache the transition probabilities.
+        Directory for completed transition models. Missing, unreadable, or
+        incomplete models are rebuilt, and failed builds are not published.
     dim_samples : int, optional (default=11)
         Samples per dimension when setting up transition probabilities. Must be
         an integer of at least 3 and is part of the model cache identity.
@@ -299,7 +341,7 @@ class DiscretizedPendulum:
     P : dict
         Transition probability matrix.
     n_workers : int
-        Number of worker processes to use for setting up transition probabilities.
+        Maximum worker processes requested for setting up transition probabilities.
     """
 
     def __init__(
@@ -349,13 +391,25 @@ class DiscretizedPendulum:
 
         os.makedirs(cache_dir, exist_ok=True)
 
+        cached_P = None
         if os.path.exists(cached_P_filepath):
-            with gzip.open(cached_P_filepath, "rb") as f:
-                self.P = pickle.load(f)
+            try:
+                with gzip.open(cached_P_filepath, "rb") as file:
+                    cached_P = pickle.load(file)
+            except (EOFError, OSError, pickle.PickleError):
+                pass
+
+        if _is_complete_transition_model(cached_P, self.state_space, self.action_space):
+            self.P = cached_P
         else:
             self.setup_transition_probabilities()
-            with gzip.open(cached_P_filepath, "wb") as f:
-                pickle.dump(self.P, f)
+            if not _is_complete_transition_model(
+                self.P, self.state_space, self.action_space
+            ):
+                raise RuntimeError(
+                    "Pendulum transition model construction was incomplete"
+                )
+            _write_cached_transition_model(self.P, cached_P_filepath)
 
     def discretize_angle(self, angle):
         """Map a finite angle to its discrete bin index."""
@@ -438,7 +492,7 @@ class DiscretizedPendulum:
 
         args = [arg for arg in args if arg[0] not in new_P]
 
-        num_workers = self.n_workers
+        num_workers = self.n_workers if _can_start_worker_processes() else 1
 
         n_completed = len(new_P)
 
@@ -460,14 +514,10 @@ class DiscretizedPendulum:
                 ]
                 for future in as_completed(futures):
                     n_completed += 1
-                    try:
-                        state, P_state = future.result()
-                        new_P[state] = P_state
-                        if n_completed % 100 == 0:
-                            print(f"Completed {n_completed}/{self.state_space}")
-                    except Exception as e:
-                        print(f"Error in future: {e}")
-                        print("task failed")
+                    state, P_state = future.result()
+                    new_P[state] = P_state
+                    if n_completed % 100 == 0:
+                        print(f"Completed {n_completed}/{self.state_space}")
 
         self.P = new_P
 

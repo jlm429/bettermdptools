@@ -58,9 +58,9 @@ class PendulumWrapper(gym.Wrapper):
         torque_bins : int
             Number of discrete bins for the torque action.
         n_workers : int
-            Number of workers used to generate the transition model.
+            Passed to :class:`DiscretizedPendulum`, which owns model construction.
         cache_dir : str
-            Directory used to cache the generated transition model.
+            Passed to :class:`DiscretizedPendulum`, which owns model caching.
         dim_samples : int
             Samples per modeled state dimension.
         """
