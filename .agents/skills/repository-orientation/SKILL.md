@@ -17,9 +17,11 @@ Read the repository [agent guide](../../../AGENTS.md) first. Use
   and action transforms, and Gymnasium wrappers.
 - `bettermdptools/experiments/env_factory.py` creates environments, obtains built-in
   models from `env.unwrapped.P`, applies explicit or registered wrappers, and returns
-  `EnvBundle`. Callers of `EnvFactory.make` own the returned environment.
-  `experiments/run.py` dispatches training and optional evaluation, and closes its
-  internally created environment on every exit path.
+  `EnvBundle`. It closes the environment when construction raises an `Exception`;
+  otherwise, callers of `EnvFactory.make` own the returned environment.
+  `experiments/run.py` dispatches training and optional evaluation, and after
+  successful construction closes its environment on ordinary completion or an
+  `Exception`.
 - `bettermdptools/utils/test_env.py` evaluates policies through environment steps.
   It preserves caller ownership, including when it creates an isolated rendering
   copy. `utils/seed.py` supplies best-effort global seeding. Other utilities own

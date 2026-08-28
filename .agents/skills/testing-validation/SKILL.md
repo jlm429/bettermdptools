@@ -1,6 +1,6 @@
 ---
 name: testing-validation
-description: Select, run, and report bettermdptools tests, formatting, lint, package builds, documentation checks, and configured no-mistakes gates. Use when validating a change or defining its verification plan.
+description: Select, run, and report bettermdptools tests, formatting, lint, package builds, and documentation checks. Use when validating a change or defining its verification plan.
 ---
 
 # Test and validate changes
@@ -77,12 +77,3 @@ README rendering and remote assets when their presentation changes.
   boundary.
 - State what was not exercised, especially slow model generation, stochastic paths,
   rendering, optional dependencies, and generated docs.
-
-## no-mistakes gate
-
-The no-mistakes repository integration is external to the tracked tree, and this
-repository does not commit a no-mistakes test command. When the user asks to gate or
-ship changes, first confirm initialization with `no-mistakes axi`, then follow the
-loaded `$no-mistakes` workflow after committing on a feature branch. Report the
-pipeline's review, test, documentation, lint, build, PR, and CI outcomes. Do not
-treat an agent-driven gate as a substitute for listing the concrete commands it ran.
