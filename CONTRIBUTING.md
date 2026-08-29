@@ -7,8 +7,8 @@ correctness-critical.
 
 ## Set up the Poetry environment
 
-Install Python 3.10 through 3.12 and
-[Poetry](https://python-poetry.org/docs/#installation), then run:
+Use a Python version allowed by `[project].requires-python` in `pyproject.toml` and
+install [Poetry](https://python-poetry.org/docs/#installation), then run:
 
 ```bash
 poetry install --with docs
@@ -32,7 +32,6 @@ Run the narrowest relevant test first, then the complete local checks:
 poetry run pytest -q
 poetry run ruff check .
 poetry run black --check .
-poetry check --lock
 ```
 
 Ruff can apply safe fixes with `poetry run ruff check . --fix`. Format Python
@@ -53,6 +52,10 @@ hand-authored `docs/index.html` redirect and Markdown files under `docs/api/`.
 Run the generation command a second time and confirm that it produces no
 additional diff.
 
+`README.md` is also the package long description. When changing its rendering or
+assets, check both repository and package-index-compatible rendering. Repository
+images must use stable absolute URLs in the package long description.
+
 ## Build and submit
 
 Before opening a pull request, validate the package metadata and artifacts:
@@ -66,3 +69,8 @@ Inspect the complete diff for unrelated files, generated notebook output,
 dependency drift, and weakened tests. Commit only the intended work, push the
 feature branch, and open a pull request that explains the behavior and lists
 the exact validation performed.
+
+When package metadata, dependency groups, or the package long description changes,
+inspect both built artifacts and exercise clean wheel and source-distribution
+installs through a representative public workflow. Keep `dist/` and other build or
+installation scratch files out of the commit.

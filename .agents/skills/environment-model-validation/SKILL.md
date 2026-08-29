@@ -15,13 +15,8 @@ Inspect the affected files under `bettermdptools/envs/`, their construction path
 `bettermdptools/experiments/env_factory.py`, relevant cases in
 `tests/test_envs.py` and `tests/test_gymnasium_compat.py`, and the matching example.
 Do not infer support from an environment name or claim that every supported
-Gymnasium environment has a custom model.
-
-Known custom paths include Blackjack's exact generated transition model and
-context-aware observation transform, plus generated discretized models for CartPole
-and Acrobot. Other wrapper and model files exist. Inspect their current
-implementation, test coverage, construction cost, and assumptions before making a
-support claim.
+Gymnasium environment has a custom model. Treat `EnvFactory._registry`, current
+wrapper modules, and compatibility tests as the support owners.
 
 ## Trace the representation
 
@@ -52,6 +47,11 @@ support claim.
   that contain emitted observations and accepted actions.
 - Generated model cache identities include every input that changes `P` plus a
   schema version that is bumped when transition or reward semantics change.
+- For persistent generated-model caches, publish only after validating a complete
+  model, and publish it atomically. A failed, interrupted, unreadable, or incomplete
+  build must not become a cache hit; the next construction must retry from clean
+  state. Use `tests/test_runtime_correctness.py -k pendulum` as the current
+  failure-recovery and cache-publication evidence.
 
 ## Supply behavioral evidence
 

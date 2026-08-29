@@ -12,8 +12,8 @@ model, wrapper, adapter, or discretizer changes.
 
 ## Use the current contract
 
-- Confirm the supported version range in `pyproject.toml`. The current range is
-  Gymnasium `>=1.3.0,<1.4`.
+- Confirm the supported Gymnasium version range in `pyproject.toml`; do not copy it
+  into another configuration owner.
 - `reset()` returns `(observation, info)`. Wrappers must forward supported reset
   arguments such as `seed` and `options`, preserve the info mapping, and emit an
   observation contained by their declared observation space.
@@ -37,10 +37,14 @@ Validate transformed observation and action spaces with `space.contains`. Exerci
 a short `TimeLimit` path to prove truncation survives wrapper layers. Close every
 environment created by a test or diagnostic.
 
-Current compatibility coverage uses `FrozenLake-v1`, `FrozenLake8x8-v1`,
-`Taxi-v4`, `Blackjack-v1`, `CartPole-v1`, `Acrobot-v1`, and `Pendulum-v1`. Confirm
-IDs against current tests and Gymnasium before adding or replacing one. Do not copy
-older IDs from external examples.
+Treat the environment IDs and supported wrapper paths in
+`tests/test_gymnasium_compat.py` and `EnvFactory._registry` as authoritative. Do not
+copy older IDs from external examples.
+
+When changing `TestEnv` rendering, preserve the complete supplied wrapper stack,
+state conversion, seeding, and caller ownership. Run
+`tests/test_runtime_correctness.py -k rendering`, which owns modeled-wrapper
+coverage, seeded behavior, rendering prerequisites, and cleanup on failures.
 
 ## Seed only what the task owns
 
