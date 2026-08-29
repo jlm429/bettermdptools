@@ -23,6 +23,9 @@ utilities. Transition and reward representations are core library behavior.
   packaging metadata.
 - Edit documentation sources before generated output. Never manually edit committed
   pdoc HTML.
+- For substantive user-facing changes, consider whether `CHANGELOG.md` needs a
+  concise `Unreleased` entry for additions, fixes, breaking changes,
+  deprecations, or other externally visible behavior.
 - Do not use em dashes in repository prose, comments, commit messages, or PR text.
   Do not add an agent as a commit co-author.
 - Never read, print, copy, or commit secrets, credentials, `.env` files, or other
