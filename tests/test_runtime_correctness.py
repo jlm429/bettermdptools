@@ -378,6 +378,24 @@ def test_generate_bin_edges_is_finite_symmetric_and_monotonic():
     assert np.diff(outer_fine)[0] < np.diff(outer_fine)[2]
 
 
+def test_generate_bin_edges_avoids_overflow_for_finite_float_limits():
+    edges = np.asarray(generate_bin_edges(np.finfo(float).max, 3, 3))
+
+    assert np.isfinite(edges).all()
+    assert np.all(np.diff(edges) > 0)
+
+
+@pytest.mark.skipif(
+    np.finfo(np.longdouble).max <= np.finfo(float).max,
+    reason="long double has no wider finite range",
+)
+def test_generate_bin_edges_rejects_values_that_overflow_float():
+    range_limit = np.longdouble(np.finfo(float).max) * 2
+
+    with pytest.raises(ValueError, match="representable as a finite float"):
+        generate_bin_edges(range_limit, 3, 3)
+
+
 @pytest.mark.parametrize(
     "args",
     [
