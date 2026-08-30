@@ -10,19 +10,62 @@ from __future__ import annotations
 
 import os
 import sys
+from collections.abc import Callable, Mapping
 from copy import deepcopy
 from importlib import metadata
-from typing import Any
+from inspect import signature
+from typing import Any, Protocol, TypeAlias
 
 import gymnasium as gym
 import numpy as np
 
 
-def _identity(value):
+class _IndexablePolicy(Protocol):
+    """Policy object that resolves actions through ``policy[state]``."""
+
+    def __getitem__(self, state: Any) -> Any: ...
+
+
+Policy: TypeAlias = (
+    _IndexablePolicy | Callable[[Any], Any] | Callable[[Any, Mapping[str, Any]], Any]
+)
+
+
+def _identity(value: Any) -> Any:
     return value
 
 
-def _require_rendering_backend():
+def _call_policy(policy: Callable[..., Any], state: Any, info: Any) -> Any:
+    """Invoke a callable policy once using a supported public signature."""
+    try:
+        policy_signature = signature(policy)
+    except (TypeError, ValueError):
+        return policy(state)
+
+    candidates = (
+        ((state,), {}),
+        ((state, info), {}),
+        ((state,), {"info": info}),
+    )
+    for args, kwargs in candidates:
+        try:
+            policy_signature.bind(*args, **kwargs)
+        except TypeError:
+            continue
+        return policy(*args, **kwargs)
+
+    raise TypeError(
+        "callable policies must accept policy(state) or policy(state, info)"
+    )
+
+
+def _policy_action(policy: Policy, state: Any, info: Any) -> Any:
+    if callable(policy):
+        return _call_policy(policy, state, info)
+    return policy[state]
+
+
+def _require_rendering_backend() -> None:
     """Require pygame-ce without accepting the incompatible classic distribution."""
     if "COLAB_RELEASE_TAG" in os.environ or "google.colab" in sys.modules:
         raise gym.error.DependencyNotInstalled(
@@ -55,7 +98,7 @@ def _require_rendering_backend():
     )
 
 
-def _copy_for_rendering(env):
+def _copy_for_rendering(env: gym.Env) -> gym.Env:
     """Return an isolated copy that renders without changing rollout semantics."""
     try:
         render_env = deepcopy(env)
@@ -105,15 +148,15 @@ class TestEnv:
 
     @staticmethod
     def test_env(
-        env,
-        desc=None,
-        render=False,
-        n_iters=10,
-        pi=None,
-        user_input=False,
-        convert_state_obs=_identity,
-        seed=None,
-    ):
+        env: gym.Env,
+        desc: np.ndarray | None = None,
+        render: bool = False,
+        n_iters: int = 10,
+        pi: Policy | None = None,
+        user_input: bool = False,
+        convert_state_obs: Callable[[Any], Any] | None = _identity,
+        seed: int | None = None,
+    ) -> np.ndarray:
         """
         Simulate episodes using a policy and return the total reward from each episode.
 
@@ -130,9 +173,11 @@ class TestEnv:
             of the complete environment and wrapper stack.
         n_iters : int, default 10
             Number of episodes to simulate.
-        pi : array-like or callable, optional
-            Policy mapping states to actions, commonly indexed as `pi[state]`.
-            If `user_input=True`, this is shown as a suggested action.
+        pi : indexable or callable, optional
+            Policy mapping states to actions. Indexable policies use
+            ``pi[state]``. Callable policies may accept ``policy(state)`` or
+            ``policy(state, info)``; ``info`` may be keyword-only. If
+            ``user_input=True``, the resolved action is shown as a suggestion.
         user_input : bool, default False
             If True, prompt the user to select each action interactively.
         convert_state_obs : callable or None, default identity
@@ -161,6 +206,8 @@ class TestEnv:
           `metadata["render_fps"]` for Gymnasium HumanRendering. Otherwise,
           construct the base environment with `render_mode="human"` before
           applying its wrappers.
+        - Callable signatures are inspected before invocation. Exceptions from
+          policy code, including ``TypeError``, propagate without retry.
         """
         if convert_state_obs is None:
             convert_state_obs = _identity
@@ -192,9 +239,10 @@ class TestEnv:
                             state=state,
                             n_actions=n_actions,
                             pi=pi,
+                            info=info,
                         )
                     else:
-                        action = pi[state]
+                        action = _policy_action(pi, state, info)
 
                     next_state, reward, terminated, truncated, info = env.step(action)
                     done = terminated or truncated
@@ -210,13 +258,18 @@ class TestEnv:
                 env.close()
 
     @staticmethod
-    def _prompt_for_action(state: Any, n_actions: int, pi: Any) -> int:
+    def _prompt_for_action(
+        state: Any,
+        n_actions: int,
+        pi: Policy | None,
+        info: Any = None,
+    ) -> int:
         """
         Prompt the user to select an action and return the chosen value.
         """
         print(f"state is {state}")
         if pi is not None:
-            print(f"policy output is {pi[state]}")
+            print(f"policy output is {_policy_action(pi, state, info)}")
 
         while True:
             raw = input(f"Please select 0 - {n_actions - 1} then hit enter:\n")
@@ -230,3 +283,6 @@ class TestEnv:
                 return action
 
             print(f"please enter a valid action, 0 - {n_actions - 1}\n")
+
+
+__all__ = ["Policy", "TestEnv"]

@@ -85,6 +85,7 @@ High-level experiment and optional Optuna APIs are documented in:
 
 - [`docs/api/experiments_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/experiments_api.md)
 - [`docs/api/optuna_search_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/optuna_search_api.md)
+- [`docs/api/utilities_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/utilities_api.md)
 
 The generated [Python API reference](https://jlm429.github.io/bettermdptools/bettermdptools.html)
 is built from the package docstrings.

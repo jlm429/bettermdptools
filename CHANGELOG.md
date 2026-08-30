@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added typed episode and transition callback contexts with ordered injection
+  at RL construction and individual Q-learning or SARSA calls. Existing
+  callback class imports and hook names remain available with one explicit
+  context-based signature.
+- Added pure plotting data transformations and optional caller-supplied
+  Matplotlib axes with useful axes return values.
+
 ### Changed
 
 - Breaking: require Python 3.12 through 3.14 and NumPy `>=2,<3`. Installation
@@ -15,11 +24,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   extra for every supported Python version. Classic `pygame` is unsupported.
   Rendering is not supported on Google Colab, while core non-rendering
   workflows continue to work normally there without the rendering extra.
+- Scoped plotting defaults to the target axes without changing global seaborn
+  themes, Matplotlib `rcParams`, or unrelated figures.
 
 ### Fixed
 
 - Preserved symmetric discretization bin edges when callers pass NumPy scalar
   parameters under NumPy 2 promotion rules.
+- Aggregated only numeric value measurements across original map axes instead
+  of attempting to average categorical policy labels.
+- Preserved multi-character action labels through policy transformations,
+  pandas tables, and rendered plot annotations.
+- Accepted documented callable policies in `TestEnv.test_env`, including
+  state-only and state-plus-info signatures.
 
 ## [0.9.0] - 2026-08-29
 
