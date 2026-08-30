@@ -8,7 +8,7 @@ from packaging.version import Version
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_package_metadata_supports_colab_python_and_numpy():
+def test_package_metadata_supports_declared_python_and_numpy_versions():
     with (PROJECT_ROOT / "pyproject.toml").open("rb") as pyproject_file:
         project = tomllib.load(pyproject_file)["project"]
 
@@ -31,21 +31,23 @@ def test_package_metadata_supports_colab_python_and_numpy():
     assert Version("2.999") in supported_numpy
     assert Version("3.0.0") not in supported_numpy
 
-    rendering_requirements = [
+    base_rendering_requirements = [
         requirement
         for requirement in requirements
         if requirement.name in {"pygame", "pygame-ce"}
     ]
+    assert base_rendering_requirements == []
 
-    def selected_renderers(python_version):
-        return {
-            requirement.name
-            for requirement in rendering_requirements
-            if requirement.marker.evaluate({"python_version": python_version})
-        }
+    optional_dependencies = project["optional-dependencies"]
+    rendering_requirements = [
+        Requirement(dependency) for dependency in optional_dependencies["rendering"]
+    ]
 
-    assert selected_renderers("3.11") == set()
-    assert selected_renderers("3.12") == {"pygame"}
-    assert selected_renderers("3.13") == {"pygame"}
-    assert selected_renderers("3.14") == {"pygame-ce"}
-    assert selected_renderers("3.15") == set()
+    assert len(rendering_requirements) == 1
+    rendering_requirement = rendering_requirements[0]
+    assert rendering_requirement.name == "pygame-ce"
+    assert rendering_requirement.marker is None
+    assert Version("2.5.4") not in rendering_requirement.specifier
+    assert Version("2.5.5") in rendering_requirement.specifier
+    assert Version("2.999") in rendering_requirement.specifier
+    assert Version("3.0.0") not in rendering_requirement.specifier

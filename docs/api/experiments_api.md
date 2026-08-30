@@ -85,7 +85,15 @@ out = run(algo="q_learning", env_id="Taxi-v4")
   Forwarded to the selected algorithm call.
 
 - `eval_kwargs: Optional[Dict[str, Any]]`  
-  If nonempty, evaluates the learned policy.
+  If nonempty, evaluates the learned policy. Evaluation does not require a
+  rendering backend when `render` is omitted or false. For local or CI
+  rendering, install `bettermdptools[rendering]`, which uses `pygame-ce`
+  through its compatible `pygame` import namespace. Classic `pygame` is not
+  supported.
+
+> **Important:** Rendering is not supported on Google Colab. Non-rendering
+> planning, training, evaluation, plotting, and experiment workflows work
+> normally there.
 
 #### Returns
 

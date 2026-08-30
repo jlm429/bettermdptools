@@ -25,9 +25,50 @@ jobs:
             poetry config virtualenvs.in-project true
 
       - run:
-          name: Install dependencies (Poetry)
+          name: Validate base installation without rendering
           command: |
             poetry install --no-interaction
+            poetry run python - <<'PY'
+            from importlib import metadata
+
+            import gymnasium as gym
+
+            from bettermdptools.algorithms.planner import Planner
+
+            for distribution in ("pygame", "pygame-ce"):
+                try:
+                    metadata.version(distribution)
+                except metadata.PackageNotFoundError:
+                    continue
+                raise AssertionError(f"Base install unexpectedly includes {distribution}")
+
+            env = gym.make("FrozenLake-v1")
+            try:
+                values, _, policy = Planner(env.unwrapped.P).value_iteration(n_iters=10)
+                assert values.shape == (env.observation_space.n,)
+                assert len(policy) == env.observation_space.n
+            finally:
+                env.close()
+            PY
+
+      - run:
+          name: Install and verify pygame-ce rendering extra
+          command: |
+            poetry install --no-interaction --extras rendering
+            poetry run python - <<'PY'
+            from importlib import metadata
+
+            try:
+                metadata.version("pygame")
+            except metadata.PackageNotFoundError:
+                pass
+            else:
+                raise AssertionError("Classic pygame must not be installed")
+
+            print("pygame-ce", metadata.version("pygame-ce"))
+            import pygame
+            print("pygame import", pygame.version.ver)
+            PY
 
       - run:
           name: Install supported NumPy version
@@ -38,7 +79,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            poetry run pytest tests
+            SDL_AUDIODRIVER=dummy SDL_VIDEODRIVER=dummy poetry run pytest tests
 
 workflows:
   version: 2

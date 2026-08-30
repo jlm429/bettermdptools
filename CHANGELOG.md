@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Breaking: require Python 3.12 through 3.14 and NumPy `>=2,<3`. Installation
   now preserves the NumPy 2 runtime provided by current Google Colab images.
-- Use pygame on Python 3.12 and 3.13, and pygame-ce on Python 3.14, preserving
-  Colab's installed pygame distribution while providing Python 3.14 wheels.
+- Made rendering optional and standardized it on the `pygame-ce` rendering
+  extra for every supported Python version. Classic `pygame` is unsupported.
+  Rendering is not supported on Google Colab, while core non-rendering
+  workflows continue to work normally there without the rendering extra.
 
 ### Fixed
 
