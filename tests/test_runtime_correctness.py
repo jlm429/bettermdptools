@@ -2,6 +2,7 @@ import gzip
 import pickle
 import sys
 import warnings
+from importlib import metadata
 from pathlib import Path
 from types import MethodType
 
@@ -51,6 +52,40 @@ def test_supported_gymnasium_environments_render_rgb_arrays(env_id):
         assert frame.ndim == 3
         assert frame.shape[2] == 3
         assert frame.dtype == np.uint8
+    finally:
+        env.close()
+
+
+def test_rendering_without_pygame_ce_reports_the_supported_install(monkeypatch):
+    real_version = metadata.version
+
+    def version(distribution_name):
+        if distribution_name == "pygame-ce":
+            raise metadata.PackageNotFoundError(distribution_name)
+        return real_version(distribution_name)
+
+    monkeypatch.setattr(metadata, "version", version)
+    env = RenderTrackingEnv()
+    try:
+        with pytest.raises(
+            gym.error.DependencyNotInstalled,
+            match=r"bettermdptools\[rendering\].*Classic pygame is not supported",
+        ):
+            TestEnv.test_env(env, render=True, n_iters=1, pi={0: 0})
+    finally:
+        env.close()
+
+
+def test_rendering_rejects_installed_classic_pygame(monkeypatch):
+    versions = {"pygame-ce": "2.5.8", "pygame": "2.6.1"}
+    monkeypatch.setattr(metadata, "version", versions.__getitem__)
+    env = RenderTrackingEnv()
+    try:
+        with pytest.raises(
+            gym.error.DependencyNotInstalled,
+            match="Classic pygame 2.6.1 is installed.*supports only pygame-ce",
+        ):
+            TestEnv.test_env(env, render=True, n_iters=1, pi={0: 0})
     finally:
         env.close()
 

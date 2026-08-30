@@ -9,6 +9,7 @@ Documentation added by: Gagandeep Randhawa
 from __future__ import annotations
 
 from copy import deepcopy
+from importlib import metadata
 from typing import Any
 
 import gymnasium as gym
@@ -17,6 +18,32 @@ import numpy as np
 
 def _identity(value):
     return value
+
+
+def _require_rendering_backend():
+    """Require pygame-ce without accepting the incompatible classic distribution."""
+    install_hint = 'pip install "bettermdptools[rendering]"'
+    try:
+        metadata.version("pygame-ce")
+    except metadata.PackageNotFoundError:
+        raise gym.error.DependencyNotInstalled(
+            "BetterMDPTools rendering requires the optional pygame-ce backend. "
+            f"Install it with `{install_hint}`. pygame-ce provides the `pygame` "
+            "import namespace expected by Gymnasium. Classic pygame is not "
+            "supported. Rendering is not supported on Google Colab; use "
+            "render=False there."
+        ) from None
+
+    try:
+        classic_version = metadata.version("pygame")
+    except metadata.PackageNotFoundError:
+        return
+
+    raise gym.error.DependencyNotInstalled(
+        f"Classic pygame {classic_version} is installed, but BetterMDPTools "
+        "rendering supports only pygame-ce. Uninstall pygame and reinstall the "
+        f"rendering extra with `{install_hint}`."
+    )
 
 
 def _copy_for_rendering(env):
@@ -116,6 +143,10 @@ class TestEnv:
         - This function assumes a discrete action space with `env.action_space.n`.
         - Internally copied rendering environments are closed. A supplied
           human-rendering environment remains owned by the caller.
+        - Rendering requires the optional ``pygame-ce`` backend. Install it with
+          ``pip install \"bettermdptools[rendering]\"``. The distribution keeps
+          the ``pygame`` import namespace expected by Gymnasium. Classic pygame
+          is not supported. Rendering is not supported on Google Colab.
         - A non-human-rendering environment must support copying and declare a
           human or array render mode. Array-only rendering also requires
           `metadata["render_fps"]` for Gymnasium HumanRendering. Otherwise,
@@ -126,9 +157,11 @@ class TestEnv:
             convert_state_obs = _identity
 
         created_env = False
-        if render and getattr(env, "render_mode", None) != "human":
-            env = _copy_for_rendering(env)
-            created_env = True
+        if render:
+            _require_rendering_backend()
+            if getattr(env, "render_mode", None) != "human":
+                env = _copy_for_rendering(env)
+                created_env = True
 
         try:
             n_actions = env.action_space.n
