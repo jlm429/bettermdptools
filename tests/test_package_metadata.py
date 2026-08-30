@@ -11,3 +11,7 @@ def test_package_metadata_supports_colab_python_and_numpy():
     assert project["requires-python"] == ">=3.12,<3.15"
     assert "numpy>=2,<3" in project["dependencies"]
     assert "numpy>=1.26,<2" not in project["dependencies"]
+    assert "pygame-ce>=2.5.5,<3" in project["dependencies"]
+    assert not any(
+        dependency.startswith("pygame>=") for dependency in project["dependencies"]
+    )

@@ -23,6 +23,8 @@ algorithms for [Gymnasium](https://gymnasium.farama.org/) environments.
 
 bettermdptools supports Python 3.12 through 3.14 and NumPy 2.x. These bounds
 match current Google Colab runtimes, including Python 3.12 with NumPy 2.0.2.
+Gymnasium rendering is provided by pygame-ce through its compatible `pygame`
+import namespace.
 
 ```bash
 pip install bettermdptools

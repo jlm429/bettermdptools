@@ -30,6 +30,31 @@ from bettermdptools.utils.plots import Plots
 from bettermdptools.utils.test_env import TestEnv
 
 
+@pytest.mark.parametrize(
+    "env_id",
+    (
+        "Blackjack-v1",
+        "CartPole-v1",
+        "Acrobot-v1",
+        "Pendulum-v1",
+        "FrozenLake-v1",
+        "Taxi-v4",
+    ),
+)
+def test_supported_gymnasium_environments_render_rgb_arrays(env_id):
+    env = gym.make(env_id, render_mode="rgb_array")
+    try:
+        env.reset(seed=417)
+        frame = env.render()
+
+        assert isinstance(frame, np.ndarray)
+        assert frame.ndim == 3
+        assert frame.shape[2] == 3
+        assert frame.dtype == np.uint8
+    finally:
+        env.close()
+
+
 class RenderTrackingEnv(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 1}
     observation_space = gym.spaces.Discrete(1)

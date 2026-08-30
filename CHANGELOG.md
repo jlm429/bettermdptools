@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Breaking: require Python 3.12 through 3.14 and NumPy `>=2,<3`. Installation
   now preserves the NumPy 2 runtime provided by current Google Colab images.
+- Use pygame-ce for Gymnasium rendering and Python 3.14 wheel availability.
 
 ### Fixed
 
