@@ -30,6 +30,31 @@ from bettermdptools.utils.plots import Plots
 from bettermdptools.utils.test_env import TestEnv
 
 
+@pytest.mark.parametrize(
+    "env_id",
+    (
+        "Blackjack-v1",
+        "CartPole-v1",
+        "Acrobot-v1",
+        "Pendulum-v1",
+        "FrozenLake-v1",
+        "Taxi-v4",
+    ),
+)
+def test_supported_gymnasium_environments_render_rgb_arrays(env_id):
+    env = gym.make(env_id, render_mode="rgb_array")
+    try:
+        env.reset(seed=417)
+        frame = env.render()
+
+        assert isinstance(frame, np.ndarray)
+        assert frame.ndim == 3
+        assert frame.shape[2] == 3
+        assert frame.dtype == np.uint8
+    finally:
+        env.close()
+
+
 class RenderTrackingEnv(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 1}
     observation_space = gym.spaces.Discrete(1)
@@ -336,19 +361,39 @@ def test_decay_schedule_rejects_invalid_parameters(kwargs):
 
 
 def test_generate_bin_edges_is_finite_symmetric_and_monotonic():
-    centered = np.asarray(
-        generate_bin_edges(np.float32(2), np.int64(5), np.float32(3), center=True)
+    centered_edges = generate_bin_edges(
+        np.float32(2), np.int64(5), np.float32(3), center=True
     )
+    centered = np.asarray(centered_edges)
     outer_fine = np.asarray(generate_bin_edges(2, 5, 3, center=False))
 
     assert len(centered) == 6
     assert centered[0] == -2
     assert centered[-1] == 2
+    assert all(type(edge) is float for edge in centered_edges)
     assert np.isfinite(centered).all()
     assert np.all(np.diff(centered) > 0)
     np.testing.assert_allclose(centered, -centered[::-1])
     assert np.diff(centered)[0] > np.diff(centered)[2]
     assert np.diff(outer_fine)[0] < np.diff(outer_fine)[2]
+
+
+def test_generate_bin_edges_avoids_overflow_for_finite_float_limits():
+    edges = np.asarray(generate_bin_edges(np.finfo(float).max, 3, 3))
+
+    assert np.isfinite(edges).all()
+    assert np.all(np.diff(edges) > 0)
+
+
+@pytest.mark.skipif(
+    np.finfo(np.longdouble).max <= np.finfo(float).max,
+    reason="long double has no wider finite range",
+)
+def test_generate_bin_edges_rejects_values_that_overflow_float():
+    range_limit = np.longdouble(np.finfo(float).max) * 2
+
+    with pytest.raises(ValueError, match="representable as a finite float"):
+        generate_bin_edges(range_limit, 3, 3)
 
 
 @pytest.mark.parametrize(

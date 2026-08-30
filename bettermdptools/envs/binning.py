@@ -55,6 +55,15 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     if not isinstance(center, (bool, np.bool_)):
         raise ValueError("center must be a boolean.")
 
+    # Normalize NumPy scalars so NumPy 2 promotion rules do not reduce the
+    # precision of the geometric calculations or their symmetry.
+    range_limit = float(range_limit)
+    width_ratio = float(width_ratio)
+    if not np.isfinite(range_limit):
+        raise ValueError("range_limit must be representable as a finite float.")
+    if not np.isfinite(width_ratio):
+        raise ValueError("width_ratio must be representable as a finite float.")
+
     k = (n_bins - 1) // 2  # Number of bins on each side of the center
 
     if k == 0:
@@ -78,7 +87,7 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
         geometric_sum = n_bins
 
     # Calculate the width of the central bin
-    w0 = 2 * range_limit / geometric_sum
+    w0 = range_limit * (2 / geometric_sum)
 
     # Generate bin widths: [w_k, ..., w1, w0, w1, ..., w_k]
     bin_widths_left = [w0 * q**i for i in range(k, 0, -1)]
@@ -92,6 +101,9 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
 
     # Due to floating-point arithmetic, ensure the last edge is exactly range_limit
     bin_edges[-1] = range_limit
+
+    if not np.isfinite(bin_edges).all():
+        raise ValueError("parameters must produce finite bin edges.")
 
     return bin_edges
 
