@@ -8,6 +8,8 @@ Documentation added by: Gagandeep Randhawa
 
 from __future__ import annotations
 
+import os
+import sys
 from copy import deepcopy
 from importlib import metadata
 from typing import Any
@@ -22,6 +24,13 @@ def _identity(value):
 
 def _require_rendering_backend():
     """Require pygame-ce without accepting the incompatible classic distribution."""
+    if "COLAB_RELEASE_TAG" in os.environ or "google.colab" in sys.modules:
+        raise gym.error.DependencyNotInstalled(
+            "BetterMDPTools rendering is not supported on Google Colab. "
+            "Non-rendering BetterMDPTools functionality works normally there; "
+            "call TestEnv.test_env with render=False."
+        )
+
     install_hint = 'pip install "bettermdptools[rendering]"'
     try:
         metadata.version("pygame-ce")
