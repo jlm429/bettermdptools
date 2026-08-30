@@ -336,14 +336,16 @@ def test_decay_schedule_rejects_invalid_parameters(kwargs):
 
 
 def test_generate_bin_edges_is_finite_symmetric_and_monotonic():
-    centered = np.asarray(
-        generate_bin_edges(np.float32(2), np.int64(5), np.float32(3), center=True)
+    centered_edges = generate_bin_edges(
+        np.float32(2), np.int64(5), np.float32(3), center=True
     )
+    centered = np.asarray(centered_edges)
     outer_fine = np.asarray(generate_bin_edges(2, 5, 3, center=False))
 
     assert len(centered) == 6
     assert centered[0] == -2
     assert centered[-1] == 2
+    assert all(type(edge) is float for edge in centered_edges)
     assert np.isfinite(centered).all()
     assert np.all(np.diff(centered) > 0)
     np.testing.assert_allclose(centered, -centered[::-1])

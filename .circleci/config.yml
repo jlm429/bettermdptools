@@ -5,6 +5,8 @@ jobs:
     parameters:
       python-version:
         type: string
+      numpy-version:
+        type: string
     docker:
       - image: cimg/python:<< parameters.python-version >>-node
     steps:
@@ -28,6 +30,12 @@ jobs:
             poetry install --no-interaction
 
       - run:
+          name: Install supported NumPy version
+          command: |
+            poetry run pip install "numpy==<< parameters.numpy-version >>"
+            poetry run pip check
+
+      - run:
           name: Run tests
           command: |
             poetry run pytest tests
@@ -37,6 +45,14 @@ workflows:
   test:
     jobs:
       - test:
-          matrix:
-            parameters:
-              python-version: ["3.10", "3.11", "3.12"]
+          name: python-3.12-numpy-2.0.2
+          python-version: "3.12"
+          numpy-version: "2.0.2"
+      - test:
+          name: python-3.13-numpy-2.1.0
+          python-version: "3.13"
+          numpy-version: "2.1.0"
+      - test:
+          name: python-3.14-numpy-2.3.4
+          python-version: "3.14"
+          numpy-version: "2.3.4"

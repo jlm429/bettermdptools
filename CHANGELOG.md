@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Breaking: require Python 3.12 through 3.14 and NumPy `>=2,<3`. Installation
+  now preserves the NumPy 2 runtime provided by current Google Colab images.
+
+### Fixed
+
+- Preserved symmetric discretization bin edges when callers pass NumPy scalar
+  parameters under NumPy 2 promotion rules.
+
 ## [0.9.0] - 2026-08-29
 
 ### Added

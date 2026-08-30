@@ -55,6 +55,11 @@ def generate_bin_edges(range_limit, n_bins, width_ratio, center=True):
     if not isinstance(center, (bool, np.bool_)):
         raise ValueError("center must be a boolean.")
 
+    # Normalize NumPy scalars so NumPy 2 promotion rules do not reduce the
+    # precision of the geometric calculations or their symmetry.
+    range_limit = float(range_limit)
+    width_ratio = float(width_ratio)
+
     k = (n_bins - 1) // 2  # Number of bins on each side of the center
 
     if k == 0:

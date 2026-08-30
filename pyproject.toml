@@ -7,21 +7,21 @@ authors = [
 ]
 license = "BSD-3-Clause"
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.12,<3.15"
 keywords = ["gymnasium", "markov-decision-process", "reinforcement-learning"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
     "gymnasium>=1.3.0,<1.4",
     "pygame>=2.6,<3",
-    "numpy>=1.26,<2",
+    "numpy>=2,<3",
     "tqdm>=4.67,<5",
     "pandas>=2.2,<3",
     "seaborn>=0.13,<0.14",
@@ -52,10 +52,11 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 88
-target-version = ["py310"]
+target-version = ["py312"]
 
 [tool.ruff]
 line-length = 88
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "I"]
