@@ -21,36 +21,35 @@ algorithms for [Gymnasium](https://gymnasium.farama.org/) environments.
 
 ## Installation
 
-bettermdptools supports Python 3.12 through 3.14 and NumPy 2.x. These bounds
-match current Google Colab runtimes, including Python 3.12 with NumPy 2.0.2.
+BetterMDPTools supports Python 3.12 through 3.14 and NumPy 2.x. The standard installation includes everything needed for planning, training, evaluation, plotting, and other non-rendering workflows, including use on Google Colab.
 
 ```bash
 pip install bettermdptools
 ```
 
-The default installation includes everything needed for planning, training,
-evaluation with `render=False`, plotting, and other non-rendering workflows.
-These core workflows work normally on Google Colab.
+### Optional Features
 
-> **Important:** Rendering is not supported on Google Colab. Rendering is
-> optional and is not required for bettermdptools' core functionality.
-
-For rendering on a supported local or CI Python environment, install the
-optional rendering extra:
+For local rendering support:
 
 ```bash
 pip install "bettermdptools[rendering]"
 ```
 
-The rendering extra uses `pygame-ce` on every supported Python version.
-`pygame-ce` intentionally provides the `pygame` import namespace expected by
-Gymnasium. Classic `pygame` is not supported; do not install both distributions.
-
-Install the optional Optuna integration with:
+For Optuna integration:
 
 ```bash
 pip install "bettermdptools[optuna]"
 ```
+
+To install both:
+
+```bash
+pip install "bettermdptools[rendering,optuna]"
+```
+
+> **Note:** Rendering is optional and is not required for BetterMDPTools' core functionality. Rendering is not supported on Google Colab; use `render=False` there.
+
+The rendering extra uses `pygame-ce`, which provides the `pygame` interface expected by Gymnasium. Classic `pygame` is not supported and should not be installed alongside `pygame-ce`.
 
 ## Quick Start
 
