@@ -201,6 +201,31 @@ class TestPlots(unittest.TestCase):
         finally:
             plt.close(figure)
 
+    def test_renderer_fallback_preserves_current_pyplot_target(self):
+        caller_figure, caller_ax = plt.subplots()
+        plt.sca(caller_ax)
+        fallback_ax = None
+
+        try:
+            fallback_ax = Plots.values_heat_map(
+                np.array([1.0, 2.0]),
+                "Values",
+                (1, 2),
+                show=False,
+            )
+            self.assertIsNot(fallback_ax, caller_ax)
+            self.assertIs(plt.gcf(), caller_figure)
+            self.assertIs(plt.gca(), caller_ax)
+
+            line = plt.plot([0, 1], [1, 0])[0]
+
+            self.assertIs(line.axes, caller_ax)
+            self.assertEqual(len(fallback_ax.lines), 0)
+        finally:
+            plt.close(caller_figure)
+            if fallback_ax is not None:
+                fallback_ax.figure.clear()
+
 
 if __name__ == "__main__":
     unittest.main()
