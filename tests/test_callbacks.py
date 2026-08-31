@@ -1,3 +1,4 @@
+import threading
 from dataclasses import FrozenInstanceError
 
 import gymnasium as gym
@@ -83,6 +84,22 @@ class ReusedInfoEnv(gym.Env):
             False,
             {"metrics": self.metrics},
         )
+
+
+class NonCopyableInfoEnv(gym.Env):
+    observation_space = gym.spaces.Discrete(2)
+    action_space = gym.spaces.Discrete(1)
+
+    def __init__(self):
+        self.lock = threading.Lock()
+
+    def reset(self, *, seed=None, options=None):
+        super().reset(seed=seed)
+        return 0, {"lock": self.lock}
+
+    def step(self, action):
+        assert self.action_space.contains(action)
+        return 1, 1.0, True, False, {"lock": self.lock}
 
 
 class ContextRecorder(Callbacks):
@@ -303,6 +320,29 @@ def test_callback_contexts_snapshot_nested_info_values(algorithm):
     np.testing.assert_array_equal(end.info["metrics"], [2])
     for context in (start, first, second, end):
         assert not np.shares_memory(context.info["metrics"], env.metrics)
+
+
+@pytest.mark.parametrize(
+    ("algorithm", "method_callbacks"),
+    (("q_learning", None), ("sarsa", [])),
+)
+def test_callback_free_training_skips_context_snapshots(
+    algorithm,
+    method_callbacks,
+):
+    learner = RL(NonCopyableInfoEnv())
+    kwargs = {
+        "n_episodes": 1,
+        "init_epsilon": 0.0,
+        "min_epsilon": 0.0,
+    }
+    if method_callbacks is not None:
+        kwargs["callbacks"] = method_callbacks
+
+    result = getattr(learner, algorithm)(**kwargs)
+
+    assert learner.callbacks == ()
+    np.testing.assert_array_equal(result[-1], [1.0])
 
 
 def test_callback_type_errors_propagate_without_retry_or_masking():

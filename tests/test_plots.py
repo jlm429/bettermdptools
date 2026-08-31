@@ -244,7 +244,7 @@ class TestPlots(unittest.TestCase):
                 plt.close(fallback_number)
             plt.close(caller_figure)
 
-    def test_renderer_fallback_without_prior_figure_uses_fresh_pyplot_target(self):
+    def test_renderer_fallback_without_prior_figure_remains_current(self):
         plt.close("all")
         fallback_ax = None
         fallback_number = None
@@ -261,11 +261,12 @@ class TestPlots(unittest.TestCase):
             fallback_manager = fallback_ax.figure.canvas.manager
             fallback_number = fallback_manager.num
             self.assertTrue(plt.fignum_exists(fallback_number))
+            self.assertEqual(plt.get_fignums(), [fallback_number])
+            self.assertIs(plt.gca(), fallback_ax)
 
             line = plt.plot([0, 1], [1, 0])[0]
 
-            self.assertIsNot(line.axes, fallback_ax)
-            self.assertEqual(len(fallback_ax.lines), 0)
+            self.assertIs(line.axes, fallback_ax)
 
             with patch.object(
                 fallback_manager,

@@ -15,7 +15,12 @@ from numpy.exceptions import AxisError
 
 
 class Plots:
-    """Transform and visualize values, policies, and training traces."""
+    """Transform and visualize values, policies, and training traces.
+
+    Renderers restore an existing pyplot figure and axes after creating a
+    fallback. If no pyplot figure existed, the managed fallback remains current
+    so pyplot show and close behavior stays intact.
+    """
 
     @staticmethod
     def values_to_dataframe(
@@ -80,10 +85,10 @@ class Plots:
         that explicit axes and does not depend on pyplot's current axes.
         """
         frame = Plots.values_to_dataframe(data, size)
-        target, needs_pyplot_target = Plots._axes(ax)
+        target = Plots._axes(ax)
         sns.heatmap(frame, annot=True, ax=target)
         target.set_title(title)
-        Plots._show(show, needs_pyplot_target)
+        Plots._show(show)
         return target
 
     @staticmethod
@@ -95,11 +100,11 @@ class Plots:
     ) -> Axes:
         """Render one or more value traces on an axes and return it."""
         frame = Plots.iterations_to_dataframe(data)
-        target, needs_pyplot_target = Plots._axes(ax)
+        target = Plots._axes(ax)
         Plots._apply_whitegrid(target)
         sns.lineplot(data=frame, legend=None, ax=target)
         target.set_title(title)
-        Plots._show(show, needs_pyplot_target)
+        Plots._show(show)
         return target
 
     @staticmethod
@@ -150,7 +155,7 @@ class Plots:
     ) -> Axes:
         """Render a policy on an axes and return it."""
         del map_size
-        target, needs_pyplot_target = Plots._axes(ax)
+        target = Plots._axes(ax)
         sns.heatmap(
             val_max,
             annot=directions,
@@ -164,13 +169,13 @@ class Plots:
             ax=target,
         )
         target.set_title(title)
-        Plots._show(show, needs_pyplot_target)
+        Plots._show(show)
         return target
 
     @staticmethod
-    def _axes(ax: Axes | None) -> tuple[Axes, bool]:
+    def _axes(ax: Axes | None) -> Axes:
         if ax is not None:
-            return ax, False
+            return ax
         previous_figure = plt.gcf() if plt.get_fignums() else None
         previous_axes = (
             previous_figure.gca()
@@ -184,7 +189,7 @@ class Plots:
                 plt.figure(previous_figure.number)
                 if previous_axes is not None:
                     plt.sca(previous_axes)
-        return target, previous_figure is None
+        return target
 
     @staticmethod
     def _apply_whitegrid(ax: Axes) -> None:
@@ -201,9 +206,6 @@ class Plots:
             ax.spines[side].set_visible(style[f"axes.spines.{side}"])
 
     @staticmethod
-    def _show(show: bool, needs_pyplot_target: bool) -> None:
+    def _show(show: bool) -> None:
         if show:
             plt.show()
-        if needs_pyplot_target:
-            with plt.ioff():
-                plt.figure()

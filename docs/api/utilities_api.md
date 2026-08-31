@@ -94,6 +94,8 @@ into a read-only top-level view. Callback code should treat nested observation
 and info objects as read-only. Callback return values are ignored and do not
 stop or modify training. Exceptions propagate unchanged, stop the run
 immediately, and prevent later callbacks for that hook from running.
+When no callbacks are configured, training does not create contexts or snapshot
+environment values.
 
 ### Stable paths and explicit signatures
 
@@ -125,10 +127,12 @@ Plots.values_heat_map(values, "State values", (4, 4), show=False, ax=ax)
 fig.tight_layout()
 ~~~
 
-The rendering helpers always pass an explicit axes to seaborn. They do not
-select pyplot's current axes or change global seaborn themes or Matplotlib
-rcParams. Omitting **ax** retains the convenient behavior of creating a new
-figure.
+The rendering helpers always pass an explicit axes to seaborn, so rendering
+does not depend on pyplot's current axes. They do not change global seaborn
+themes or Matplotlib rcParams. Omitting **ax** retains the convenient behavior
+of creating a new figure. If a pyplot figure already exists, its current axes
+is restored. If no figure existed, the managed fallback remains current so
+normal **plt.show()** and **plt.close(fig)** behavior is preserved.
 
 The directly testable transformations are:
 

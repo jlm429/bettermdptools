@@ -26,7 +26,6 @@ from tqdm.auto import tqdm
 from bettermdptools.utils.callbacks import (
     CallbackSpec,
     EpisodeContext,
-    MyCallbacks,
     TransitionContext,
     _dispatch_callbacks,
     _normalize_callbacks,
@@ -41,7 +40,7 @@ class RL:
     def __init__(self, env, callbacks: CallbackSpec | None = None):
         """Create a trainer with optional ordered callback injection."""
         self.env = env
-        self.callbacks = MyCallbacks() if callbacks is None else callbacks
+        self.callbacks = callbacks
         self.render = False
         # Explanation of lambda:
         # def select_action(state, Q, epsilon):
@@ -239,27 +238,31 @@ class RL:
                 observation, info = self.env.reset(seed=seed)
             else:
                 observation, info = self.env.reset()
-            observation = _snapshot_observation(observation)
+            if active_callbacks:
+                observation = _snapshot_observation(observation)
             state = convert_state_obs(observation)
-            start_context = EpisodeContext(
-                algorithm="q_learning",
-                episode=e,
-                total_episodes=n_episodes,
-                observation=observation,
-                state=state,
-                info=_snapshot_info(info),
-                steps=0,
-                total_reward=0.0,
-                terminated=False,
-                truncated=False,
-                epsilon=float(epsilons[e]),
-                alpha=float(alphas[e]),
-                gamma=float(gamma),
-            )
-            _dispatch_callbacks(
-                active_callbacks, "on_episode_begin", self, start_context
-            )
-            _dispatch_callbacks(active_callbacks, "on_episode", self, start_context)
+            if active_callbacks:
+                start_context = EpisodeContext(
+                    algorithm="q_learning",
+                    episode=e,
+                    total_episodes=n_episodes,
+                    observation=observation,
+                    state=state,
+                    info=_snapshot_info(info),
+                    steps=0,
+                    total_reward=0.0,
+                    terminated=False,
+                    truncated=False,
+                    epsilon=float(epsilons[e]),
+                    alpha=float(alphas[e]),
+                    gamma=float(gamma),
+                )
+                _dispatch_callbacks(
+                    active_callbacks, "on_episode_begin", self, start_context
+                )
+                _dispatch_callbacks(
+                    active_callbacks, "on_episode", self, start_context
+                )
             episode_done = False
             total_reward = 0.0
             steps = 0
@@ -275,33 +278,35 @@ class RL:
                 next_observation, reward, terminated, truncated, info = self.env.step(
                     action
                 )
-                next_observation = _snapshot_observation(next_observation)
+                if active_callbacks:
+                    next_observation = _snapshot_observation(next_observation)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_observation)
                 steps += 1
                 total_reward += float(reward)
-                transition_context = TransitionContext(
-                    algorithm="q_learning",
-                    episode=e,
-                    total_episodes=n_episodes,
-                    step=steps,
-                    observation=observation,
-                    state=state,
-                    action=action,
-                    reward=float(reward),
-                    terminated=terminated,
-                    truncated=truncated,
-                    next_observation=next_observation,
-                    next_state=next_state,
-                    info=_snapshot_info(info),
-                    total_reward=total_reward,
-                    epsilon=float(epsilons[e]),
-                    alpha=float(alphas[e]),
-                    gamma=float(gamma),
-                )
-                _dispatch_callbacks(
-                    active_callbacks, "on_env_step", self, transition_context
-                )
+                if active_callbacks:
+                    transition_context = TransitionContext(
+                        algorithm="q_learning",
+                        episode=e,
+                        total_episodes=n_episodes,
+                        step=steps,
+                        observation=observation,
+                        state=state,
+                        action=action,
+                        reward=float(reward),
+                        terminated=terminated,
+                        truncated=truncated,
+                        next_observation=next_observation,
+                        next_state=next_state,
+                        info=_snapshot_info(info),
+                        total_reward=total_reward,
+                        epsilon=float(epsilons[e]),
+                        alpha=float(alphas[e]),
+                        gamma=float(gamma),
+                    )
+                    _dispatch_callbacks(
+                        active_callbacks, "on_env_step", self, transition_context
+                    )
                 td_target = reward + gamma * Q[next_state].max() * (not terminated)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
@@ -310,22 +315,25 @@ class RL:
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            end_context = EpisodeContext(
-                algorithm="q_learning",
-                episode=e,
-                total_episodes=n_episodes,
-                observation=observation,
-                state=state,
-                info=_snapshot_info(info),
-                steps=steps,
-                total_reward=total_reward,
-                terminated=terminated,
-                truncated=truncated,
-                epsilon=float(epsilons[e]),
-                alpha=float(alphas[e]),
-                gamma=float(gamma),
-            )
-            _dispatch_callbacks(active_callbacks, "on_episode_end", self, end_context)
+            if active_callbacks:
+                end_context = EpisodeContext(
+                    algorithm="q_learning",
+                    episode=e,
+                    total_episodes=n_episodes,
+                    observation=observation,
+                    state=state,
+                    info=_snapshot_info(info),
+                    steps=steps,
+                    total_reward=total_reward,
+                    terminated=terminated,
+                    truncated=truncated,
+                    epsilon=float(epsilons[e]),
+                    alpha=float(alphas[e]),
+                    gamma=float(gamma),
+                )
+                _dispatch_callbacks(
+                    active_callbacks, "on_episode_end", self, end_context
+                )
 
         V = np.max(Q, axis=1)
 
@@ -425,27 +433,31 @@ class RL:
                 observation, info = self.env.reset(seed=seed)
             else:
                 observation, info = self.env.reset()
-            observation = _snapshot_observation(observation)
+            if active_callbacks:
+                observation = _snapshot_observation(observation)
             state = convert_state_obs(observation)
-            start_context = EpisodeContext(
-                algorithm="sarsa",
-                episode=e,
-                total_episodes=n_episodes,
-                observation=observation,
-                state=state,
-                info=_snapshot_info(info),
-                steps=0,
-                total_reward=0.0,
-                terminated=False,
-                truncated=False,
-                epsilon=float(epsilons[e]),
-                alpha=float(alphas[e]),
-                gamma=float(gamma),
-            )
-            _dispatch_callbacks(
-                active_callbacks, "on_episode_begin", self, start_context
-            )
-            _dispatch_callbacks(active_callbacks, "on_episode", self, start_context)
+            if active_callbacks:
+                start_context = EpisodeContext(
+                    algorithm="sarsa",
+                    episode=e,
+                    total_episodes=n_episodes,
+                    observation=observation,
+                    state=state,
+                    info=_snapshot_info(info),
+                    steps=0,
+                    total_reward=0.0,
+                    terminated=False,
+                    truncated=False,
+                    epsilon=float(epsilons[e]),
+                    alpha=float(alphas[e]),
+                    gamma=float(gamma),
+                )
+                _dispatch_callbacks(
+                    active_callbacks, "on_episode_begin", self, start_context
+                )
+                _dispatch_callbacks(
+                    active_callbacks, "on_episode", self, start_context
+                )
             episode_done = False
             action = self.select_action(state, Q, epsilons[e])
             total_reward = 0.0
@@ -461,33 +473,35 @@ class RL:
                 next_observation, reward, terminated, truncated, info = self.env.step(
                     action
                 )
-                next_observation = _snapshot_observation(next_observation)
+                if active_callbacks:
+                    next_observation = _snapshot_observation(next_observation)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_observation)
                 steps += 1
                 total_reward += float(reward)
-                transition_context = TransitionContext(
-                    algorithm="sarsa",
-                    episode=e,
-                    total_episodes=n_episodes,
-                    step=steps,
-                    observation=observation,
-                    state=state,
-                    action=action,
-                    reward=float(reward),
-                    terminated=terminated,
-                    truncated=truncated,
-                    next_observation=next_observation,
-                    next_state=next_state,
-                    info=_snapshot_info(info),
-                    total_reward=total_reward,
-                    epsilon=float(epsilons[e]),
-                    alpha=float(alphas[e]),
-                    gamma=float(gamma),
-                )
-                _dispatch_callbacks(
-                    active_callbacks, "on_env_step", self, transition_context
-                )
+                if active_callbacks:
+                    transition_context = TransitionContext(
+                        algorithm="sarsa",
+                        episode=e,
+                        total_episodes=n_episodes,
+                        step=steps,
+                        observation=observation,
+                        state=state,
+                        action=action,
+                        reward=float(reward),
+                        terminated=terminated,
+                        truncated=truncated,
+                        next_observation=next_observation,
+                        next_state=next_state,
+                        info=_snapshot_info(info),
+                        total_reward=total_reward,
+                        epsilon=float(epsilons[e]),
+                        alpha=float(alphas[e]),
+                        gamma=float(gamma),
+                    )
+                    _dispatch_callbacks(
+                        active_callbacks, "on_env_step", self, transition_context
+                    )
                 next_action = self.select_action(next_state, Q, epsilons[e])
                 td_target = reward + gamma * Q[next_state][next_action] * (
                     not terminated
@@ -500,22 +514,25 @@ class RL:
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            end_context = EpisodeContext(
-                algorithm="sarsa",
-                episode=e,
-                total_episodes=n_episodes,
-                observation=observation,
-                state=state,
-                info=_snapshot_info(info),
-                steps=steps,
-                total_reward=total_reward,
-                terminated=terminated,
-                truncated=truncated,
-                epsilon=float(epsilons[e]),
-                alpha=float(alphas[e]),
-                gamma=float(gamma),
-            )
-            _dispatch_callbacks(active_callbacks, "on_episode_end", self, end_context)
+            if active_callbacks:
+                end_context = EpisodeContext(
+                    algorithm="sarsa",
+                    episode=e,
+                    total_episodes=n_episodes,
+                    observation=observation,
+                    state=state,
+                    info=_snapshot_info(info),
+                    steps=steps,
+                    total_reward=total_reward,
+                    terminated=terminated,
+                    truncated=truncated,
+                    epsilon=float(epsilons[e]),
+                    alpha=float(alphas[e]),
+                    gamma=float(gamma),
+                )
+                _dispatch_callbacks(
+                    active_callbacks, "on_episode_end", self, end_context
+                )
 
         V = np.max(Q, axis=1)
 
