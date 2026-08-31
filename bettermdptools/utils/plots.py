@@ -171,8 +171,20 @@ class Plots:
     def _axes(ax: Axes | None) -> Axes:
         if ax is not None:
             return ax
-        manager = plt.new_figure_manager(1)
-        return manager.canvas.figure.subplots()
+        previous_figure = plt.gcf() if plt.get_fignums() else None
+        previous_axes = (
+            previous_figure.gca()
+            if previous_figure is not None and previous_figure.axes
+            else None
+        )
+        try:
+            _, target = plt.subplots()
+        finally:
+            if previous_figure is not None:
+                plt.figure(previous_figure.number)
+                if previous_axes is not None:
+                    plt.sca(previous_axes)
+        return target
 
     @staticmethod
     def _apply_whitegrid(ax: Axes) -> None:
@@ -190,5 +202,5 @@ class Plots:
 
     @staticmethod
     def _show(ax: Axes, show: bool) -> None:
-        if show and ax.figure.canvas.manager is not None:
-            ax.figure.show()
+        if show:
+            plt.show()

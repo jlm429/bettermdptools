@@ -31,6 +31,7 @@ from bettermdptools.utils.callbacks import (
     _dispatch_callbacks,
     _normalize_callbacks,
     _snapshot_info,
+    _snapshot_observation,
 )
 
 
@@ -58,6 +59,15 @@ class RL:
             if np.random.random() > epsilon
             else np.random.randint(len(Q[state]))
         )
+
+    @property
+    def callbacks(self) -> tuple[object, ...]:
+        """Return the normalized constructor or assigned callbacks."""
+        return self._callbacks
+
+    @callbacks.setter
+    def callbacks(self, callbacks: CallbackSpec | None) -> None:
+        self._callbacks = _normalize_callbacks(callbacks)
 
     @staticmethod
     def decay_schedule(
@@ -221,14 +231,15 @@ class RL:
             init_epsilon, min_epsilon, epsilon_decay_ratio, n_episodes
         )
         rewards = np.zeros(n_episodes, dtype=np.float32)
-        active_callbacks = _normalize_callbacks(
-            self.callbacks if callbacks is None else callbacks
+        active_callbacks = (
+            self.callbacks if callbacks is None else _normalize_callbacks(callbacks)
         )
         for e in tqdm(range(n_episodes), leave=False):
             if e == 0 and seed is not None:
                 observation, info = self.env.reset(seed=seed)
             else:
                 observation, info = self.env.reset()
+            observation = _snapshot_observation(observation)
             state = convert_state_obs(observation)
             start_context = EpisodeContext(
                 algorithm="q_learning",
@@ -264,6 +275,7 @@ class RL:
                 next_observation, reward, terminated, truncated, info = self.env.step(
                     action
                 )
+                next_observation = _snapshot_observation(next_observation)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_observation)
                 steps += 1
@@ -404,8 +416,8 @@ class RL:
         epsilons = RL.decay_schedule(
             init_epsilon, min_epsilon, epsilon_decay_ratio, n_episodes
         )
-        active_callbacks = _normalize_callbacks(
-            self.callbacks if callbacks is None else callbacks
+        active_callbacks = (
+            self.callbacks if callbacks is None else _normalize_callbacks(callbacks)
         )
 
         for e in tqdm(range(n_episodes), leave=False):
@@ -413,6 +425,7 @@ class RL:
                 observation, info = self.env.reset(seed=seed)
             else:
                 observation, info = self.env.reset()
+            observation = _snapshot_observation(observation)
             state = convert_state_obs(observation)
             start_context = EpisodeContext(
                 algorithm="sarsa",
@@ -448,6 +461,7 @@ class RL:
                 next_observation, reward, terminated, truncated, info = self.env.step(
                     action
                 )
+                next_observation = _snapshot_observation(next_observation)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_observation)
                 steps += 1

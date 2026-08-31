@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any, Literal, TypeAlias
@@ -184,6 +185,15 @@ CallbackSpec: TypeAlias = Callbacks | Iterable[Callbacks]
 def _snapshot_info(info: Mapping[str, Any] | None) -> Mapping[str, Any]:
     """Copy an environment info mapping into a read-only top-level view."""
     return MappingProxyType(dict(info or {}))
+
+
+def _snapshot_observation(observation: Any) -> Any:
+    """Copy mutable observations while preserving immutable values."""
+    if observation is None or isinstance(
+        observation, (bool, int, float, complex, str, bytes)
+    ):
+        return observation
+    return deepcopy(observation)
 
 
 def _normalize_callbacks(callbacks: Any) -> tuple[Any, ...]:

@@ -40,6 +40,24 @@ class TwoStepEnv(gym.Env):
         )
 
 
+class ReusedObservationEnv(gym.Env):
+    observation_space = gym.spaces.Box(0, 1, shape=(1,), dtype=np.int64)
+    action_space = gym.spaces.Discrete(1)
+
+    def __init__(self):
+        self.observation = np.zeros(1, dtype=np.int64)
+
+    def reset(self, *, seed=None, options=None):
+        super().reset(seed=seed)
+        self.observation[0] = 0
+        return self.observation, {}
+
+    def step(self, action):
+        assert self.action_space.contains(action)
+        self.observation[0] = 1
+        return self.observation, 1.0, True, False, {}
+
+
 class ContextRecorder(Callbacks):
     def __init__(self):
         self.events = []
@@ -186,6 +204,54 @@ def test_named_hooks_and_ordered_callback_iterables_run_in_injection_order():
     ]
     assert first.transition_data == [(1.0, False, 1.0), (2.0, True, 3.0)]
     assert second.transition_data == first.transition_data
+
+
+def test_constructor_callback_generator_is_reused_across_training_calls():
+    algorithms = []
+
+    class AlgorithmRecorder(Callbacks):
+        def on_episode_begin(self, caller, *, context):
+            algorithms.append(context.algorithm)
+
+    recorder = AlgorithmRecorder()
+    learner = RL(
+        TwoStepEnv("terminated"),
+        callbacks=(callback for callback in (recorder,)),
+    )
+
+    learner.q_learning(n_episodes=1, init_epsilon=0.0, min_epsilon=0.0)
+    learner.sarsa(n_episodes=1, init_epsilon=0.0, min_epsilon=0.0)
+
+    assert learner.callbacks == (recorder,)
+    assert algorithms == ["q_learning", "sarsa"]
+
+
+@pytest.mark.parametrize("algorithm", ("q_learning", "sarsa"))
+def test_callback_contexts_snapshot_reused_observation_buffers(algorithm):
+    env = ReusedObservationEnv()
+    recorder = ContextRecorder()
+    learner = RL(env, callbacks=recorder)
+
+    getattr(learner, algorithm)(
+        nS=2,
+        nA=1,
+        convert_state_obs=lambda observation: int(observation[0]),
+        n_episodes=1,
+        init_epsilon=0.0,
+        min_epsilon=0.0,
+    )
+
+    start, end = recorder.episodes
+    transition = recorder.transitions[0]
+    env.observation[0] = 0
+
+    np.testing.assert_array_equal(start.observation, [0])
+    np.testing.assert_array_equal(transition.observation, [0])
+    np.testing.assert_array_equal(transition.next_observation, [1])
+    np.testing.assert_array_equal(end.observation, [1])
+    assert not np.shares_memory(start.observation, env.observation)
+    assert not np.shares_memory(transition.next_observation, env.observation)
+    assert not np.shares_memory(end.observation, env.observation)
 
 
 def test_callback_type_errors_propagate_without_retry_or_masking():

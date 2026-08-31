@@ -205,38 +205,44 @@ class TestPlots(unittest.TestCase):
     def test_renderer_fallback_shows_without_changing_pyplot_target(self):
         caller_figure, caller_ax = plt.subplots()
         plt.sca(caller_ax)
-        manager = plt.new_figure_manager(1)
         fallback_ax = None
+        fallback_number = None
 
         try:
-            with (
-                patch(
-                    "bettermdptools.utils.plots.plt.new_figure_manager",
-                    return_value=manager,
-                ) as new_figure_manager,
-                patch.object(manager, "show") as show,
-            ):
+            with patch("bettermdptools.utils.plots.plt.show") as show:
                 fallback_ax = Plots.values_heat_map(
                     np.array([1.0, 2.0]),
                     "Values",
                     (1, 2),
                 )
 
-            new_figure_manager.assert_called_once_with(1)
             show.assert_called_once_with()
             self.assertIsNot(fallback_ax, caller_ax)
             self.assertIs(plt.gcf(), caller_figure)
             self.assertIs(plt.gca(), caller_ax)
+            fallback_manager = fallback_ax.figure.canvas.manager
+            fallback_number = fallback_manager.num
+            self.assertTrue(plt.fignum_exists(fallback_number))
 
             line = plt.plot([0, 1], [1, 0])[0]
 
             self.assertIs(line.axes, caller_ax)
             self.assertEqual(len(fallback_ax.lines), 0)
+
+            with patch.object(
+                fallback_manager,
+                "destroy",
+                wraps=fallback_manager.destroy,
+            ) as destroy:
+                plt.close(fallback_ax.figure)
+
+            destroy.assert_called_once_with()
+            self.assertFalse(plt.fignum_exists(fallback_number))
+            self.assertIs(plt.gca(), caller_ax)
         finally:
+            if fallback_number is not None and plt.fignum_exists(fallback_number):
+                plt.close(fallback_number)
             plt.close(caller_figure)
-            if fallback_ax is not None:
-                fallback_ax.figure.clear()
-            manager.destroy()
 
 
 if __name__ == "__main__":

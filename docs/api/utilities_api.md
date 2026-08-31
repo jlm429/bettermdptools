@@ -88,11 +88,12 @@ For every episode, hooks run in this order:
 5. Training records the completed episode.
 6. **on_episode_end** receives the final episode context.
 
-Context dataclasses are frozen, and their **info** mapping is copied into a
-read-only top-level view. Nested observation objects are not copied and should
-be treated as read-only. Callback return values are ignored and do not stop or
-modify training. Exceptions propagate unchanged, stop the run immediately,
-and prevent later callbacks for that hook from running.
+Context dataclasses are frozen, mutable observations are copied when received
+from the environment, and the **info** mapping is copied into a read-only
+top-level view. Callback code should treat nested observation objects as
+read-only. Callback return values are ignored and do not stop or modify
+training. Exceptions propagate unchanged, stop the run immediately, and
+prevent later callbacks for that hook from running.
 
 ### Stable paths and explicit signatures
 
