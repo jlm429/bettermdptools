@@ -58,6 +58,33 @@ class ReusedObservationEnv(gym.Env):
         return self.observation, 1.0, True, False, {}
 
 
+class ReusedInfoEnv(gym.Env):
+    observation_space = gym.spaces.Discrete(3)
+    action_space = gym.spaces.Discrete(1)
+
+    def __init__(self):
+        self.steps = 0
+        self.metrics = np.zeros(1, dtype=np.int64)
+
+    def reset(self, *, seed=None, options=None):
+        super().reset(seed=seed)
+        self.steps = 0
+        self.metrics[0] = 0
+        return 0, {"metrics": self.metrics}
+
+    def step(self, action):
+        assert self.action_space.contains(action)
+        self.steps += 1
+        self.metrics[0] = self.steps
+        return (
+            self.steps,
+            0.0,
+            self.steps == 2,
+            False,
+            {"metrics": self.metrics},
+        )
+
+
 class ContextRecorder(Callbacks):
     def __init__(self):
         self.events = []
@@ -252,6 +279,30 @@ def test_callback_contexts_snapshot_reused_observation_buffers(algorithm):
     assert not np.shares_memory(start.observation, env.observation)
     assert not np.shares_memory(transition.next_observation, env.observation)
     assert not np.shares_memory(end.observation, env.observation)
+
+
+@pytest.mark.parametrize("algorithm", ("q_learning", "sarsa"))
+def test_callback_contexts_snapshot_nested_info_values(algorithm):
+    env = ReusedInfoEnv()
+    recorder = ContextRecorder()
+    learner = RL(env, callbacks=recorder)
+
+    getattr(learner, algorithm)(
+        n_episodes=1,
+        init_epsilon=0.0,
+        min_epsilon=0.0,
+    )
+
+    start, end = recorder.episodes
+    first, second = recorder.transitions
+    env.metrics[0] = 99
+
+    np.testing.assert_array_equal(start.info["metrics"], [0])
+    np.testing.assert_array_equal(first.info["metrics"], [1])
+    np.testing.assert_array_equal(second.info["metrics"], [2])
+    np.testing.assert_array_equal(end.info["metrics"], [2])
+    for context in (start, first, second, end):
+        assert not np.shares_memory(context.info["metrics"], env.metrics)
 
 
 def test_callback_type_errors_propagate_without_retry_or_masking():

@@ -244,6 +244,41 @@ class TestPlots(unittest.TestCase):
                 plt.close(fallback_number)
             plt.close(caller_figure)
 
+    def test_renderer_fallback_without_prior_figure_uses_fresh_pyplot_target(self):
+        plt.close("all")
+        fallback_ax = None
+        fallback_number = None
+
+        try:
+            with patch("bettermdptools.utils.plots.plt.show") as show:
+                fallback_ax = Plots.values_heat_map(
+                    np.array([1.0, 2.0]),
+                    "Values",
+                    (1, 2),
+                )
+
+            show.assert_called_once_with()
+            fallback_manager = fallback_ax.figure.canvas.manager
+            fallback_number = fallback_manager.num
+            self.assertTrue(plt.fignum_exists(fallback_number))
+
+            line = plt.plot([0, 1], [1, 0])[0]
+
+            self.assertIsNot(line.axes, fallback_ax)
+            self.assertEqual(len(fallback_ax.lines), 0)
+
+            with patch.object(
+                fallback_manager,
+                "destroy",
+                wraps=fallback_manager.destroy,
+            ) as destroy:
+                plt.close(fallback_ax.figure)
+
+            destroy.assert_called_once_with()
+            self.assertFalse(plt.fignum_exists(fallback_number))
+        finally:
+            plt.close("all")
+
 
 if __name__ == "__main__":
     unittest.main()

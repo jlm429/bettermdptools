@@ -183,8 +183,8 @@ CallbackSpec: TypeAlias = Callbacks | Iterable[Callbacks]
 
 
 def _snapshot_info(info: Mapping[str, Any] | None) -> Mapping[str, Any]:
-    """Copy an environment info mapping into a read-only top-level view."""
-    return MappingProxyType(dict(info or {}))
+    """Copy environment info and nested values into a read-only top-level view."""
+    return MappingProxyType(deepcopy(dict(info or {})))
 
 
 def _snapshot_observation(observation: Any) -> Any:
