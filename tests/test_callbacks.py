@@ -59,6 +59,23 @@ class ReusedObservationEnv(gym.Env):
         return self.observation, 1.0, True, False, {}
 
 
+class IdentityObservationEnv(gym.Env):
+    observation_space = gym.spaces.Discrete(2)
+    action_space = gym.spaces.Discrete(1)
+
+    def __init__(self):
+        self.initial_observation = object()
+        self.final_observation = object()
+
+    def reset(self, *, seed=None, options=None):
+        super().reset(seed=seed)
+        return self.initial_observation, {}
+
+    def step(self, action):
+        assert self.action_space.contains(action)
+        return self.final_observation, 1.0, True, False, {}
+
+
 class ReusedInfoEnv(gym.Env):
     observation_space = gym.spaces.Discrete(3)
     action_space = gym.spaces.Discrete(1)
@@ -296,6 +313,31 @@ def test_callback_contexts_snapshot_reused_observation_buffers(algorithm):
     assert not np.shares_memory(start.observation, env.observation)
     assert not np.shares_memory(transition.next_observation, env.observation)
     assert not np.shares_memory(end.observation, env.observation)
+
+
+@pytest.mark.parametrize("algorithm", ("q_learning", "sarsa"))
+def test_callbacks_preserve_converter_observation_identity(algorithm):
+    env = IdentityObservationEnv()
+    converted = []
+
+    def convert_state_obs(observation):
+        converted.append(observation)
+        if observation is env.initial_observation:
+            return 0
+        if observation is env.final_observation:
+            return 1
+        raise AssertionError("converter received a copied observation")
+
+    getattr(RL(env, callbacks=Callbacks()), algorithm)(
+        nS=2,
+        nA=1,
+        convert_state_obs=convert_state_obs,
+        n_episodes=1,
+        init_epsilon=0.0,
+        min_epsilon=0.0,
+    )
+
+    assert converted == [env.initial_observation, env.final_observation]
 
 
 @pytest.mark.parametrize("algorithm", ("q_learning", "sarsa"))

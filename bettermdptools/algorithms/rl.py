@@ -238,15 +238,14 @@ class RL:
                 observation, info = self.env.reset(seed=seed)
             else:
                 observation, info = self.env.reset()
-            if active_callbacks:
-                observation = _snapshot_observation(observation)
             state = convert_state_obs(observation)
             if active_callbacks:
+                observation_snapshot = _snapshot_observation(observation)
                 start_context = EpisodeContext(
                     algorithm="q_learning",
                     episode=e,
                     total_episodes=n_episodes,
-                    observation=observation,
+                    observation=observation_snapshot,
                     state=state,
                     info=_snapshot_info(info),
                     steps=0,
@@ -278,25 +277,26 @@ class RL:
                 next_observation, reward, terminated, truncated, info = self.env.step(
                     action
                 )
-                if active_callbacks:
-                    next_observation = _snapshot_observation(next_observation)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_observation)
                 steps += 1
                 total_reward += float(reward)
                 if active_callbacks:
+                    next_observation_snapshot = _snapshot_observation(
+                        next_observation
+                    )
                     transition_context = TransitionContext(
                         algorithm="q_learning",
                         episode=e,
                         total_episodes=n_episodes,
                         step=steps,
-                        observation=observation,
+                        observation=observation_snapshot,
                         state=state,
                         action=action,
                         reward=float(reward),
                         terminated=terminated,
                         truncated=truncated,
-                        next_observation=next_observation,
+                        next_observation=next_observation_snapshot,
                         next_state=next_state,
                         info=_snapshot_info(info),
                         total_reward=total_reward,
@@ -307,6 +307,7 @@ class RL:
                     _dispatch_callbacks(
                         active_callbacks, "on_env_step", self, transition_context
                     )
+                    observation_snapshot = next_observation_snapshot
                 td_target = reward + gamma * Q[next_state].max() * (not terminated)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
@@ -320,7 +321,7 @@ class RL:
                     algorithm="q_learning",
                     episode=e,
                     total_episodes=n_episodes,
-                    observation=observation,
+                    observation=observation_snapshot,
                     state=state,
                     info=_snapshot_info(info),
                     steps=steps,
@@ -433,15 +434,14 @@ class RL:
                 observation, info = self.env.reset(seed=seed)
             else:
                 observation, info = self.env.reset()
-            if active_callbacks:
-                observation = _snapshot_observation(observation)
             state = convert_state_obs(observation)
             if active_callbacks:
+                observation_snapshot = _snapshot_observation(observation)
                 start_context = EpisodeContext(
                     algorithm="sarsa",
                     episode=e,
                     total_episodes=n_episodes,
-                    observation=observation,
+                    observation=observation_snapshot,
                     state=state,
                     info=_snapshot_info(info),
                     steps=0,
@@ -473,25 +473,26 @@ class RL:
                 next_observation, reward, terminated, truncated, info = self.env.step(
                     action
                 )
-                if active_callbacks:
-                    next_observation = _snapshot_observation(next_observation)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_observation)
                 steps += 1
                 total_reward += float(reward)
                 if active_callbacks:
+                    next_observation_snapshot = _snapshot_observation(
+                        next_observation
+                    )
                     transition_context = TransitionContext(
                         algorithm="sarsa",
                         episode=e,
                         total_episodes=n_episodes,
                         step=steps,
-                        observation=observation,
+                        observation=observation_snapshot,
                         state=state,
                         action=action,
                         reward=float(reward),
                         terminated=terminated,
                         truncated=truncated,
-                        next_observation=next_observation,
+                        next_observation=next_observation_snapshot,
                         next_state=next_state,
                         info=_snapshot_info(info),
                         total_reward=total_reward,
@@ -502,6 +503,7 @@ class RL:
                     _dispatch_callbacks(
                         active_callbacks, "on_env_step", self, transition_context
                     )
+                    observation_snapshot = next_observation_snapshot
                 next_action = self.select_action(next_state, Q, epsilons[e])
                 td_target = reward + gamma * Q[next_state][next_action] * (
                     not terminated
@@ -519,7 +521,7 @@ class RL:
                     algorithm="sarsa",
                     episode=e,
                     total_episodes=n_episodes,
-                    observation=observation,
+                    observation=observation_snapshot,
                     state=state,
                     info=_snapshot_info(info),
                     steps=steps,
