@@ -232,6 +232,32 @@ def test_test_env_accepts_documented_callable_policy_signatures(policy):
         env.close()
 
 
+def test_test_env_prefers_indexing_for_dual_protocol_policy():
+    calls = []
+
+    class DualProtocolPolicy:
+        def __getitem__(self, state):
+            calls.append(("getitem", state))
+            return 0
+
+        def __call__(self, state):
+            raise AssertionError("callable policy path must not be used")
+
+    env = gym.make("FrozenLake-v1", is_slippery=False, max_episode_steps=1)
+    try:
+        scores = TestEnv.test_env(
+            env,
+            n_iters=1,
+            pi=DualProtocolPolicy(),
+            seed=417,
+        )
+    finally:
+        env.close()
+
+    np.testing.assert_array_equal(scores, [0.0])
+    assert calls == [("getitem", 0)]
+
+
 def test_test_env_propagates_callable_policy_type_errors_without_retry():
     expected = TypeError("policy implementation failed")
     calls = []

@@ -60,6 +60,8 @@ def _call_policy(policy: Callable[..., Any], state: Any, info: Any) -> Any:
 
 
 def _policy_action(policy: Policy, state: Any, info: Any) -> Any:
+    if callable(getattr(policy, "__getitem__", None)):
+        return policy[state]
     if callable(policy):
         return _call_policy(policy, state, info)
     return policy[state]
