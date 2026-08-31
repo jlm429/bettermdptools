@@ -259,9 +259,7 @@ class RL:
                 _dispatch_callbacks(
                     active_callbacks, "on_episode_begin", self, start_context
                 )
-                _dispatch_callbacks(
-                    active_callbacks, "on_episode", self, start_context
-                )
+                _dispatch_callbacks(active_callbacks, "on_episode", self, start_context)
             episode_done = False
             total_reward = 0.0
             steps = 0
@@ -282,9 +280,7 @@ class RL:
                 steps += 1
                 total_reward += float(reward)
                 if active_callbacks:
-                    next_observation_snapshot = _snapshot_observation(
-                        next_observation
-                    )
+                    next_observation_snapshot = _snapshot_observation(next_observation)
                     transition_context = TransitionContext(
                         algorithm="q_learning",
                         episode=e,
@@ -455,9 +451,7 @@ class RL:
                 _dispatch_callbacks(
                     active_callbacks, "on_episode_begin", self, start_context
                 )
-                _dispatch_callbacks(
-                    active_callbacks, "on_episode", self, start_context
-                )
+                _dispatch_callbacks(active_callbacks, "on_episode", self, start_context)
             episode_done = False
             action = self.select_action(state, Q, epsilons[e])
             total_reward = 0.0
@@ -478,9 +472,7 @@ class RL:
                 steps += 1
                 total_reward += float(reward)
                 if active_callbacks:
-                    next_observation_snapshot = _snapshot_observation(
-                        next_observation
-                    )
+                    next_observation_snapshot = _snapshot_observation(next_observation)
                     transition_context = TransitionContext(
                         algorithm="sarsa",
                         episode=e,
