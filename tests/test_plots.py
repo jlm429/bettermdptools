@@ -1,5 +1,6 @@
 import unittest
 import warnings
+from unittest.mock import patch
 
 import gymnasium as gym
 import matplotlib as mpl
@@ -201,18 +202,28 @@ class TestPlots(unittest.TestCase):
         finally:
             plt.close(figure)
 
-    def test_renderer_fallback_preserves_current_pyplot_target(self):
+    def test_renderer_fallback_shows_without_changing_pyplot_target(self):
         caller_figure, caller_ax = plt.subplots()
         plt.sca(caller_ax)
+        manager = plt.new_figure_manager(1)
         fallback_ax = None
 
         try:
-            fallback_ax = Plots.values_heat_map(
-                np.array([1.0, 2.0]),
-                "Values",
-                (1, 2),
-                show=False,
-            )
+            with (
+                patch(
+                    "bettermdptools.utils.plots.plt.new_figure_manager",
+                    return_value=manager,
+                ) as new_figure_manager,
+                patch.object(manager, "show") as show,
+            ):
+                fallback_ax = Plots.values_heat_map(
+                    np.array([1.0, 2.0]),
+                    "Values",
+                    (1, 2),
+                )
+
+            new_figure_manager.assert_called_once_with(1)
+            show.assert_called_once_with()
             self.assertIsNot(fallback_ax, caller_ax)
             self.assertIs(plt.gcf(), caller_figure)
             self.assertIs(plt.gca(), caller_ax)
@@ -225,6 +236,7 @@ class TestPlots(unittest.TestCase):
             plt.close(caller_figure)
             if fallback_ax is not None:
                 fallback_ax.figure.clear()
+            manager.destroy()
 
 
 if __name__ == "__main__":

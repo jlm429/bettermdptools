@@ -6,11 +6,11 @@ from collections.abc import Mapping, Sequence
 from operator import index
 from typing import Any
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 from numpy.exceptions import AxisError
 
 
@@ -171,7 +171,8 @@ class Plots:
     def _axes(ax: Axes | None) -> Axes:
         if ax is not None:
             return ax
-        return Figure().subplots()
+        manager = plt.new_figure_manager(1)
+        return manager.canvas.figure.subplots()
 
     @staticmethod
     def _apply_whitegrid(ax: Axes) -> None:
