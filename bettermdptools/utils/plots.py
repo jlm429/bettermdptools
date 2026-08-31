@@ -156,6 +156,7 @@ class Plots:
         """Render a policy on an axes and return it."""
         del map_size
         target = Plots._axes(ax)
+        previous_annotation_count = len(target.texts)
         sns.heatmap(
             val_max,
             annot=directions,
@@ -169,8 +170,30 @@ class Plots:
             ax=target,
         )
         target.set_title(title)
+        Plots._fit_annotations(target, target.texts[previous_annotation_count:])
         Plots._show(show)
         return target
+
+    @staticmethod
+    def _fit_annotations(ax: Axes, annotations: Sequence[Any]) -> None:
+        if not annotations:
+            return
+
+        ax.figure.canvas.draw()
+        renderer = ax.figure.canvas.get_renderer()
+        corner_a = ax.transData.transform((0, 0))
+        corner_b = ax.transData.transform((1, 1))
+        cell_width = abs(corner_b[0] - corner_a[0])
+        cell_height = abs(corner_b[1] - corner_a[1])
+
+        for annotation in annotations:
+            bounds = annotation.get_window_extent(renderer)
+            scale = min(
+                1.0,
+                0.9 * cell_width / bounds.width if bounds.width else 1.0,
+                0.9 * cell_height / bounds.height if bounds.height else 1.0,
+            )
+            annotation.set_fontsize(annotation.get_fontsize() * scale)
 
     @staticmethod
     def _axes(ax: Axes | None) -> Axes:

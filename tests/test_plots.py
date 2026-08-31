@@ -85,6 +85,38 @@ class TestPlots(unittest.TestCase):
 
         self.assertEqual(policy_map.tolist(), [["LEFT", "RIGHT"]])
 
+    def test_policy_plot_fits_multi_character_labels_within_cells(self):
+        values = np.arange(16.0).reshape(4, 4)
+        labels = np.array(
+            [["MOVE LEFT", "MOVE RIGHT", "STAY PUT", "TURN AROUND"]] * 4,
+            dtype=object,
+        )
+        figure, ax = plt.subplots()
+
+        try:
+            Plots.plot_policy(values, labels, (4, 4), "Policy", show=False, ax=ax)
+            figure.canvas.draw()
+            renderer = figure.canvas.get_renderer()
+            oversized = []
+
+            for position, annotation in enumerate(ax.texts):
+                row, column = divmod(position, values.shape[1])
+                annotation_bounds = annotation.get_window_extent(renderer)
+                corner_a = ax.transData.transform((column, row))
+                corner_b = ax.transData.transform((column + 1, row + 1))
+                cell_width = abs(corner_b[0] - corner_a[0])
+                cell_height = abs(corner_b[1] - corner_a[1])
+
+                if (
+                    annotation_bounds.width > cell_width
+                    or annotation_bounds.height > cell_height
+                ):
+                    oversized.append((annotation.get_text(), position))
+
+            self.assertEqual(oversized, [])
+        finally:
+            plt.close(figure)
+
     def test_policy_aggregation_averages_values_not_categorical_labels(self):
         values = np.arange(8.0)
         policy = {state: state % 2 for state in range(8)}
