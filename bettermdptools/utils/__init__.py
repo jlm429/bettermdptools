@@ -7,6 +7,6 @@ This module contains shared bettermdptools utility functions and classes.
 - **Plotting**: Compose pure value and policy transformations with explicit
   Matplotlib axes rendering.
 - **Callbacks**: Observe typed episode and transition contexts during
-  model-free training while retaining legacy hook signatures.
+  model-free training while retaining existing hook names.
 - **Seeding**: Seed global random generators on a best-effort basis.
 """
