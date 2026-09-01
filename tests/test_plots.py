@@ -85,17 +85,17 @@ class TestPlots(unittest.TestCase):
         self.assertEqual(numeric_policy_map.tolist(), [["0", "1"]])
 
     def test_policy_aggregation_averages_values_not_categorical_labels(self):
-        values = np.arange(8.0)
-        policy = {state: state % 2 for state in range(8)}
+        values = np.arange(24.0)
+        policy = {state: state % 2 for state in range(24)}
 
         aggregated = Plots.get_values_agg_axis_means(
             policy,
             values,
-            (2, 2, 2),
-            (0,),
+            (2, 3, 4),
+            (0, 1),
         )
 
-        np.testing.assert_array_equal(aggregated, [[2.0, 3.0], [4.0, 5.0]])
+        np.testing.assert_array_equal(aggregated, [10.0, 11.0, 12.0, 13.0])
 
 
 if __name__ == "__main__":
