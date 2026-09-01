@@ -130,9 +130,9 @@ class TestEnv:
             of the complete environment and wrapper stack.
         n_iters : int, default 10
             Number of episodes to simulate.
-        pi : array-like or callable, optional
-            Policy mapping states to actions, commonly indexed as `pi[state]`.
-            If `user_input=True`, this is shown as a suggested action.
+        pi : array-like or mapping, optional
+            Policy mapping states to actions, indexed as ``pi[state]``.
+            If ``user_input=True``, this is shown as a suggested action.
         user_input : bool, default False
             If True, prompt the user to select each action interactively.
         convert_state_obs : callable or None, default identity
