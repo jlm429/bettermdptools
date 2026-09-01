@@ -152,9 +152,7 @@ def test_explicit_exact_mycallbacks_remain_active(algorithm, assign_after_init):
     callbacks.on_env_step = lambda context: events.append(
         ("step", context.episode, context.step)
     )
-    callbacks.on_episode_end = lambda context: events.append(
-        ("end", context.episode)
-    )
+    callbacks.on_episode_end = lambda context: events.append(("end", context.episode))
 
     train_with_callbacks(
         algorithm,
