@@ -223,15 +223,16 @@ class RL:
         )
         rewards = np.zeros(n_episodes, dtype=np.float32)
         for e in tqdm(range(n_episodes), leave=False):
-            self.callbacks.on_episode_begin(
-                EpisodeBeginContext(
-                    caller=self,
-                    episode=e,
-                    alpha=float(alphas[e]),
-                    epsilon=float(epsilons[e]),
-                    gamma=float(gamma),
+            if self.callbacks.__class__ is not MyCallbacks:
+                self.callbacks.on_episode_begin(
+                    EpisodeBeginContext(
+                        caller=self,
+                        episode=e,
+                        alpha=float(alphas[e]),
+                        epsilon=float(epsilons[e]),
+                        gamma=float(gamma),
+                    )
                 )
-            )
             if e == 0 and seed is not None:
                 state, info = self.env.reset(seed=seed)
             else:
@@ -252,21 +253,22 @@ class RL:
                 next_state, reward, terminated, truncated, info = self.env.step(action)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_state)
-                self.callbacks.on_env_step(
-                    EnvStepContext(
-                        caller=self,
-                        episode=e,
-                        step=step,
-                        state=int(state),
-                        action=int(action),
-                        next_state=int(next_state),
-                        reward=float(reward),
-                        terminated=bool(terminated),
-                        truncated=bool(truncated),
-                        info=info,
-                        q_values=Q,
+                if self.callbacks.__class__ is not MyCallbacks:
+                    self.callbacks.on_env_step(
+                        EnvStepContext(
+                            caller=self,
+                            episode=e,
+                            step=step,
+                            state=int(state),
+                            action=int(action),
+                            next_state=int(next_state),
+                            reward=float(reward),
+                            terminated=bool(terminated),
+                            truncated=bool(truncated),
+                            info=info,
+                            q_values=Q,
+                        )
                     )
-                )
                 td_target = reward + gamma * Q[next_state].max() * (not terminated)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
@@ -277,16 +279,17 @@ class RL:
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            self.callbacks.on_episode_end(
-                EpisodeEndContext(
-                    caller=self,
-                    episode=e,
-                    total_reward=float(total_reward),
-                    step_count=step,
-                    terminated=bool(terminated),
-                    truncated=bool(truncated),
+            if self.callbacks.__class__ is not MyCallbacks:
+                self.callbacks.on_episode_end(
+                    EpisodeEndContext(
+                        caller=self,
+                        episode=e,
+                        total_reward=float(total_reward),
+                        step_count=step,
+                        terminated=bool(terminated),
+                        truncated=bool(truncated),
+                    )
                 )
-            )
 
         V = np.max(Q, axis=1)
 
@@ -374,15 +377,16 @@ class RL:
         )
 
         for e in tqdm(range(n_episodes), leave=False):
-            self.callbacks.on_episode_begin(
-                EpisodeBeginContext(
-                    caller=self,
-                    episode=e,
-                    alpha=float(alphas[e]),
-                    epsilon=float(epsilons[e]),
-                    gamma=float(gamma),
+            if self.callbacks.__class__ is not MyCallbacks:
+                self.callbacks.on_episode_begin(
+                    EpisodeBeginContext(
+                        caller=self,
+                        episode=e,
+                        alpha=float(alphas[e]),
+                        epsilon=float(epsilons[e]),
+                        gamma=float(gamma),
+                    )
                 )
-            )
             if e == 0 and seed is not None:
                 state, info = self.env.reset(seed=seed)
             else:
@@ -403,21 +407,22 @@ class RL:
                 next_state, reward, terminated, truncated, info = self.env.step(action)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_state)
-                self.callbacks.on_env_step(
-                    EnvStepContext(
-                        caller=self,
-                        episode=e,
-                        step=step,
-                        state=int(state),
-                        action=int(action),
-                        next_state=int(next_state),
-                        reward=float(reward),
-                        terminated=bool(terminated),
-                        truncated=bool(truncated),
-                        info=info,
-                        q_values=Q,
+                if self.callbacks.__class__ is not MyCallbacks:
+                    self.callbacks.on_env_step(
+                        EnvStepContext(
+                            caller=self,
+                            episode=e,
+                            step=step,
+                            state=int(state),
+                            action=int(action),
+                            next_state=int(next_state),
+                            reward=float(reward),
+                            terminated=bool(terminated),
+                            truncated=bool(truncated),
+                            info=info,
+                            q_values=Q,
+                        )
                     )
-                )
                 next_action = self.select_action(next_state, Q, epsilons[e])
                 td_target = reward + gamma * Q[next_state][next_action] * (
                     not terminated
@@ -431,16 +436,17 @@ class RL:
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            self.callbacks.on_episode_end(
-                EpisodeEndContext(
-                    caller=self,
-                    episode=e,
-                    total_reward=float(total_reward),
-                    step_count=step,
-                    terminated=bool(terminated),
-                    truncated=bool(truncated),
+            if self.callbacks.__class__ is not MyCallbacks:
+                self.callbacks.on_episode_end(
+                    EpisodeEndContext(
+                        caller=self,
+                        episode=e,
+                        total_reward=float(total_reward),
+                        step_count=step,
+                        terminated=bool(terminated),
+                        truncated=bool(truncated),
+                    )
                 )
-            )
 
         V = np.max(Q, axis=1)
 

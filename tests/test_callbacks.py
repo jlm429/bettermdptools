@@ -4,6 +4,7 @@ import gymnasium as gym
 import numpy as np
 import pytest
 
+from bettermdptools.algorithms import rl as rl_module
 from bettermdptools.algorithms.rl import RL
 from bettermdptools.utils.callbacks import (
     Callbacks,
@@ -68,8 +69,14 @@ class RecordingCallbacks(Callbacks):
         self.end_contexts.append(context)
 
 
-def train_with_callbacks(algorithm, callbacks, n_episodes=2):
-    agent = RL(CallbackLifecycleEnv(), callbacks=callbacks)
+def train_with_callbacks(
+    algorithm, callbacks=None, n_episodes=2, assign_after_init=False
+):
+    if assign_after_init:
+        agent = RL(CallbackLifecycleEnv())
+        agent.callbacks = callbacks
+    else:
+        agent = RL(CallbackLifecycleEnv(), callbacks=callbacks)
     agent.select_action = lambda state, Q, epsilon: 0
     result = getattr(agent, algorithm)(
         gamma=0.75,
@@ -118,6 +125,36 @@ def test_callback_contexts_are_hook_specific_and_mycallbacks_is_subclassable():
         pass
 
     assert isinstance(CustomCallbacks(), Callbacks)
+
+
+@pytest.mark.parametrize("algorithm", ["q_learning", "sarsa"])
+def test_default_callbacks_skip_context_allocation(monkeypatch, algorithm):
+    def fail_context_allocation(**kwargs):
+        raise AssertionError("no-op callbacks allocated a context")
+
+    monkeypatch.setattr(rl_module, "EpisodeBeginContext", fail_context_allocation)
+    monkeypatch.setattr(rl_module, "EnvStepContext", fail_context_allocation)
+    monkeypatch.setattr(rl_module, "EpisodeEndContext", fail_context_allocation)
+
+    agent, _ = train_with_callbacks(algorithm, n_episodes=1)
+
+    assert agent.callbacks.__class__ is MyCallbacks
+
+
+@pytest.mark.parametrize("algorithm", ["q_learning", "sarsa"])
+def test_callbacks_assigned_after_construction_remain_active(algorithm):
+    callbacks = RecordingCallbacks()
+
+    train_with_callbacks(
+        algorithm, callbacks, n_episodes=1, assign_after_init=True
+    )
+
+    assert callbacks.events == [
+        ("begin", 0),
+        ("step", 0, 0),
+        ("step", 0, 1),
+        ("end", 0),
+    ]
 
 
 @pytest.mark.parametrize("algorithm", ["q_learning", "sarsa"])
