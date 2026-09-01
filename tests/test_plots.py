@@ -64,6 +64,39 @@ class TestPlots(unittest.TestCase):
         except Exception as e:
             self.fail(f"v_iters_plot raised an exception: {e}")
 
+    def test_policy_map_preserves_multi_character_action_labels(self):
+        values = np.array([1.0, 2.0])
+        policy = {0: 0, 1: 1}
+
+        _, policy_map = Plots.get_policy_map(
+            policy,
+            values,
+            {0: "MOVE LEFT", 1: "MOVE RIGHT"},
+            (1, 2),
+        )
+        _, numeric_policy_map = Plots.get_policy_map(
+            policy,
+            values,
+            None,
+            (1, 2),
+        )
+
+        self.assertEqual(policy_map.tolist(), [["MOVE LEFT", "MOVE RIGHT"]])
+        self.assertEqual(numeric_policy_map.tolist(), [["0", "1"]])
+
+    def test_policy_aggregation_averages_values_not_categorical_labels(self):
+        values = np.arange(8.0)
+        policy = {state: state % 2 for state in range(8)}
+
+        aggregated = Plots.get_values_agg_axis_means(
+            policy,
+            values,
+            (2, 2, 2),
+            (0,),
+        )
+
+        np.testing.assert_array_equal(aggregated, [[2.0, 3.0], [4.0, 5.0]])
+
 
 if __name__ == "__main__":
     unittest.main()

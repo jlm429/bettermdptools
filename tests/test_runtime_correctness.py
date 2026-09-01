@@ -214,6 +214,85 @@ class FixedPolicy:
         return self.action
 
 
+@pytest.mark.parametrize(
+    "policy",
+    (
+        lambda state: 0,
+        lambda state, info: 0,
+        lambda state, *, info: 0,
+    ),
+)
+def test_test_env_accepts_documented_callable_policy_signatures(policy):
+    env = gym.make("FrozenLake-v1", is_slippery=False, max_episode_steps=1)
+    try:
+        scores = TestEnv.test_env(env, n_iters=1, pi=policy, seed=417)
+
+        np.testing.assert_array_equal(scores, [0.0])
+    finally:
+        env.close()
+
+
+def test_test_env_passes_reset_info_to_callable_policy():
+    calls = []
+
+    def policy(state, info):
+        calls.append((state, info))
+        return 0
+
+    env = gym.make("FrozenLake-v1", is_slippery=False, max_episode_steps=1)
+    try:
+        TestEnv.test_env(env, n_iters=1, pi=policy, seed=417)
+    finally:
+        env.close()
+
+    assert calls == [(0, {"prob": 1})]
+
+
+def test_test_env_prefers_indexing_for_dual_protocol_policy():
+    calls = []
+
+    class DualProtocolPolicy:
+        def __getitem__(self, state):
+            calls.append(("getitem", state))
+            return 0
+
+        def __call__(self, state):
+            raise AssertionError("callable policy path must not be used")
+
+    env = gym.make("FrozenLake-v1", is_slippery=False, max_episode_steps=1)
+    try:
+        scores = TestEnv.test_env(
+            env,
+            n_iters=1,
+            pi=DualProtocolPolicy(),
+            seed=417,
+        )
+    finally:
+        env.close()
+
+    np.testing.assert_array_equal(scores, [0.0])
+    assert calls == [("getitem", 0)]
+
+
+def test_test_env_propagates_callable_policy_type_errors_without_retry():
+    expected = TypeError("policy implementation failed")
+    calls = []
+
+    def policy(state):
+        calls.append(state)
+        raise expected
+
+    env = gym.make("FrozenLake-v1", is_slippery=False, max_episode_steps=1)
+    try:
+        with pytest.raises(TypeError) as caught:
+            TestEnv.test_env(env, n_iters=1, pi=policy, seed=417)
+    finally:
+        env.close()
+
+    assert caught.value is expected
+    assert calls == [0]
+
+
 def test_policy_evaluation_bounds_an_undiscounted_recurrent_policy():
     recurrent_model = {0: {0: [(1.0, 0, -1.0, False)]}}
     terminal_model = {0: {0: [(1.0, 0, -1.0, True)]}}

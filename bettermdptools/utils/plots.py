@@ -32,10 +32,10 @@ class Plots:
     @staticmethod
     def get_values_agg_axis_means(pi, val_max, map_size, agg_axes):
         """Aggregate multidimensional maps over axes before visualization."""
-        val_max, policy_map = Plots.get_policy_map(pi, val_max, None, map_size)
+        val_max, _ = Plots.get_policy_map(pi, val_max, None, map_size)
         for ax in agg_axes:
-            policy_map = np.mean(policy_map, axis=ax)
-        return policy_map
+            val_max = np.mean(val_max, axis=ax)
+        return val_max
 
     # modified from https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/
     @staticmethod
@@ -45,9 +45,10 @@ class Plots:
         best_action = np.zeros(val_max.shape[0], dtype=np.int32)
         for idx, val in enumerate(val_max):
             best_action[idx] = pi[idx]
-        policy_map = np.empty(best_action.flatten().shape, dtype=str)
+        policy_map = np.empty(best_action.flatten().shape, dtype=object)
         for idx, val in enumerate(best_action.flatten()):
-            policy_map[idx] = actions[val] if actions is not None else val
+            label = actions[val] if actions is not None else val
+            policy_map[idx] = str(label)
         policy_map = policy_map.reshape(*map_size)
         val_max = val_max.reshape(*map_size)
         return val_max, policy_map

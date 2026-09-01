@@ -12,6 +12,7 @@ import os
 import sys
 from copy import deepcopy
 from importlib import metadata
+from inspect import signature
 from typing import Any
 
 import gymnasium as gym
@@ -20,6 +21,38 @@ import numpy as np
 
 def _identity(value):
     return value
+
+
+def _call_policy(policy, state, info):
+    """Invoke a callable policy once using a supported public signature."""
+    try:
+        policy_signature = signature(policy)
+    except (TypeError, ValueError):
+        return policy(state)
+
+    candidates = (
+        ((state,), {}),
+        ((state, info), {}),
+        ((state,), {"info": info}),
+    )
+    for args, kwargs in candidates:
+        try:
+            policy_signature.bind(*args, **kwargs)
+        except TypeError:
+            continue
+        return policy(*args, **kwargs)
+
+    raise TypeError(
+        "callable policies must accept policy(state) or policy(state, info)"
+    )
+
+
+def _policy_action(policy, state, info):
+    if callable(getattr(policy, "__getitem__", None)):
+        return policy[state]
+    if callable(policy):
+        return _call_policy(policy, state, info)
+    return policy[state]
 
 
 def _require_rendering_backend():
@@ -130,9 +163,11 @@ class TestEnv:
             of the complete environment and wrapper stack.
         n_iters : int, default 10
             Number of episodes to simulate.
-        pi : array-like or callable, optional
-            Policy mapping states to actions, commonly indexed as `pi[state]`.
-            If `user_input=True`, this is shown as a suggested action.
+        pi : indexable or callable, optional
+            Policy mapping states to actions. Indexable policies use
+            ``pi[state]``. Callable policies may accept ``policy(state)`` or
+            ``policy(state, info)``; ``info`` may be keyword-only. If
+            ``user_input=True``, the resolved action is shown as a suggestion.
         user_input : bool, default False
             If True, prompt the user to select each action interactively.
         convert_state_obs : callable or None, default identity
@@ -161,6 +196,8 @@ class TestEnv:
           `metadata["render_fps"]` for Gymnasium HumanRendering. Otherwise,
           construct the base environment with `render_mode="human"` before
           applying its wrappers.
+        - Callable signatures are inspected before invocation. Exceptions from
+          policy code, including ``TypeError``, propagate without retry.
         """
         if convert_state_obs is None:
             convert_state_obs = _identity
@@ -192,9 +229,10 @@ class TestEnv:
                             state=state,
                             n_actions=n_actions,
                             pi=pi,
+                            info=info,
                         )
                     else:
-                        action = pi[state]
+                        action = _policy_action(pi, state, info)
 
                     next_state, reward, terminated, truncated, info = env.step(action)
                     done = terminated or truncated
@@ -210,13 +248,18 @@ class TestEnv:
                 env.close()
 
     @staticmethod
-    def _prompt_for_action(state: Any, n_actions: int, pi: Any) -> int:
+    def _prompt_for_action(
+        state: Any,
+        n_actions: int,
+        pi: Any,
+        info: Any = None,
+    ) -> int:
         """
         Prompt the user to select an action and return the chosen value.
         """
         print(f"state is {state}")
         if pi is not None:
-            print(f"policy output is {pi[state]}")
+            print(f"policy output is {_policy_action(pi, state, info)}")
 
         while True:
             raw = input(f"Please select 0 - {n_actions - 1} then hit enter:\n")
