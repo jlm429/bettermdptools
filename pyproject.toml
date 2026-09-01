@@ -1,6 +1,6 @@
 [project]
 name = "bettermdptools"
-version = "0.9.0"
+version = "0.10.0"
 description = "Planning and tabular reinforcement learning tools for Gymnasium environments"
 authors = [
     { name = "John Mansfield", email = "jlm429@gmail.com" },
