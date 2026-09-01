@@ -142,14 +142,28 @@ def test_default_callbacks_skip_context_allocation(monkeypatch, algorithm):
 
 
 @pytest.mark.parametrize("algorithm", ["q_learning", "sarsa"])
-def test_callbacks_assigned_after_construction_remain_active(algorithm):
-    callbacks = RecordingCallbacks()
-
-    train_with_callbacks(
-        algorithm, callbacks, n_episodes=1, assign_after_init=True
+@pytest.mark.parametrize("assign_after_init", [False, True])
+def test_explicit_exact_mycallbacks_remain_active(algorithm, assign_after_init):
+    callbacks = MyCallbacks()
+    events = []
+    callbacks.on_episode_begin = lambda context: events.append(
+        ("begin", context.episode)
+    )
+    callbacks.on_env_step = lambda context: events.append(
+        ("step", context.episode, context.step)
+    )
+    callbacks.on_episode_end = lambda context: events.append(
+        ("end", context.episode)
     )
 
-    assert callbacks.events == [
+    train_with_callbacks(
+        algorithm,
+        callbacks,
+        n_episodes=1,
+        assign_after_init=assign_after_init,
+    )
+
+    assert events == [
         ("begin", 0),
         ("step", 0, 0),
         ("step", 0, 1),

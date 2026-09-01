@@ -47,6 +47,7 @@ class RL:
     def __init__(self, env, callbacks: Callbacks | None = None):
         self.env = env
         self.callbacks = callbacks if callbacks is not None else MyCallbacks()
+        self._default_callbacks = self.callbacks if callbacks is None else None
         self.render = False
         # Explanation of lambda:
         # def select_action(state, Q, epsilon):
@@ -223,7 +224,7 @@ class RL:
         )
         rewards = np.zeros(n_episodes, dtype=np.float32)
         for e in tqdm(range(n_episodes), leave=False):
-            if self.callbacks.__class__ is not MyCallbacks:
+            if self.callbacks is not self._default_callbacks:
                 self.callbacks.on_episode_begin(
                     EpisodeBeginContext(
                         caller=self,
@@ -253,7 +254,7 @@ class RL:
                 next_state, reward, terminated, truncated, info = self.env.step(action)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_state)
-                if self.callbacks.__class__ is not MyCallbacks:
+                if self.callbacks is not self._default_callbacks:
                     self.callbacks.on_env_step(
                         EnvStepContext(
                             caller=self,
@@ -279,7 +280,7 @@ class RL:
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            if self.callbacks.__class__ is not MyCallbacks:
+            if self.callbacks is not self._default_callbacks:
                 self.callbacks.on_episode_end(
                     EpisodeEndContext(
                         caller=self,
@@ -377,7 +378,7 @@ class RL:
         )
 
         for e in tqdm(range(n_episodes), leave=False):
-            if self.callbacks.__class__ is not MyCallbacks:
+            if self.callbacks is not self._default_callbacks:
                 self.callbacks.on_episode_begin(
                     EpisodeBeginContext(
                         caller=self,
@@ -407,7 +408,7 @@ class RL:
                 next_state, reward, terminated, truncated, info = self.env.step(action)
                 episode_done = terminated or truncated
                 next_state = convert_state_obs(next_state)
-                if self.callbacks.__class__ is not MyCallbacks:
+                if self.callbacks is not self._default_callbacks:
                     self.callbacks.on_env_step(
                         EnvStepContext(
                             caller=self,
@@ -436,7 +437,7 @@ class RL:
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            if self.callbacks.__class__ is not MyCallbacks:
+            if self.callbacks is not self._default_callbacks:
                 self.callbacks.on_episode_end(
                     EpisodeEndContext(
                         caller=self,
