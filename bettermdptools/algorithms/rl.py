@@ -23,15 +23,30 @@ from numbers import Integral, Real
 import numpy as np
 from tqdm.auto import tqdm
 
-from bettermdptools.utils.callbacks import MyCallbacks
+from bettermdptools.utils.callbacks import (
+    Callbacks,
+    EnvStepContext,
+    EpisodeBeginContext,
+    EpisodeEndContext,
+    MyCallbacks,
+)
 
 
 class RL:
-    """Train tabular policies by interacting with a Gymnasium environment."""
+    """Train tabular policies by interacting with a Gymnasium environment.
 
-    def __init__(self, env):
+    Parameters
+    ----------
+    env : gymnasium.Env
+        Environment used for training. The caller retains ownership.
+    callbacks : Callbacks, optional
+        Typed callback instance used by Q-learning and SARSA. A no-op
+        `MyCallbacks` instance is created when omitted.
+    """
+
+    def __init__(self, env, callbacks: Callbacks | None = None):
         self.env = env
-        self.callbacks = MyCallbacks()
+        self.callbacks = callbacks if callbacks is not None else MyCallbacks()
         self.render = False
         # Explanation of lambda:
         # def select_action(state, Q, epsilon):
@@ -208,8 +223,15 @@ class RL:
         )
         rewards = np.zeros(n_episodes, dtype=np.float32)
         for e in tqdm(range(n_episodes), leave=False):
-            self.callbacks.on_episode_begin(self)
-            self.callbacks.on_episode(self, episode=e)
+            self.callbacks.on_episode_begin(
+                EpisodeBeginContext(
+                    caller=self,
+                    episode=e,
+                    alpha=float(alphas[e]),
+                    epsilon=float(epsilons[e]),
+                    gamma=float(gamma),
+                )
+            )
             if e == 0 and seed is not None:
                 state, info = self.env.reset(seed=seed)
             else:
@@ -217,6 +239,9 @@ class RL:
             episode_done = False
             state = convert_state_obs(state)
             total_reward = 0
+            step = 0
+            terminated = False
+            truncated = False
             while not episode_done:
                 if self.render:
                     warnings.warn(
@@ -224,20 +249,44 @@ class RL:
                         "to render."
                     )
                 action = self.select_action(state, Q, epsilons[e])
-                next_state, reward, terminated, truncated, _ = self.env.step(action)
+                next_state, reward, terminated, truncated, info = self.env.step(action)
                 episode_done = terminated or truncated
-                self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)
+                self.callbacks.on_env_step(
+                    EnvStepContext(
+                        caller=self,
+                        episode=e,
+                        step=step,
+                        state=int(state),
+                        action=int(action),
+                        next_state=int(next_state),
+                        reward=float(reward),
+                        terminated=bool(terminated),
+                        truncated=bool(truncated),
+                        info=info,
+                        q_values=Q,
+                    )
+                )
                 td_target = reward + gamma * Q[next_state].max() * (not terminated)
                 td_error = td_target - Q[state][action]
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state = next_state
                 total_reward += reward
+                step += 1
             rewards[e] = total_reward
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            self.callbacks.on_episode_end(self)
+            self.callbacks.on_episode_end(
+                EpisodeEndContext(
+                    caller=self,
+                    episode=e,
+                    total_reward=float(total_reward),
+                    step_count=step,
+                    terminated=bool(terminated),
+                    truncated=bool(truncated),
+                )
+            )
 
         V = np.max(Q, axis=1)
 
@@ -325,8 +374,15 @@ class RL:
         )
 
         for e in tqdm(range(n_episodes), leave=False):
-            self.callbacks.on_episode_begin(self)
-            self.callbacks.on_episode(self, episode=e)
+            self.callbacks.on_episode_begin(
+                EpisodeBeginContext(
+                    caller=self,
+                    episode=e,
+                    alpha=float(alphas[e]),
+                    epsilon=float(epsilons[e]),
+                    gamma=float(gamma),
+                )
+            )
             if e == 0 and seed is not None:
                 state, info = self.env.reset(seed=seed)
             else:
@@ -335,16 +391,33 @@ class RL:
             state = convert_state_obs(state)
             action = self.select_action(state, Q, epsilons[e])
             total_reward = 0
+            step = 0
+            terminated = False
+            truncated = False
             while not episode_done:
                 if self.render:
                     warnings.warn(
                         "Occasional rendering is deprecated. Use test_env.py "
                         "to render."
                     )
-                next_state, reward, terminated, truncated, _ = self.env.step(action)
+                next_state, reward, terminated, truncated, info = self.env.step(action)
                 episode_done = terminated or truncated
-                self.callbacks.on_env_step(self)
                 next_state = convert_state_obs(next_state)
+                self.callbacks.on_env_step(
+                    EnvStepContext(
+                        caller=self,
+                        episode=e,
+                        step=step,
+                        state=int(state),
+                        action=int(action),
+                        next_state=int(next_state),
+                        reward=float(reward),
+                        terminated=bool(terminated),
+                        truncated=bool(truncated),
+                        info=info,
+                        q_values=Q,
+                    )
+                )
                 next_action = self.select_action(next_state, Q, epsilons[e])
                 td_target = reward + gamma * Q[next_state][next_action] * (
                     not terminated
@@ -353,11 +426,21 @@ class RL:
                 Q[state][action] = Q[state][action] + alphas[e] * td_error
                 state, action = next_state, next_action
                 total_reward += reward
+                step += 1
             rewards[e] = total_reward
             Q_track[e] = Q
             pi_track.append(np.argmax(Q, axis=1))
             self.render = False
-            self.callbacks.on_episode_end(self)
+            self.callbacks.on_episode_end(
+                EpisodeEndContext(
+                    caller=self,
+                    episode=e,
+                    total_reward=float(total_reward),
+                    step_count=step,
+                    terminated=bool(terminated),
+                    truncated=bool(truncated),
+                )
+            )
 
         V = np.max(Q, axis=1)
 
