@@ -11,9 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Corrected policy plotting aggregation to average numeric values and preserved
   multi-character action labels in policy maps.
-- Restored documented callable policy support in `TestEnv`, including policies
-  that accept both state and environment info, while preserving indexable policy
-  behavior.
 
 ## [0.10.0] - 2026-09-01
 
