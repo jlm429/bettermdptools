@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Breaking: replaced legacy reinforcement-learning callback signatures with
+  minimal typed contexts for episode begin, environment step, and episode end,
+  and removed the redundant `on_episode` hook.
+
 ### Fixed
 
 - Corrected policy plotting aggregation to average numeric values and preserved
