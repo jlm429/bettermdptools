@@ -48,11 +48,14 @@ def run_algorithm(algo: str, bundle: EnvBundle, **algo_kwargs: Any) -> Dict[str,
 
         planner = Planner(bundle.P)
         if a == "vi":
-            V, V_track, pi = planner.value_iteration(**algo_kwargs)
-            return {"V": V, "V_track": V_track, "pi": pi}
+            planning_result = planner.value_iteration(**algo_kwargs)
         else:
-            V, V_track, pi = planner.policy_iteration(**algo_kwargs)
-            return {"V": V, "V_track": V_track, "pi": pi}
+            planning_result = planner.policy_iteration(**algo_kwargs)
+        V, V_track, pi = planning_result[:3]
+        output = {"V": V, "V_track": V_track, "pi": pi}
+        if len(planning_result) == 4:
+            output["planning_metadata"] = planning_result[3]
+        return output
 
     if a in {"q_learning", "sarsa"}:
         from bettermdptools.algorithms.rl import RL

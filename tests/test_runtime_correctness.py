@@ -27,7 +27,7 @@ from bettermdptools.envs.pendulum_discretized import (
 from bettermdptools.envs.pendulum_wrapper import PendulumWrapper
 from bettermdptools.experiments import run
 from bettermdptools.experiments.env_factory import EnvFactory
-from bettermdptools.utils.plots import Plots
+from bettermdptools.plotting import prepare_policy_grid
 from bettermdptools.utils.test_env import TestEnv
 
 
@@ -337,6 +337,64 @@ def test_planning_iterations_reject_an_empty_iteration_budget(method_name):
 
     with pytest.raises(ValueError, match="n_iters must be an integer of at least 2"):
         getattr(Planner(model), method_name)(n_iters=1)
+
+
+@pytest.mark.parametrize(
+    "method_name",
+    ["value_iteration", "value_iteration_vectorized", "policy_iteration"],
+)
+def test_planning_metadata_reports_exact_valid_history_without_changing_default(
+    method_name,
+):
+    model = {0: {0: [(1.0, 0, 0.0, True)]}}
+    np.random.seed(0)
+    default_result = getattr(Planner(model), method_name)(n_iters=5)
+    np.random.seed(0)
+    V, V_track, pi, metadata = getattr(Planner(model), method_name)(
+        n_iters=5, return_metadata=True
+    )
+
+    assert len(default_result) == 3
+    np.testing.assert_array_equal(V, default_result[0])
+    np.testing.assert_array_equal(V_track, default_result[1])
+    assert pi == default_result[2]
+    assert metadata.iterations == 1
+    assert metadata.history_length == 2
+    assert metadata.converged is True
+    np.testing.assert_array_equal(V_track[: metadata.history_length], [[0.0], [0.0]])
+
+
+@pytest.mark.parametrize(
+    "method_name",
+    ["value_iteration", "value_iteration_vectorized", "policy_iteration"],
+)
+def test_planning_metadata_does_not_treat_valid_zero_rows_as_padding(method_name):
+    model = {0: {0: [(1.0, 0, 0.0, True)]}}
+    np.random.seed(0)
+
+    with pytest.warns(UserWarning, match="Max iterations reached"):
+        _, V_track, _, metadata = getattr(Planner(model), method_name)(
+            n_iters=4, theta=0.0, return_metadata=True
+        )
+
+    assert metadata.iterations == 3
+    assert metadata.history_length == 4
+    assert metadata.converged is False
+    np.testing.assert_array_equal(V_track, np.zeros((4, 1)))
+
+
+def test_experiment_planning_metadata_is_available_when_requested():
+    result = run(
+        algo="vi",
+        env_id="FrozenLake-v1",
+        env_kwargs={"is_slippery": False},
+        algo_kwargs={"n_iters": 20, "return_metadata": True},
+    )
+
+    metadata = result.train["planning_metadata"]
+    assert 2 <= metadata.history_length <= 20
+    assert metadata.history_length == metadata.iterations + 1
+    assert result.train["V_track"].shape == (20, 16)
 
 
 @pytest.mark.parametrize(
@@ -909,14 +967,14 @@ def test_blackjack_policy_map_excludes_the_terminal_sink():
             state: policy[state] for state in range(len(decision_values))
         }
 
-        mapped_values, mapped_policy = Plots.get_policy_map(
+        policy_grid = prepare_policy_grid(
             decision_policy,
             decision_values,
             {0: "S", 1: "H"},
             (29, 10),
         )
 
-        assert mapped_values.shape == (29, 10)
-        assert mapped_policy.shape == (29, 10)
+        assert policy_grid.values.shape == (29, 10)
+        assert policy_grid.actions.shape == (29, 10)
     finally:
         env.close()

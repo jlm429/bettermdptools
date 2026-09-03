@@ -58,18 +58,31 @@ on the unwrapped environment:
 
 ```python
 import gymnasium as gym
+import matplotlib.pyplot as plt
 
 from bettermdptools.algorithms.planner import Planner
-from bettermdptools.utils.plots import Plots
+from bettermdptools.plotting import plot_value_policy, prepare_policy_grid
 
 env = gym.make("FrozenLake8x8-v1", render_mode=None)
 
 V, V_track, pi = Planner(env.unwrapped.P).value_iteration(gamma=0.99)
+data = prepare_policy_grid(
+    pi,
+    V,
+    {0: "LEFT", 1: "DOWN", 2: "RIGHT", 3: "UP"},
+    (8, 8),
+)
 
-Plots.values_heat_map(V, title="State Values", size=(8, 8))
+fig, axes = plt.subplots(1, 2, figsize=(11, 4), layout="constrained")
+plot_value_policy(data, value_ax=axes[0], policy_ax=axes[1])
+plt.show()
+plt.close(fig)
 
 env.close()
 ```
+
+The plotting API leaves saving, display, layout, and closing to the figure
+owner.
 
 bettermdptools wrappers expose generated tabular models through their own `.P`
 property. The Blackjack wrapper uses a context-aware exact representation.
@@ -83,6 +96,7 @@ directory.
 
 High-level experiment and optional Optuna APIs are documented in:
 
+- [`docs/api/plotting_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/plotting_api.md)
 - [`docs/api/experiments_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/experiments_api.md)
 - [`docs/api/optuna_search_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/optuna_search_api.md)
 

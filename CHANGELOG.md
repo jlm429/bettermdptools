@@ -7,16 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `bettermdptools.plotting` with pure typed preparation, explicit Axes
+  renderers, repeated-run learning curves, value and policy convergence
+  diagnostics, and value-plus-policy composition.
+- Added opt-in planning metadata that reports convergence and the exact valid
+  `V_track` prefix without changing default planner returns.
+
 ### Changed
 
 - Breaking: replaced legacy reinforcement-learning callback signatures with
   minimal typed contexts for episode begin, environment step, and episode end,
   and removed the redundant `on_episode` hook.
+- Breaking: replaced `bettermdptools.utils.plots.Plots` with the typed,
+  axes-owned `bettermdptools.plotting` API.
+- Modernized the plotting, experiment, and Optuna notebooks around explicit
+  figure ownership and valid history handling.
 
 ### Fixed
 
 - Corrected policy plotting aggregation to average numeric values and preserved
   multi-character action labels in policy maps.
+- Removed the process-global seaborn theme mutation with the legacy plotting
+  facade.
 
 ## [0.10.0] - 2026-09-01
 
