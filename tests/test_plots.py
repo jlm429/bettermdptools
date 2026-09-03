@@ -202,6 +202,40 @@ class TestAxesRenderers(unittest.TestCase):
             [text.get_text() for text in policy_ax.texts], ["LEFT", "RIGHT"]
         )
 
+    def test_value_policy_routes_policy_only_colorbar_to_supplied_axes(self):
+        figure = plt.figure()
+        grid = figure.add_gridspec(1, 3, width_ratios=(1, 1, 0.05))
+        value_ax = figure.add_subplot(grid[0, 0])
+        policy_ax = figure.add_subplot(grid[0, 1])
+        colorbar_ax = figure.add_subplot(grid[0, 2])
+        data = prepare_policy_grid({0: 0, 1: 1}, [0.0, 1.0], None, (1, 2))
+
+        plot_value_policy(
+            data,
+            value_ax=value_ax,
+            policy_ax=policy_ax,
+            value_colorbar=False,
+            policy_colorbar=True,
+            cbar_ax=colorbar_ax,
+        )
+
+        self.assertEqual(figure.axes, [value_ax, policy_ax, colorbar_ax])
+        self.assertEqual(colorbar_ax.get_ylabel(), "State value")
+
+    def test_value_policy_rejects_one_axes_for_two_colorbars(self):
+        figure, (value_ax, policy_ax, colorbar_ax) = plt.subplots(1, 3)
+        data = prepare_policy_grid({0: 0, 1: 1}, [0.0, 1.0], None, (1, 2))
+
+        with self.assertRaisesRegex(ValueError, "cannot target both"):
+            plot_value_policy(
+                data,
+                value_ax=value_ax,
+                policy_ax=policy_ax,
+                value_colorbar=True,
+                policy_colorbar=True,
+                cbar_ax=colorbar_ax,
+            )
+
     def test_save_through_axes_figure_smoke(self):
         figure, ax = plt.subplots()
         plot_learning_curve(prepare_learning_curve([0.0, 1.0, 2.0]), ax=ax)

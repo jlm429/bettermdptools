@@ -277,6 +277,13 @@ def plot_value_policy(
     annotation_kws: Mapping[str, Any] | None = None,
 ) -> ValuePolicyAxes:
     """Compose matching value and policy grids on two supplied axes."""
+    if cbar_ax is not None and value_colorbar and policy_colorbar:
+        raise ValueError(
+            "cbar_ax cannot target both value and policy colorbars; "
+            "supply separate rendering calls or omit cbar_ax"
+        )
+    value_cbar_ax = cbar_ax if value_colorbar else None
+    policy_cbar_ax = cbar_ax if policy_colorbar else None
     annotations = np.empty(data.values.shape, dtype=object)
     for cell, value in np.ndenumerate(data.values):
         annotations[cell] = "" if np.isnan(value) else f"{value:.2f}"
@@ -287,7 +294,7 @@ def plot_value_policy(
         title=value_title,
         cmap=cmap,
         colorbar=value_colorbar,
-        cbar_ax=cbar_ax,
+        cbar_ax=value_cbar_ax,
         value_label=value_label,
         show_coordinates=show_coordinates,
         norm=norm,
@@ -301,6 +308,7 @@ def plot_value_policy(
         title=policy_title,
         cmap=cmap,
         colorbar=policy_colorbar,
+        cbar_ax=policy_cbar_ax,
         value_label=value_label,
         show_coordinates=show_coordinates,
         norm=norm,
