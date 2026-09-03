@@ -276,7 +276,13 @@ def plot_value_policy(
     vmax: float | None = None,
     annotation_kws: Mapping[str, Any] | None = None,
 ) -> ValuePolicyAxes:
-    """Compose matching value and policy grids on two supplied axes."""
+    """Compose matching value and policy grids on two supplied axes.
+
+    When ``cbar_ax`` is supplied, it receives the sole enabled colorbar. An
+    explicit target is ambiguous when both colorbars are enabled, so that
+    combination raises ``ValueError``. Without ``cbar_ax``, Matplotlib owns
+    automatic colorbar placement for each enabled panel.
+    """
     if cbar_ax is not None and value_colorbar and policy_colorbar:
         raise ValueError(
             "cbar_ax cannot target both value and policy colorbars; "
