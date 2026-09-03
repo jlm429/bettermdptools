@@ -200,7 +200,6 @@ Because each trial delegates to `experiments.run(...)`, the training output keys
 - `V`
 - `V_track`
 - `pi`
-- `planning_metadata` when algorithm arguments request `return_metadata=True`
 
 ### Tabular RL algorithms (`q_learning`, `sarsa`)
 

@@ -95,25 +95,18 @@ plot_convergence(
 
 No preparation function infers validity from numeric values. In particular,
 trailing zero rows are never removed because an all-zero estimate can be valid.
-Q-learning and SARSA record one valid history entry per episode, so their full
-histories are valid.
-
-Planner histories preserve their historical fixed allocation. Request exact
-metadata and pass its valid prefix explicitly:
+Q-learning and SARSA record one valid history entry per episode. Planner
+algorithms return only valid history rows, including the all-zero initial row,
+so these histories can be passed directly:
 
 ```python
-V, V_track, pi, metadata = Planner(P).value_iteration(
-    return_metadata=True
-)
-convergence = prepare_convergence(
-    V_track,
-    valid_length=metadata.history_length,
-)
+V, V_track, pi = Planner(P).value_iteration()
+convergence = prepare_convergence(V_track)
 ```
 
-`PlanningMetadata.history_length` includes the initial history row. Existing
-planner calls still return the historical three-item tuple unless
-`return_metadata=True` is requested.
+For an externally padded history, either slice it before preparation or pass
+its trustworthy leading length with `valid_length`. Never derive that length
+from zero-valued rows.
 
 ## Value and policy grids
 

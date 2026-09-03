@@ -110,7 +110,6 @@ Common training keys:
 
 - Planner algorithms (`vi`, `pi`)
   - `V`, `V_track`, `pi`
-  - `planning_metadata` when `algo_kwargs` requests `return_metadata=True`
 
 - Tabular RL algorithms (`q_learning`, `sarsa`)
   - `Q`, `V`, `pi`, `Q_track`, `pi_track`, `rewards`

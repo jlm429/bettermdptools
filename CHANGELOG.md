@@ -12,8 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `bettermdptools.plotting` with pure typed preparation, explicit Axes
   renderers, repeated-run learning curves, value and policy convergence
   diagnostics, and value-plus-policy composition.
-- Added opt-in planning metadata that reports convergence and the exact valid
-  `V_track` prefix without changing default planner returns.
 
 ### Changed
 
@@ -22,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and removed the redundant `on_episode` hook.
 - Breaking: replaced `bettermdptools.utils.plots.Plots` with the typed,
   axes-owned `bettermdptools.plotting` API.
+- Breaking: planning algorithms now return only valid `V_track` rows, including
+  the initial row, instead of padding the history to the iteration budget.
 - Modernized the plotting, experiment, and Optuna notebooks around explicit
   figure ownership and valid history handling.
 

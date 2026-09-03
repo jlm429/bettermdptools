@@ -19,7 +19,6 @@ Model-based learning algorithms: Value Iteration and Policy Iteration
 """
 
 import warnings
-from dataclasses import dataclass
 from numbers import Integral
 
 import numpy as np
@@ -29,37 +28,6 @@ def _validate_iteration_count(name, value, minimum):
     if isinstance(value, bool) or not isinstance(value, Integral) or value < minimum:
         raise ValueError(f"{name} must be an integer of at least {minimum}")
     return int(value)
-
-
-@dataclass(frozen=True, slots=True)
-class PlanningMetadata:
-    """Validity metadata for a planning algorithm history.
-
-    Attributes
-    ----------
-    iterations : int
-        Number of update iterations performed.
-    history_length : int
-        Number of valid leading rows in ``V_track``, including its initial row.
-    converged : bool
-        Whether the algorithm satisfied its convergence condition.
-    """
-
-    iterations: int
-    history_length: int
-    converged: bool
-
-
-def _planning_result(V, V_track, pi, iterations, converged, return_metadata):
-    result = (V, V_track, pi)
-    if not return_metadata:
-        return result
-    metadata = PlanningMetadata(
-        iterations=iterations,
-        history_length=iterations + 1,
-        converged=converged,
-    )
-    return (*result, metadata)
 
 
 class Planner:
@@ -77,15 +45,7 @@ class Planner:
         """
         self.P = P
 
-    def value_iteration(
-        self,
-        gamma=1.0,
-        n_iters=1000,
-        theta=1e-10,
-        dtype=np.float32,
-        *,
-        return_metadata=False,
-    ):
+    def value_iteration(self, gamma=1.0, n_iters=1000, theta=1e-10, dtype=np.float32):
         """
         Value Iteration algorithm.
 
@@ -97,9 +57,6 @@ class Planner:
             Iteration budget of at least 2, by default 1000.
         theta : float, optional
             Convergence criterion for value iteration, by default 1e-10.
-        return_metadata : bool, optional
-            When true, append :class:`PlanningMetadata` to the historical
-            three-item return. The default preserves the existing return.
 
         Returns
         -------
@@ -107,12 +64,9 @@ class Planner:
             V : np.ndarray
                 State values array.
             V_track : np.ndarray
-                Log of V(s) for each iteration.
+                Valid value history, including the all-zero initial row.
             pi : dict
                 Policy mapping states to actions.
-            metadata : PlanningMetadata, optional
-                Exact convergence and valid-history information, returned only
-                when ``return_metadata=True``.
         """
         n_iters = _validate_iteration_count("n_iters", n_iters, 2)
 
@@ -139,7 +93,7 @@ class Planner:
             pi = self._extract_undiscounted_policy(Q, dtype)
         else:
             pi = dict(enumerate(np.argmax(Q, axis=1)))
-        return _planning_result(V, V_track, pi, i, converged, return_metadata)
+        return V, V_track[: i + 1], pi
 
     def value_iteration_vectorized(
         self,
@@ -147,8 +101,6 @@ class Planner:
         n_iters=1000,
         theta=1e-10,
         dtype=np.float32,
-        *,
-        return_metadata=False,
     ):
         """
         Vectorized Value Iteration algorithm.
@@ -167,22 +119,15 @@ class Planner:
             previous values is less than theta.
             Stops at n_iters or theta convergence - whichever comes first.
 
-        return_metadata : bool, optional
-            When true, append :class:`PlanningMetadata` to the historical
-            three-item return. The default preserves the existing return.
-
         Returns
         -------
         tuple
             V : np.ndarray
                 State values array.
             V_track : np.ndarray
-                Log of V(s) for each iteration.
+                Valid value history, including the all-zero initial row.
             pi : dict
                 Policy mapping states to actions.
-            metadata : PlanningMetadata, optional
-                Exact convergence and valid-history information, returned only
-                when ``return_metadata=True``.
         """
         n_iters = _validate_iteration_count("n_iters", n_iters, 2)
 
@@ -237,7 +182,7 @@ class Planner:
             pi = self._extract_undiscounted_policy(Q, dtype)
         else:
             pi = dict(enumerate(np.argmax(Q, axis=1)))
-        return _planning_result(V, V_track, pi, i, converged, return_metadata)
+        return V, V_track[: i + 1], pi
 
     def policy_iteration(
         self,
@@ -246,8 +191,6 @@ class Planner:
         theta=1e-10,
         dtype=np.float32,
         eval_n_iters=1000,
-        *,
-        return_metadata=False,
     ):
         """
         Policy Iteration algorithm.
@@ -264,9 +207,6 @@ class Planner:
             Positive maximum Bellman sweeps per policy evaluation, by default 1000.
             Bounding evaluation prevents an improper undiscounted policy from
             blocking policy improvement indefinitely.
-        return_metadata : bool, optional
-            When true, append :class:`PlanningMetadata` to the historical
-            three-item return. The default preserves the existing return.
 
         Returns
         -------
@@ -274,12 +214,9 @@ class Planner:
             V : np.ndarray
                 State values array.
             V_track : np.ndarray
-                Log of V(s) for each iteration.
+                Valid value history, including the all-zero initial row.
             pi : dict
                 Policy mapping states to actions.
-            metadata : PlanningMetadata, optional
-                Exact convergence and valid-history information, returned only
-                when ``return_metadata=True``.
         """
         n_iters = _validate_iteration_count("n_iters", n_iters, 2)
         eval_n_iters = _validate_iteration_count("eval_n_iters", eval_n_iters, 1)
@@ -310,7 +247,7 @@ class Planner:
 
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
-        return _planning_result(V, V_track, pi, i, converged, return_metadata)
+        return V, V_track[: i + 1], pi
 
     def policy_evaluation(
         self,
