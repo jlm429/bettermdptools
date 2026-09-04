@@ -46,6 +46,7 @@ Detailed workflows live in `.agents/skills/`:
 | Change an environment model, wrapper, or discretizer | [Environment model validation](.agents/skills/environment-model-validation/SKILL.md) |
 | Select and report validation commands | [Testing and validation](.agents/skills/testing-validation/SKILL.md) |
 | Change docstrings, API docs, or pdoc output | [Generated documentation](.agents/skills/generated-documentation/SKILL.md) |
+| Refresh the README, static README assets, or saved notebook output | [README and notebook publishing](.agents/skills/readme-notebook-publishing/SKILL.md) |
 
 Before handoff, inspect the complete diff for unrelated changes, generated
 artifacts, weakened tests, dependency drift, and local files. Report the exact
