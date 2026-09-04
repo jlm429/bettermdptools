@@ -12,12 +12,12 @@ Read the repository [agent guide](../../../AGENTS.md),
 
 ## Establish the source of truth
 
-- Trace recent history and public exports before deciding which notebooks or
-  claims are affected.
-- Execute notebooks against the editable Poetry checkout, not an installed
-  release. Notebook tooling may be installed into the local virtual environment
-  when absent, but do not add it to project metadata unless the task requires a
-  maintained dependency.
+- Trace recent relevant history, public exports, and user-facing API changes
+  before deciding which notebooks, README claims, or visuals are affected.
+- Execute and validate notebooks against the editable Poetry checkout, not an
+  installed release. Notebook tooling may be installed into the local virtual
+  environment when absent, but do not add it to project metadata unless the task
+  requires a maintained dependency.
 - Keep README requirements synchronized with `[project]` and optional extras in
   `pyproject.toml`.
 
@@ -42,13 +42,17 @@ output changes.
 ## Publish README visuals
 
 Generate visuals through the documented public API and commit them under
-`docs/assets/`. Use descriptive alt text and a stable absolute raw repository URL
-in `README.md`, because package indexes cannot resolve repository-relative image
-paths.
+`docs/assets/`. Use descriptive alt text and an absolute raw repository URL in
+`README.md` that resolves from both GitHub and package indexes. For newly added
+assets, prefer an immutable commit-pinned URL so the image renders during PR
+review and remains stable after publication. An absolute URL targeting `master`
+alone does not provide that immutability.
 
 Build the wheel and source distribution after a README change. Inspect their
-long-description content and confirm referenced local assets exist. Exercise a
-representative public workflow from clean installs of both artifacts.
+packaged long-description content and verify its README image references resolve
+independently of installed package contents. Exercise a representative public
+workflow from clean wheel and source-distribution installs outside the repository
+so imports cannot accidentally resolve to the editable checkout.
 
 Before handoff, inspect notebooks for absolute local paths, ANSI control
 sequences, timestamps, unexpectedly large text output, errors, and unrelated
