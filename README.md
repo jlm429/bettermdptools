@@ -7,54 +7,62 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/jlm429/bettermdptools/master/docs/assets/bettermdptools-banner.png"
-       alt="bettermdptools reinforcement learning gridworld"
+       alt="BetterMDPTools reinforcement learning gridworld"
        width="100%">
 </p>
 
-bettermdptools provides classic planning and tabular reinforcement learning
-algorithms for [Gymnasium](https://gymnasium.farama.org/) environments.
+# BetterMDPTools
 
-- **Planning:** value iteration and policy iteration
-- **Reinforcement learning:** Q-learning and SARSA
-- **Environments:** discrete and discretized Gymnasium environments
-- **Experimentation:** reusable experiment, plotting, and optional Optuna utilities
+Learn how classic Markov decision process algorithms work by solving,
+experimenting with, and visualizing tabular Gymnasium environments.
+BetterMDPTools gives you direct access to value iteration, policy iteration,
+Q-learning, and SARSA, with inspectable NumPy results and composable plotting
+tools.
+
+## See values and policy together
+
+Turn a solved FrozenLake environment into a value map and readable policy with
+the public plotting API:
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/jlm429/bettermdptools/c8801b83496b3257695a93c4b01dfde70557b940/docs/assets/frozen-lake-value-policy.png"
+       alt="FrozenLake state values and policy plotted side by side"
+       width="900">
+</p>
+
+Plot preparation is separate from rendering. Every renderer draws on explicit,
+caller-owned Matplotlib axes, so plots compose naturally in notebooks,
+applications, and reports.
+
+## What you can explore
+
+| Area | Included tools |
+| --- | --- |
+| Planning | `Planner.value_iteration`, vectorized value iteration, and `Planner.policy_iteration` for tabular transition models |
+| Tabular reinforcement learning | `RL.q_learning` and `RL.sarsa` for learning through Gymnasium interactions |
+| Environments | Native discrete Gymnasium environments plus model and discretization wrappers for Blackjack, CartPole, Acrobot, and Pendulum |
+| Experiments | A reusable `run` entrypoint, `ExperimentBuilder`, seeded evaluation, and optional Optuna search |
+| Visualization | Learning curves, value and policy convergence, value heatmaps, policy grids, and combined value-policy figures |
+
+Planning methods return state values, valid convergence history, and a policy.
+Model-free methods also return action values, per-episode policy history, and
+rewards, making the learning process available for analysis rather than hiding
+it behind a training loop.
 
 ## Installation
 
-BetterMDPTools supports Python 3.12 through 3.14 and NumPy 2.x. The standard installation includes everything needed for planning, training, evaluation, plotting, and other non-rendering workflows, including use on Google Colab.
+BetterMDPTools supports Python 3.12 through 3.14, NumPy 2.x, and Gymnasium 1.3.
+The standard installation includes planning, training, evaluation, plotting,
+and non-rendering notebook workflows:
 
 ```bash
 pip install bettermdptools
 ```
 
-### Optional Features
+## Quick start
 
-For local rendering support:
-
-```bash
-pip install "bettermdptools[rendering]"
-```
-
-For Optuna integration:
-
-```bash
-pip install "bettermdptools[optuna]"
-```
-
-To install both:
-
-```bash
-pip install "bettermdptools[rendering,optuna]"
-```
-
-> **Note:** Rendering is optional and is not required for BetterMDPTools' core functionality. Rendering is not supported on Google Colab; use `render=False` there.
-
-The rendering extra uses `pygame-ce`, which provides the `pygame` interface expected by Gymnasium. Classic `pygame` is not supported and should not be installed alongside `pygame-ce`.
-
-## Quick Start
-
-The transition model for Gymnasium's built-in discrete environments is stored
-on the unwrapped environment:
+This example solves the built-in 8 by 8 FrozenLake transition model and plots
+the values and greedy policy side by side:
 
 ```python
 import gymnasium as gym
@@ -66,54 +74,82 @@ from bettermdptools.plotting import plot_value_policy, prepare_policy_grid
 env = gym.make("FrozenLake8x8-v1", render_mode=None)
 
 V, V_track, pi = Planner(env.unwrapped.P).value_iteration(gamma=0.99)
-data = prepare_policy_grid(
-    pi,
-    V,
-    {0: "LEFT", 1: "DOWN", 2: "RIGHT", 3: "UP"},
-    (8, 8),
+grid = prepare_policy_grid(
+    policy=pi,
+    values=V,
+    action_labels={0: "←", 1: "↓", 2: "→", 3: "↑"},
+    shape=(8, 8),
 )
 
 fig, axes = plt.subplots(1, 2, figsize=(11, 4), layout="constrained")
-plot_value_policy(data, value_ax=axes[0], policy_ax=axes[1])
+plot_value_policy(grid, value_ax=axes[0], policy_ax=axes[1])
 plt.show()
 plt.close(fig)
-
 env.close()
 ```
 
-The plotting API leaves saving, display, layout, and closing to the figure
-owner.
+For policy iteration, replace `value_iteration(...)` with
+`policy_iteration(...)`. For model-free learning, pass the environment to
+`RL(env).q_learning(...)` or `RL(env).sarsa(...)`.
 
-bettermdptools wrappers expose generated tabular models through their own `.P`
-property. The Blackjack wrapper uses a context-aware exact representation.
-CartPole, Acrobot, and Pendulum use discretized models.
+Gymnasium's built-in tabular transition models live on `env.unwrapped.P`.
+BetterMDPTools wrappers expose their generated models through `.P` and convert
+continuous or context-dependent observations into discrete state spaces.
 
-## Documentation
+## Examples and documentation
 
-User-facing examples and tutorials are available in the
-[`examples/`](https://github.com/jlm429/bettermdptools/tree/master/examples)
-directory.
+The [`examples/`](https://github.com/jlm429/bettermdptools/tree/master/examples)
+directory contains executed notebooks with saved plots and results:
 
-High-level experiment and optional Optuna APIs are documented in:
+- [`frozen_lake.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/frozen_lake.ipynb)
+  introduces planning and a value heatmap.
+- [`plots.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/plots.ipynb)
+  covers learning curves, convergence diagnostics, figure composition, and
+  style controls.
+- [`experiments_demo.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/experiments_demo.ipynb)
+  runs planning and Q-learning across discrete and wrapped environments.
+- [`optuna_search_examples.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/optuna_search_examples.ipynb)
+  tunes Q-learning, SARSA, and value iteration.
 
-- [`docs/api/plotting_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/plotting_api.md)
-- [`docs/api/experiments_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/experiments_api.md)
-- [`docs/api/optuna_search_api.md`](https://github.com/jlm429/bettermdptools/blob/master/docs/api/optuna_search_api.md)
-
+Detailed guides are available for the
+[plotting API](https://github.com/jlm429/bettermdptools/blob/master/docs/api/plotting_api.md),
+[experiment API](https://github.com/jlm429/bettermdptools/blob/master/docs/api/experiments_api.md),
+and [Optuna integration](https://github.com/jlm429/bettermdptools/blob/master/docs/api/optuna_search_api.md).
 The generated [Python API reference](https://jlm429.github.io/bettermdptools/bettermdptools.html)
-is built from the package docstrings.
+documents every public module.
 
-## Development
+## Optional rendering and Optuna
 
-Poetry is the source of truth for dependencies, builds, and documentation
-tooling:
+Install local Gymnasium rendering support, Optuna search, or both:
+
+```bash
+pip install "bettermdptools[rendering]"
+pip install "bettermdptools[optuna]"
+pip install "bettermdptools[rendering,optuna]"
+```
+
+The `rendering` extra installs `pygame-ce>=2.5.5,<3`, which supplies the
+`pygame` interface used by Gymnasium. Classic `pygame` is not supported and
+should not be installed alongside `pygame-ce`. Rendering is not supported on
+Google Colab, but core non-rendering workflows work there without this extra.
+
+The `optuna` extra installs `optuna>=4.6,<5`. It is only needed when calling
+`bettermdptools.experiments.optimize`.
+
+The package requires Python `>=3.12,<3.15`, NumPy `>=2,<3`, Gymnasium
+`>=1.3,<1.4`, and Matplotlib `>=3.8,<4`.
+
+## Development and contributing
+
+Poetry owns dependency resolution, builds, tests, and documentation tooling:
 
 ```bash
 poetry install --with docs
 poetry run pytest -q
 poetry run ruff check .
 poetry run black --check .
-poetry run pdoc bettermdptools -o docs
+poetry check --lock
+poetry build
 ```
 
 See [`CONTRIBUTING.md`](https://github.com/jlm429/bettermdptools/blob/master/CONTRIBUTING.md)
@@ -121,5 +157,5 @@ for the complete contributor workflow.
 
 ## License
 
-bettermdptools is distributed under the BSD 3-Clause License. See
-[`LICENSE`](https://github.com/jlm429/bettermdptools/blob/master/LICENSE).
+BetterMDPTools is distributed under the
+[BSD 3-Clause License](https://github.com/jlm429/bettermdptools/blob/master/LICENSE).
