@@ -25,7 +25,7 @@ Turn a solved FrozenLake environment into a value map and readable policy with
 the public plotting API:
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/jlm429/bettermdptools/c8801b83496b3257695a93c4b01dfde70557b940/docs/assets/frozen-lake-value-policy.png"
+  <img src="https://raw.githubusercontent.com/jlm429/bettermdptools/master/docs/assets/frozen-lake-value-policy.png"
        alt="FrozenLake state values and policy plotted side by side"
        width="900">
 </p>
