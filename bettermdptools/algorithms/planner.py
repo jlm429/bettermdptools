@@ -64,7 +64,7 @@ class Planner:
             V : np.ndarray
                 State values array.
             V_track : np.ndarray
-                Log of V(s) for each iteration.
+                Valid value history, including the all-zero initial row.
             pi : dict
                 Policy mapping states to actions.
         """
@@ -93,10 +93,14 @@ class Planner:
             pi = self._extract_undiscounted_policy(Q, dtype)
         else:
             pi = dict(enumerate(np.argmax(Q, axis=1)))
-        return V, V_track, pi
+        return V, V_track[: i + 1], pi
 
     def value_iteration_vectorized(
-        self, gamma=1.0, n_iters=1000, theta=1e-10, dtype=np.float32
+        self,
+        gamma=1.0,
+        n_iters=1000,
+        theta=1e-10,
+        dtype=np.float32,
     ):
         """
         Vectorized Value Iteration algorithm.
@@ -121,7 +125,7 @@ class Planner:
             V : np.ndarray
                 State values array.
             V_track : np.ndarray
-                Log of V(s) for each iteration.
+                Valid value history, including the all-zero initial row.
             pi : dict
                 Policy mapping states to actions.
         """
@@ -178,7 +182,7 @@ class Planner:
             pi = self._extract_undiscounted_policy(Q, dtype)
         else:
             pi = dict(enumerate(np.argmax(Q, axis=1)))
-        return V, V_track, pi
+        return V, V_track[: i + 1], pi
 
     def policy_iteration(
         self,
@@ -210,7 +214,7 @@ class Planner:
             V : np.ndarray
                 State values array.
             V_track : np.ndarray
-                Log of V(s) for each iteration.
+                Valid value history, including the all-zero initial row.
             pi : dict
                 Policy mapping states to actions.
         """
@@ -243,7 +247,7 @@ class Planner:
 
         if not converged:
             warnings.warn("Max iterations reached before convergence.  Check n_iters.")
-        return V, V_track, pi
+        return V, V_track[: i + 1], pi
 
     def policy_evaluation(
         self,

@@ -27,7 +27,7 @@ from bettermdptools.envs.pendulum_discretized import (
 from bettermdptools.envs.pendulum_wrapper import PendulumWrapper
 from bettermdptools.experiments import run
 from bettermdptools.experiments.env_factory import EnvFactory
-from bettermdptools.utils.plots import Plots
+from bettermdptools.plotting import prepare_policy_grid
 from bettermdptools.utils.test_env import TestEnv
 
 
@@ -337,6 +337,33 @@ def test_planning_iterations_reject_an_empty_iteration_budget(method_name):
 
     with pytest.raises(ValueError, match="n_iters must be an integer of at least 2"):
         getattr(Planner(model), method_name)(n_iters=1)
+
+
+@pytest.mark.parametrize(
+    "method_name",
+    ["value_iteration", "value_iteration_vectorized", "policy_iteration"],
+)
+def test_planning_returns_only_valid_history_rows(method_name):
+    model = {0: {0: [(1.0, 0, 0.0, True)]}}
+    np.random.seed(0)
+
+    _, V_track, _ = getattr(Planner(model), method_name)(n_iters=5)
+
+    np.testing.assert_array_equal(V_track, [[0.0], [0.0]])
+
+
+@pytest.mark.parametrize(
+    "method_name",
+    ["value_iteration", "value_iteration_vectorized", "policy_iteration"],
+)
+def test_planning_history_keeps_valid_zero_rows(method_name):
+    model = {0: {0: [(1.0, 0, 0.0, True)]}}
+    np.random.seed(0)
+
+    with pytest.warns(UserWarning, match="Max iterations reached"):
+        _, V_track, _ = getattr(Planner(model), method_name)(n_iters=4, theta=0.0)
+
+    np.testing.assert_array_equal(V_track, np.zeros((4, 1)))
 
 
 @pytest.mark.parametrize(
@@ -909,14 +936,14 @@ def test_blackjack_policy_map_excludes_the_terminal_sink():
             state: policy[state] for state in range(len(decision_values))
         }
 
-        mapped_values, mapped_policy = Plots.get_policy_map(
+        policy_grid = prepare_policy_grid(
             decision_policy,
             decision_values,
             {0: "S", 1: "H"},
             (29, 10),
         )
 
-        assert mapped_values.shape == (29, 10)
-        assert mapped_policy.shape == (29, 10)
+        assert policy_grid.values.shape == (29, 10)
+        assert policy_grid.actions.shape == (29, 10)
     finally:
         env.close()

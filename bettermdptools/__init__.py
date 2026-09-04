@@ -23,8 +23,8 @@ learning and planning algorithms to work with Gymnasium environments that do
 not expose a native tabular transition model.
 
 ### Visualization Tools
-Plotting utilities generate heatmaps, line plots, and other visualizations for
-analyzing learning progress and performance.
+The `plotting` package provides pure preparation functions and explicit
+Matplotlib Axes renderers for learning, convergence, value, and policy plots.
 
 ## Getting Started
 
@@ -46,6 +46,8 @@ https://github.com/jlm429/bettermdptools
 - [Envs](./bettermdptools/envs.html): Environment wrappers and models.
 - [Algorithms](./bettermdptools/algorithms.html): Learning and planning
   algorithms.
+- [Plotting](./bettermdptools/plotting.html): Prepared data and composable Axes
+  renderers.
 - [Experiments](./bettermdptools/experiments.html): High-level experiment and
   optional Optuna entrypoints.
 """

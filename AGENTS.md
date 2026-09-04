@@ -14,6 +14,9 @@ utilities. Transition and reward representations are core library behavior.
   make a change pass.
 - Treat state and action indexing, transition probabilities, rewards, terminal
   handling, and Gymnasium API semantics as correctness-critical.
+- For plotting changes, keep data preparation independently testable, render to
+  explicit caller-provided Matplotlib Axes, avoid process-global plotting state,
+  and never close or relayout caller-owned figures.
 - Make resource ownership explicit. Close environments and other resources an API
   retains on success and failure, and never close caller-owned resources.
 - Change dependencies, packaging, CI, and release configuration only when the task
