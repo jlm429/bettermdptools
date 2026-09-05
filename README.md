@@ -103,9 +103,16 @@ directory contains executed notebooks with saved plots and results:
 
 - [`frozen_lake.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/frozen_lake.ipynb)
   introduces planning and a value heatmap.
+- [`blackjack.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/blackjack.ipynb)
+  compares planning and Q-learning on the exact Blackjack model.
+- [`cartpole.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/cartpole.ipynb)
+  applies planning and Q-learning to discretized CartPole.
 - [`plots.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/plots.ipynb)
   covers learning curves, convergence diagnostics, figure composition, and
   style controls.
+- [`callbacks.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/callbacks.ipynb)
+  explains how episode and transition callbacks add training diagnostics beyond
+  standard policy-evaluation scores.
 - [`experiments_demo.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/experiments_demo.ipynb)
   runs planning and Q-learning across discrete and wrapped environments.
 - [`optuna_search_examples.ipynb`](https://github.com/jlm429/bettermdptools/blob/master/examples/optuna_search_examples.ipynb)

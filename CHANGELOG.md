@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the initial row, instead of padding the history to the iteration budget.
 - Modernized the plotting, experiment, and Optuna notebooks around explicit
   figure ownership and valid history handling.
+- Replaced the general utilities notebook with a focused callback tutorial and
+  normalized saved execution state across the example notebooks.
 
 ### Fixed
 
