@@ -145,7 +145,7 @@ data = prepare_policy_grid(
 
 ## Migrating from `Plots`
 
-The unreleased API replaces `bettermdptools.utils.plots.Plots`. Use
+The 0.11.0 API replaces `bettermdptools.utils.plots.Plots`. Use
 `prepare_value_grid` plus `plot_value_heatmap` instead of `values_heat_map`,
 `prepare_policy_grid` plus `plot_policy_grid` instead of `get_policy_map` and
 `plot_policy`, and the learning or convergence APIs instead of the ambiguous
