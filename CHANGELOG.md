@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-06
+
 ### Added
 
 - Added `bettermdptools.plotting` with pure typed preparation, explicit Axes
@@ -96,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated public examples, notebooks, docstrings, and package documentation for
   the Gymnasium 1.3 and public API contracts.
 
-[Unreleased]: https://github.com/jlm429/bettermdptools/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/jlm429/bettermdptools/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/jlm429/bettermdptools/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/jlm429/bettermdptools/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/jlm429/bettermdptools/compare/v0.8.6...v0.9.0
