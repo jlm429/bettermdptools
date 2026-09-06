@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `TestEnv.test_env` now reports a missing automatic policy before rendering
+  setup or reset, while preserving interactive suggestions and policy-free
+  zero-episode calls.
 - Corrected policy plotting aggregation to average numeric values and preserved
   multi-character action labels in policy maps.
 - Removed the process-global seaborn theme mutation with the legacy plotting
