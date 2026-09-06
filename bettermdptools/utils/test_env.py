@@ -12,10 +12,14 @@ import os
 import sys
 from copy import deepcopy
 from importlib import metadata
-from typing import Any
+from typing import Any, Protocol
 
 import gymnasium as gym
 import numpy as np
+
+
+class _StateIndexablePolicy(Protocol):
+    def __getitem__(self, state: Any, /) -> Any: ...
 
 
 def _identity(value):
@@ -109,7 +113,7 @@ class TestEnv:
         desc=None,
         render=False,
         n_iters=10,
-        pi=None,
+        pi: _StateIndexablePolicy | None = None,
         user_input=False,
         convert_state_obs=_identity,
         seed=None,
@@ -130,9 +134,13 @@ class TestEnv:
             of the complete environment and wrapper stack.
         n_iters : int, default 10
             Number of episodes to simulate.
-        pi : array-like or mapping, optional
-            Policy mapping states to actions, indexed as ``pi[state]``.
-            If ``user_input=True``, this is shown as a suggested action.
+        pi : state-indexable policy or None, default None
+            Policy indexed as ``pi[state]``, such as a dictionary, NumPy array,
+            or custom indexable object. Required when ``user_input=False`` and
+            episodes will execute. With ``user_input=True``, a supplied policy
+            only suggests an action; user input always selects the action.
+            None means no suggestion. With ``n_iters=0``, no policy is required
+            and an empty array is returned without resetting the environment.
         user_input : bool, default False
             If True, prompt the user to select each action interactively.
         convert_state_obs : callable or None, default identity
@@ -146,6 +154,22 @@ class TestEnv:
         -------
         np.ndarray
             Array of length `n_iters` containing the total reward for each episode.
+
+        Raises
+        ------
+        ValueError
+            If pi is None for automatic episodes that will execute. This is
+            checked before rendering setup, environment copying, or reset.
+
+        Examples
+        --------
+        Evaluate an indexable policy on a caller-owned environment:
+
+        >>> scores = TestEnv.test_env(env, pi=policy, n_iters=10)
+
+        Select actions interactively without policy suggestions:
+
+        >>> scores = TestEnv.test_env(env, user_input=True, n_iters=1)
 
         Notes
         -----
@@ -162,6 +186,12 @@ class TestEnv:
           construct the base environment with `render_mode="human"` before
           applying its wrappers.
         """
+        if pi is None and not user_input and range(n_iters):
+            raise ValueError(
+                "pi is required when user_input=False and episodes will execute; "
+                "provide a policy indexed as pi[state] or use user_input=True."
+            )
+
         if convert_state_obs is None:
             convert_state_obs = _identity
 
@@ -210,7 +240,9 @@ class TestEnv:
                 env.close()
 
     @staticmethod
-    def _prompt_for_action(state: Any, n_actions: int, pi: Any) -> int:
+    def _prompt_for_action(
+        state: Any, n_actions: int, pi: _StateIndexablePolicy | None
+    ) -> int:
         """
         Prompt the user to select an action and return the chosen value.
         """
